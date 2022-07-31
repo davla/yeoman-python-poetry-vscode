@@ -1,0 +1,101 @@
+{
+  "name": "generator-python-poetry-vscode",
+  "version": "0.0.0",
+  "description": "Yeoman generator for Python packages, using Poetry and integrated with Visual Studio Code",
+  "homepage": "https://github.com/davla/yeoman-python-poetry-vscode",
+  "type": "module",
+  "author": {
+    "name": "Davide Laezza",
+    "email": "truzzialrogo@gmx.com",
+    "url": "https://github.com/davla"
+  },
+  "files": [
+    "generators"
+  ],
+  "main": "generators/index.js",
+  "keywords": [
+    "python",
+    "poetry",
+    "vscode",
+    "yeoman-generator"
+  ],
+  "devDependencies": {
+    "@types/jest": "^28.1.6",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-xo": "^0.41.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "jest": "^28.1.3",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "yeoman-test": "^6.3.0"
+  },
+  "engines": {
+    "npm": ">= 4.0.0"
+  },
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "yeoman-generator": "^5.7.0",
+    "yosay": "^2.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "xo",
+      "prettier"
+    ],
+    "env": {
+      "jest": true,
+      "node": true
+    },
+    "rules": {
+      "import/order": [
+        "error",
+        {
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          }
+        }
+      ],
+      "prettier/prettier": "error",
+      "sort-imports": [
+        "error",
+        {
+          "allowSeparatedGroups": true,
+          "ignoreDeclarationSort": true,
+          "ignoreMemberSort": false
+        }
+      ]
+    },
+    "plugins": [
+      "import",
+      "prettier"
+    ]
+  },
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "repository": "git@github.com:davla/yeoman-python-poetry-vscode.git",
+  "license": "GPL-3.0"
+}
