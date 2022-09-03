@@ -20,6 +20,7 @@
     "yeoman-generator"
   ],
   "devDependencies": {
+    "@types/flat": "^5.0.2",
     "@types/jest": "^28.1.6",
     "@types/sinon": "^10.0.13",
     "eslint": "^8.22.0",
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "chalk": "^2.1.0",
+    "flat": "^5.0.2",
     "lodash": "^4.17.21",
     "yeoman-generator": "^5.7.0",
     "yosay": "^2.0.2"
