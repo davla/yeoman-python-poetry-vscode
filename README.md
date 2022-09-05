@@ -1,14 +1,15 @@
 # generator-python-poetry-vscode [![NPM version][npm-image]][npm-url] [![Build Status][actions-image]][actions-url] [![Dependency Status][daviddm-image]][daviddm-url]
-> Yeoman generator for Python packages, using Poetry and integrated with Visual Studio Code
+> Yeoman generator for Python packages, using [Poetry](https://python-poetry.org/) and integrated with [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Installation
 
 First, install [Yeoman](http://yeoman.io) and generator-python-poetry-vscode using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
 
 ```bash
-npm install -g yo
-npm install -g generator-python-poetry-vscode
+npm install -g yo generator-python-poetry-vscode
 ```
+
+Then, you'll need to install Poetry. Follow the [instructions](https://python-poetry.org/docs/#installation) on the project's website.
 
 Then generate your new project:
 
