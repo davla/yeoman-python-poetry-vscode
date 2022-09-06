@@ -224,6 +224,20 @@ describe("InputState", () => {
         );
       }
     );
+
+    it.each(mergeMethods)(
+      "Should preserve array values when merging $inputType",
+      ({ merge }) => {
+        const args = [{ [Input.PATH_KEY]: "array.input" }];
+        const inputState = new InputState(args);
+
+        merge.call(inputState, { "array.input": ["an", { array: true }] });
+
+        expect(inputState.values).toStrictEqual({
+          array: { input: ["an", { array: true }] },
+        });
+      }
+    );
   });
 
   describe("Missing input names", () => {
