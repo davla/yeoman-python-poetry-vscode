@@ -176,6 +176,22 @@ describe("Input", () => {
 
       validate.verify();
     });
+
+    it("should validate the value before transformation", () => {
+      const validate = sinon.expectation.create();
+      validate.once().withArgs("Doublade").returns(true);
+
+      const transform = sinon.stub().returns("Aegislash");
+
+      const input = new Input({
+        [Input.VALIDATE_KEY]: validate,
+        [Input.TRANSFORM_KEY]: transform,
+      });
+
+      input.setValue("Doublade");
+
+      validate.verify();
+    });
   });
 
   describe("Prompt-specific", () => {
