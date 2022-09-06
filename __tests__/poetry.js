@@ -3,6 +3,7 @@ import path from "path";
 
 import TOML from "@iarna/toml";
 import _ from "lodash";
+import sinon from "sinon";
 import yeomanTest from "yeoman-test";
 
 import PoetryGenerator from "../generators/poetry";
@@ -86,18 +87,28 @@ const generatorInput = [
 
 const mandatoryAnswers = {
   name: "mandatory_package",
-  author: "Yoshimitsu <yoshimitsu@tekken.jp>",
   version: "1.9.0",
   description: "Non-empty description",
   license: "",
-  repository: "https://repository.com",
-  python: "3.7.2",
 };
 
 describe("python-poetry-vscode:poetry", () => {
   let context;
+  let queryGitOriginUrl;
+  let spawnCommand;
+  let userGitEmail;
+  let userGitName;
 
   beforeEach(() => {
+    queryGitOriginUrl = sinon
+      .stub()
+      .resolves("https://github.com/eddy-gordo/git_package");
+    spawnCommand = sinon
+      .stub()
+      .withArgs("python", ["--version"], { stdio: "pipe" })
+      .resolves({ stdout: "Python 3.10.2" });
+    userGitName = sinon.stub().returns("Jin Kazama");
+    userGitEmail = sinon.stub().returns("jin.kazama@tekken.jp");
     context = yeomanTest
       .run(
         PoetryGenerator,
@@ -108,7 +119,13 @@ describe("python-poetry-vscode:poetry", () => {
         {}
       )
       // Silence the annoying warnings
-      .withPrompts(mandatoryAnswers);
+      .withPrompts(mandatoryAnswers)
+      .on("ready", (generator) => {
+        generator.user.git.email = userGitEmail;
+        generator.user.git.name = userGitName;
+        generator._queryGitOriginUrl = queryGitOriginUrl;
+        generator.spawnCommand = spawnCommand;
+      });
   });
 
   describe("pyproject.toml", () => {
@@ -201,6 +218,54 @@ describe("python-poetry-vscode:poetry", () => {
           .inTmpDir(writePyProjectToml.bind(null, existingContent))
           .withPrompts({ [promptName]: promptValue });
         await assertPyProjectTomlContains(run, existingContent);
+      }
+    );
+  });
+
+  describe("dynamic default values", () => {
+    it("queries git config for the default author", async () => {
+      const run = await context;
+
+      expect(userGitEmail.calledOnce).toBeTruthy();
+      expect(userGitName.calledOnce).toBeTruthy();
+
+      await assertPyProjectTomlContains(run, {
+        tool: { poetry: { authors: ["Jin Kazama <jin.kazama@tekken.jp>"] } },
+      });
+    });
+
+    it("queries current python version for default python", async () => {
+      const run = await context;
+
+      expect(
+        spawnCommand.calledOnceWith("python", ["--version"], {
+          stdio: "pipe",
+        })
+      ).toBeTruthy();
+
+      await assertPyProjectTomlContains(run, {
+        tool: { poetry: { dependencies: { python: "^3.10.2" } } },
+      });
+    });
+
+    it.each([
+      { protocol: "https", url: "https://github.com/hwoarang/https_package" },
+      { protocol: "ssh", url: "git@github.com:hwoarang/https_package.git" },
+    ])(
+      "queries git config for the default project url ($protocol)",
+      async ({ url }) => {
+        queryGitOriginUrl.resolves(url);
+        const run = await context;
+
+        expect(queryGitOriginUrl.calledOnce).toBeTruthy();
+
+        await assertPyProjectTomlContains(run, {
+          tool: {
+            poetry: {
+              repository: "https://github.com/hwoarang/https_package",
+            },
+          },
+        });
       }
     );
   });

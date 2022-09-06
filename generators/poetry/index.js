@@ -1,6 +1,8 @@
 "use strict";
 import TOML from "@iarna/toml";
+import giturl from "giturl";
 import _ from "lodash";
+import gitOriginUrl from "remote-origin-url";
 import Generator from "yeoman-generator";
 
 import InputState from "../../lib/input-state.js";
@@ -52,6 +54,7 @@ export default class PoetryGenerator extends Generator {
           name: "author",
           message: "Python package author (name <email>)",
           type: "input",
+          default: () => this._makeAuthor(),
         },
         [Input.OPTION_KEY]: {
           name: "author",
@@ -76,6 +79,7 @@ export default class PoetryGenerator extends Generator {
           name: "python",
           message: "Python versions compatible with the package",
           type: "input",
+          default: async () => `^${await this._queryCurrentPythonVersion()}`,
         },
         [Input.OPTION_KEY]: {
           name: "python",
@@ -88,6 +92,7 @@ export default class PoetryGenerator extends Generator {
         [Input.PROMPT_KEY]: {
           message: "Project repository URL",
           type: "input",
+          default: () => this._makeRepositoryUrl(),
         },
         [Input.OPTION_KEY]: {
           desc: "The URL of the project repository",
@@ -138,6 +143,33 @@ export default class PoetryGenerator extends Generator {
   get _iterableOptions() {
     const optionNames = this.inputState.options.map((option) => option.name);
     return _.pick(this.options, optionNames);
+  }
+
+  _makeAuthor() {
+    const userName = this.user.git.name();
+    const email = this.user.git.email();
+
+    if (userName === undefined || email === undefined) {
+      return null;
+    }
+
+    return `${userName} <${email}>`;
+  }
+
+  async _makeRepositoryUrl() {
+    const url = await this._queryGitOriginUrl();
+    return url === undefined ? null : giturl.parse(url);
+  }
+
+  async _queryCurrentPythonVersion() {
+    const { stdout } = await this.spawnCommand("python", ["--version"], {
+      stdio: "pipe",
+    });
+    return stdout.split(" ")[1];
+  }
+
+  _queryGitOriginUrl() {
+    return gitOriginUrl();
   }
 
   _readToml(filePath, defaults = "") {
