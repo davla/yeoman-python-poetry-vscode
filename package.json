@@ -41,10 +41,12 @@
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "chalk": "^2.1.0",
+    "email-validator": "^2.0.4",
     "flat": "^5.0.2",
     "giturl": "^1.0.1",
     "lodash": "^4.17.21",
     "remote-origin-url": "^2.0.0",
+    "semver": "^7.3.7",
     "yeoman-generator": "^5.7.0",
     "yosay": "^2.0.2"
   },

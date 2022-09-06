@@ -34,6 +34,7 @@ const generatorInput = [
     optionValue: "option_package",
     promptValue: "prompt_package",
     pyProjectTomlValue: "py_project_toml_package",
+    invalidValue: "UpperCase",
   },
   {
     optionName: "package-version",
@@ -42,6 +43,7 @@ const generatorInput = [
     optionValue: "2.0.2",
     promptValue: "7.7.2",
     pyProjectTomlValue: "1.0.19",
+    invalidValue: "9.2",
   },
   {
     optionName: "description",
@@ -50,6 +52,7 @@ const generatorInput = [
     optionValue: "Option description",
     promptValue: "Prompt description",
     pyProjectTomlValue: "pyproject.toml description",
+    invalidValue: "",
   },
   {
     optionName: "author",
@@ -58,6 +61,7 @@ const generatorInput = [
     optionValue: "Steve Fox <steve.fox@tekken.uk>",
     promptValue: "Kazuya Mishima <kazuya.mishima@tekken.jp>",
     pyProjectTomlValue: "Paul Phoenix <paul.phoenix@tekken.us>",
+    invalidValue: "no-real-author",
   },
   {
     optionName: "license",
@@ -74,6 +78,7 @@ const generatorInput = [
     optionValue: "^3.10.1",
     promptValue: "^3.2.0",
     pyProjectTomlValue: "^3.7.0",
+    invalidValue: "not-a-version",
   },
   {
     optionName: "repository",
@@ -82,6 +87,7 @@ const generatorInput = [
     optionValue: "https://github.com/marshall-law/option_package",
     promptValue: "https://github.com/marshall-law/prompt_package",
     pyProjectTomlValue: "https://github.com/marshall-law/pyprojecttoml_package",
+    invalidValue: "not-a-url",
   },
 ];
 
@@ -169,6 +175,14 @@ describe("python-poetry-vscode:poetry", () => {
         const run = await context.withOptions({ [optionName]: optionValue });
         await assertPyProjectTomlContains(run, expectedContent);
       }
+    );
+
+    it.each(generatorInput.filter((input) => input.invalidValue !== undefined))(
+      'validates the "$optionName" option',
+      ({ optionName, invalidValue }) =>
+        expect(() =>
+          context.withOptions({ [optionName]: invalidValue })
+        ).rejects.toThrow()
     );
   });
 

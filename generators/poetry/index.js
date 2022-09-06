@@ -6,7 +6,16 @@ import gitOriginUrl from "remote-origin-url";
 import Generator from "yeoman-generator";
 
 import InputState from "../../lib/input-state.js";
-import Input from "../../lib/input.js";
+import { Input, InvalidInputValueError } from "../../lib/input.js";
+
+import {
+  validateAuthor,
+  validateDescription,
+  validatePoetryVersionRange,
+  validatePythonPackageName,
+  validatePythonPackageVersion,
+  validateUrl,
+} from "./validate-input.js";
 
 export default class PoetryGenerator extends Generator {
   constructor(args, opts) {
@@ -15,6 +24,7 @@ export default class PoetryGenerator extends Generator {
     this.inputState = new InputState([
       {
         [Input.PATH_KEY]: "name",
+        [Input.VALIDATE_KEY]: validatePythonPackageName,
         [Input.PROMPT_KEY]: {
           message: "Python package name",
           type: "input",
@@ -26,6 +36,7 @@ export default class PoetryGenerator extends Generator {
       },
       {
         [Input.PATH_KEY]: "version",
+        [Input.VALIDATE_KEY]: validatePythonPackageVersion,
         [Input.PROMPT_KEY]: {
           message: "Python package version",
           type: "input",
@@ -38,6 +49,7 @@ export default class PoetryGenerator extends Generator {
       },
       {
         [Input.PATH_KEY]: "description",
+        [Input.VALIDATE_KEY]: validateDescription,
         [Input.PROMPT_KEY]: {
           message: "Python package description",
           type: "input",
@@ -49,6 +61,7 @@ export default class PoetryGenerator extends Generator {
       },
       {
         [Input.PATH_KEY]: "authors",
+        [Input.VALIDATE_KEY]: validateAuthor,
         [Input.TRANSFORM_KEY]: (author) => [author],
         [Input.PROMPT_KEY]: {
           name: "author",
@@ -75,6 +88,7 @@ export default class PoetryGenerator extends Generator {
       },
       {
         [Input.PATH_KEY]: "dependencies.python",
+        [Input.VALIDATE_KEY]: validatePoetryVersionRange,
         [Input.PROMPT_KEY]: {
           name: "python",
           message: "Python versions compatible with the package",
@@ -89,6 +103,7 @@ export default class PoetryGenerator extends Generator {
       },
       {
         [Input.PATH_KEY]: "repository",
+        [Input.VALIDATE_KEY]: validateUrl,
         [Input.PROMPT_KEY]: {
           message: "Project repository URL",
           type: "input",
@@ -109,7 +124,11 @@ export default class PoetryGenerator extends Generator {
   async initializing() {
     const diskToolPoetry = this._diskPyProjectToml.tool?.poetry ?? {};
     this.inputState.mergeValues(diskToolPoetry);
-    this.inputState.mergeOptions(this._iterableOptions);
+    try {
+      this.inputState.mergeOptions(this._iterableOptions);
+    } catch (err) {
+      this._emitInvalidOptionValueError(err);
+    }
   }
 
   async prompting() {
@@ -143,6 +162,17 @@ export default class PoetryGenerator extends Generator {
   get _iterableOptions() {
     const optionNames = this.inputState.options.map((option) => option.name);
     return _.pick(this.options, optionNames);
+  }
+
+  _emitInvalidOptionValueError(err) {
+    if (!(err instanceof InvalidInputValueError)) {
+      throw err;
+    }
+
+    const errorMessage =
+      `Value "${err.value}" for option --${err.input.optionPath} is ` +
+      `invalid: ${_.lowerFirst(err.reason)}`;
+    this.emit("error", new TypeError(errorMessage));
   }
 
   _makeAuthor() {
