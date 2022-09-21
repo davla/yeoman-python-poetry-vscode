@@ -1,6 +1,6 @@
 import sinon from "sinon";
 
-import Input from "../lib/input";
+import { Input, InvalidInputValueError } from "../lib/input";
 
 describe("Input", () => {
   describe("Keys inclusion", () => {
@@ -158,10 +158,22 @@ describe("Input", () => {
 
     it("shouldn't set the new value if it's not valid", () => {
       const validate = sinon.expectation.create();
-      validate.once().withArgs([]).returns("I don't like it");
-      const input = new Input({ [Input.VALIDATE_KEY]: validate });
+      validate.once().withArgs(92).returns("I don't like it");
+      const input = new Input({
+        [Input.PATH_KEY]: "a.dotted.path",
+        [Input.VALIDATE_KEY]: validate,
+      });
 
-      expect(() => input.setValue([])).toThrow("I don't like it");
+      try {
+        input.setValue(92);
+      } catch (err) {
+        expect(err).toBeInstanceOf(InvalidInputValueError);
+        expect(err.toString()).toContain("I don't like it");
+        expect(err.input).toBe(input);
+        expect(err.value).toBe(92);
+        expect(err.reason).toBe("I don't like it");
+      }
+
       validate.verify();
     });
   });

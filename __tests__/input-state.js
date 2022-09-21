@@ -1,7 +1,7 @@
 import sinon from "sinon";
 
 import InputState from "../lib/input-state.js";
-import Input from "../lib/input.js";
+import { Input } from "../lib/input.js";
 
 const nonTransformedMergeMethods = [
   {
