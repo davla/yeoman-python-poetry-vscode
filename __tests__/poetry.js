@@ -283,4 +283,11 @@ describe("python-poetry-vscode:poetry", () => {
       }
     );
   });
+
+  describe("install", () => {
+    it("doesn't run poetry install", async () => {
+      await context;
+      expect(spawnCommand.calledWith("poetry", ["install"])).toBeFalsy();
+    });
+  });
 });

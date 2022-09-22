@@ -145,8 +145,6 @@ export default class PoetryGenerator extends Generator {
     this._writeToml(this._pyProjectTomlPath, newPyProjectToml);
   }
 
-  install() {}
-
   get _diskPyProjectToml() {
     return this._readToml(this._pyProjectTomlPath);
   }
