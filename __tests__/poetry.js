@@ -9,7 +9,7 @@ import yeomanTest from "yeoman-test";
 import PoetryGenerator from "../generators/poetry";
 import { moduleDirName } from "../lib/paths";
 
-import { assertTomlFileContent } from "./__lib__/toml-assertions.js";
+import { assertTomlFileContent, readToml } from "./__lib__/toml-assertions.js";
 
 const generatorPath = path.join(
   moduleDirName(import.meta),
@@ -164,6 +164,31 @@ describe("python-poetry-vscode:poetry", () => {
           },
         },
       });
+    });
+
+    it('adds the "build-system" section', async () => {
+      const run = await context;
+      await assertPyProjectTomlContains(run, PoetryGenerator.buildSystem);
+    });
+
+    it('leaves existing "build-system" sections untouched', async () => {
+      /*
+       * Use an object as "build-system" value to verify it's not merged with
+       * the default value, that is itself an object.
+       */
+      const existingBuildSystem = {
+        "build-system": {
+          requires: ["setuptools", "wheel"],
+        },
+      };
+      const run = await context.inTmpDir(
+        writePyProjectToml.bind(null, existingBuildSystem)
+      );
+      const actualBuildSystem = _.pick(
+        await readToml(run, "pyproject.toml"),
+        "build-system"
+      );
+      expect(actualBuildSystem).toStrictEqual(existingBuildSystem);
     });
   });
 

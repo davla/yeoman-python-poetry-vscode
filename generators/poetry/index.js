@@ -18,6 +18,13 @@ import {
 } from "./validate-input.js";
 
 export default class PoetryGenerator extends Generator {
+  static buildSystem = {
+    "build-system": {
+      requires: ["poetry-core"],
+      "build-backend": "poetry.core.masonry.api",
+    },
+  };
+
   constructor(args, opts) {
     super(args, opts, {});
 
@@ -138,9 +145,8 @@ export default class PoetryGenerator extends Generator {
 
   async writing() {
     const statePyProjectToml = { tool: { poetry: this.inputState.values } };
-    const newPyProjectToml = _.merge(
-      this._diskPyProjectToml,
-      statePyProjectToml
+    const newPyProjectToml = PoetryGenerator._applyDefaultBuildSystem(
+      _.merge(this._diskPyProjectToml, statePyProjectToml)
     );
     this._writeToml(this._pyProjectTomlPath, newPyProjectToml);
   }
@@ -160,6 +166,14 @@ export default class PoetryGenerator extends Generator {
   get _iterableOptions() {
     const optionNames = this.inputState.options.map((option) => option.name);
     return _.pick(this.options, optionNames);
+  }
+
+  static _applyDefaultBuildSystem(pyProjectToml) {
+    /*
+     * Not use _.merge because we want to fully overwrite the default
+     * "build-system" with the one on the disk, if any.
+     */
+    return _.assign(_.clone(PoetryGenerator.buildSystem), pyProjectToml);
   }
 
   _emitInvalidOptionValueError(err) {
