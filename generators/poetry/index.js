@@ -1,5 +1,8 @@
 "use strict";
+import { createRequire } from "node:module";
+
 import TOML from "@iarna/toml";
+import LicenseGenerator from "generator-license";
 import giturl from "giturl";
 import _ from "lodash";
 import gitOriginUrl from "remote-origin-url";
@@ -11,11 +14,14 @@ import { Input, InvalidInputValueError } from "../../lib/input.js";
 import {
   validateAuthor,
   validateDescription,
+  validateLicense,
   validatePoetryVersionRange,
   validatePythonPackageName,
   validatePythonPackageVersion,
   validateUrl,
 } from "./validate-input.js";
+
+const require = createRequire(import.meta.url);
 
 export default class PoetryGenerator extends Generator {
   static buildSystem = {
@@ -84,9 +90,12 @@ export default class PoetryGenerator extends Generator {
       },
       {
         [Input.PATH_KEY]: "license",
+        [Input.VALIDATE_KEY]: validateLicense,
         [Input.PROMPT_KEY]: {
           message: "Python package license",
-          type: "input",
+          type: "list",
+          choices: LicenseGenerator.licenses,
+          default: "GPL-3.0",
         },
         [Input.OPTION_KEY]: {
           desc: "The license of the Python package.",
@@ -141,6 +150,18 @@ export default class PoetryGenerator extends Generator {
   async prompting() {
     const answers = await this.prompt(this.inputState.prompts);
     this.inputState.mergeAnswers(answers);
+  }
+
+  default() {
+    const { authors, repository, license } = this.inputState.values;
+    const [name, email] = authors[0].match(/(.*) <(.*)>$/).slice(1);
+
+    this.composeWith(require.resolve("generator-license"), {
+      name,
+      email,
+      website: repository,
+      license,
+    });
   }
 
   async writing() {

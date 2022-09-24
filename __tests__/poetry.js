@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 
 import TOML from "@iarna/toml";
+import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import sinon from "sinon";
 import yeomanTest from "yeoman-test";
@@ -67,9 +68,10 @@ const generatorInput = [
     optionName: "license",
     promptName: "license",
     toolPoetryPath: "license",
-    optionValue: "GPL-3.0-or-later",
-    promptValue: "CC-BY-4.0",
-    pyProjectTomlValue: "PSF-2.0",
+    optionValue: LicenseGenerator.licenses[1].value,
+    promptValue: LicenseGenerator.licenses[2].value,
+    pyProjectTomlValue: LicenseGenerator.licenses[3].value,
+    invalidValue: "OSL-3.0",
   },
   {
     optionName: "python",
@@ -95,7 +97,6 @@ const mandatoryAnswers = {
   name: "mandatory_package",
   version: "1.9.0",
   description: "Non-empty description",
-  license: "",
 };
 
 describe("python-poetry-vscode:poetry", () => {
@@ -124,6 +125,12 @@ describe("python-poetry-vscode:poetry", () => {
         },
         {}
       )
+      .withGenerators([
+        [
+          yeomanTest.createMockedGenerator(LicenseGenerator),
+          "generator-license",
+        ],
+      ])
       // Silence the annoying warnings
       .withPrompts(mandatoryAnswers)
       .on("ready", (generator) => {

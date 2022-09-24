@@ -43,6 +43,7 @@
     "chalk": "^2.1.0",
     "email-validator": "^2.0.4",
     "flat": "^5.0.2",
+    "generator-license": "^5.4.0",
     "giturl": "^1.0.1",
     "lodash": "^4.17.21",
     "remote-origin-url": "^2.0.0",

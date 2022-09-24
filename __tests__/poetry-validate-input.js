@@ -1,7 +1,10 @@
+import LicenseGenerator from "generator-license";
+
 import {
   validPep440PrereleaseTags,
   validateAuthor,
   validateDescription,
+  validateLicense,
   validatePoetryVersionRange,
   validatePythonPackageName,
   validatePythonPackageVersion,
@@ -40,6 +43,16 @@ describe("Poetry input validation", () => {
 
     it("Should not report valid descriptions", () => {
       expect(validateDescription("King of Iron Fist Tournament")).toBe(true);
+    });
+  });
+
+  describe("License", () => {
+    it("Should report unsupported licenses", () => {
+      expect(validateLicense("OFL-1.1")).toContain("not supported");
+    });
+
+    it("Should not report supported licenses", () => {
+      expect(validateLicense(LicenseGenerator.licenses[0].value)).toBe(true);
     });
   });
 
