@@ -23,6 +23,7 @@
     "@types/flat": "^5.0.2",
     "@types/jest": "^28.1.6",
     "@types/lodash": "^4.14.185",
+    "@types/semver": "^7.3.12",
     "@types/sinon": "^10.0.13",
     "@types/yeoman-generator": "^5.2.11",
     "@types/yeoman-test": "^4.0.3",
@@ -42,14 +43,24 @@
     "npm": ">= 4.0.0"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "chalk": "^2.1.0",
+    "email-validator": "^2.0.4",
     "flat": "^5.0.2",
+    "generator-license": "^5.4.0",
+    "giturl": "^1.0.1",
     "lodash": "^4.17.21",
+    "remote-origin-url": "^2.0.0",
+    "semver": "^7.3.7",
     "yeoman-generator": "^5.7.0",
     "yosay": "^2.0.2"
   },
   "jest": {
-    "testEnvironment": "node"
+    "errorOnDeprecated": true,
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "__lib__"
+    ]
   },
   "lint-staged": {
     "*.js": [

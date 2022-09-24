@@ -1,6 +1,8 @@
 {
   "editor.formatOnSave": true,
   "eslint.format.enable": true,
+  "jest.autoRun": "off",
+  "jest.showTerminalOnLaunch": false,
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
