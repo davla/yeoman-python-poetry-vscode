@@ -20,21 +20,28 @@
     "yeoman-generator"
   ],
   "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/chai-subset": "^1.3.3",
     "@types/flat": "^5.0.2",
-    "@types/jest": "^28.1.6",
     "@types/lodash": "^4.14.185",
+    "@types/mocha": "^9.1.1",
     "@types/semver": "^7.3.12",
     "@types/sinon": "^10.0.13",
     "@types/yeoman-generator": "^5.2.11",
     "@types/yeoman-test": "^4.0.3",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
+    "chai-subset": "^1.6.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-xo": "^0.41.0",
+    "eslint-plugin-chai-friendly": "^0.7.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.1",
-    "jest": "^28.1.3",
     "lint-staged": "^13.0.3",
+    "mocha": "^10.0.0",
     "prettier": "^2.7.1",
     "sinon": "^14.0.0",
     "yeoman-test": "^6.3.0"
@@ -55,13 +62,6 @@
     "yeoman-generator": "^5.7.0",
     "yosay": "^2.0.2"
   },
-  "jest": {
-    "errorOnDeprecated": true,
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "__lib__"
-    ]
-  },
   "lint-staged": {
     "*.js": [
       "eslint --fix",
@@ -77,13 +77,20 @@
       "pre-commit": "lint-staged"
     }
   },
+  "mocha": {
+    "checkLeaks": true,
+    "failZero": true,
+    "parallel": true
+  },
   "eslintConfig": {
     "extends": [
       "xo",
-      "prettier"
+      "prettier",
+      "plugin:chai-friendly/recommended"
     ],
     "env": {
-      "jest": true,
+      "es6": true,
+      "mocha": true,
       "node": true
     },
     "rules": {
@@ -109,11 +116,12 @@
     },
     "plugins": [
       "import",
-      "prettier"
+      "prettier",
+      "chai-friendly"
     ]
   },
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "mocha"
   },
   "repository": "git@github.com:davla/yeoman-python-poetry-vscode.git",
   "license": "GPL-3.0"

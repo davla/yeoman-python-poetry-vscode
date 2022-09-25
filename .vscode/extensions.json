@@ -4,9 +4,9 @@
   // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
     "bungcip.better-toml",
-    "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
-    "Orta.vscode-jest"
+    "editorconfig.editorconfig",
+    "hbenl.vscode-mocha-test-adapter"
   ],
   // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
   "unwantedRecommendations": []

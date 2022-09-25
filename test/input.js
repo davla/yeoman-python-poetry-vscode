@@ -1,35 +1,29 @@
 "use strict";
+import "chai/register-should.js";
+import chai from "chai";
+import chaiSubset from "chai-subset";
 import sinon from "sinon";
 
-import { Input, InvalidInputValueError } from "../lib/input";
+import { Input, InvalidInputValueError } from "../lib/input.js";
+
+chai.use(chaiSubset);
 
 describe("Input", () => {
   describe("Keys inclusion", () => {
     it("shares any keys that's not Input.OPTION_KEY or Input.PROMPT_KEY between option and prompt", () => {
       const input = new Input({ shared: 22, property: false });
-
-      expect(input.asOption()).toStrictEqual(
-        expect.objectContaining({ shared: 22, property: false })
-      );
-      expect(input.asPrompt()).toStrictEqual(
-        expect.objectContaining({ shared: 22, property: false })
-      );
+      input.asOption().should.containSubset({ shared: 22, property: false });
+      input.asPrompt().should.containSubset({ shared: 22, property: false });
     });
 
     it("includes keys under Input.OPTION_KEY in options", () => {
       const input = new Input({ [Input.OPTION_KEY]: { field: "shovel" } });
-
-      expect(input.asOption()).toStrictEqual(
-        expect.objectContaining({ field: "shovel" })
-      );
+      input.asOption().should.containSubset({ field: "shovel" });
     });
 
     it("includes keys under Input.PROMPT_KEY in prompts", () => {
       const input = new Input({ [Input.PROMPT_KEY]: { here: ["stuff"] } });
-
-      expect(input.asPrompt()).toStrictEqual(
-        expect.objectContaining({ here: ["stuff"] })
-      );
+      input.asPrompt().should.containSubset({ here: ["stuff"] });
     });
 
     it("overrides shared keys with those from Input.OPTION_KEY", () => {
@@ -37,10 +31,7 @@ describe("Input", () => {
         shared: 22,
         [Input.OPTION_KEY]: { shared: "shovel" },
       });
-
-      expect(input.asOption()).toStrictEqual(
-        expect.objectContaining({ shared: "shovel" })
-      );
+      input.asOption().should.containSubset({ shared: "shovel" });
     });
 
     it("overrides shared keys with those from Input.PROMPT_KEY", () => {
@@ -48,40 +39,31 @@ describe("Input", () => {
         shared: 22,
         [Input.PROMPT_KEY]: { shared: ["more", "stuff"] },
       });
-
-      expect(input.asPrompt()).toStrictEqual(
-        expect.objectContaining({ shared: ["more", "stuff"] })
-      );
+      input.asPrompt().should.containSubset({ shared: ["more", "stuff"] });
     });
   });
 
   describe("Keys exclusion", () => {
     it("excludes keys under Input.PROMPT_KEY from options", () => {
       const input = new Input({ [Input.PROMPT_KEY]: { here: ["stuff"] } });
-
-      expect(input.asOption()).toStrictEqual(
-        expect.not.objectContaining({ here: ["stuff"] })
-      );
+      input.asOption().should.not.containSubset({ here: ["stuff"] });
     });
 
     it("excludes keys under Input.OPTION_KEY from prompts", () => {
       const input = new Input({ [Input.OPTION_KEY]: { field: "shovel" } });
-
-      expect(input.asPrompt()).toStrictEqual(
-        expect.not.objectContaining({ field: "shovel" })
-      );
+      input.asPrompt().should.not.containSubset({ field: "shovel" });
     });
   });
 
   describe("Paths", () => {
     it("Input path should use Input.PATH_KEY when provided", () => {
       const input = new Input({ [Input.PATH_KEY]: "jellyfish" });
-      expect(input.path).toBe("jellyfish");
+      input.path.should.equal("jellyfish");
     });
 
     it('path should default to "name" key when Input.PATH_KEY is not provided', () => {
       const input = new Input({ name: "jellyfish" });
-      expect(input.path).toBe("jellyfish");
+      input.path.should.equal("jellyfish");
     });
 
     it('path should ignore to "name" key when Input.PATH_KEY is provided', () => {
@@ -89,27 +71,27 @@ describe("Input", () => {
         [Input.PATH_KEY]: "jellyfish",
         name: "squid",
       });
-      expect(input.path).toBe("jellyfish");
+      input.path.should.equal("jellyfish");
     });
 
     it('optionPath should use "[Input.OPTION_KEY].name" when provided', () => {
       const input = new Input({ [Input.OPTION_KEY]: { name: "aye-aye" } });
-      expect(input.optionPath).toBe("aye-aye");
+      input.optionPath.should.equal("aye-aye");
     });
 
     it('optionPath should use path when "[Input.OPTION_KEY].name" is not provided', () => {
       const input = new Input({ [Input.PATH_KEY]: "aye-aye" });
-      expect(input.optionPath).toBe("aye-aye");
+      input.optionPath.should.equal("aye-aye");
     });
 
     it('promptPath should use "[Input.PROMPT_KEY].name" when provided', () => {
       const input = new Input({ [Input.PROMPT_KEY]: { name: "aardvark" } });
-      expect(input.promptPath).toBe("aardvark");
+      input.promptPath.should.equal("aardvark");
     });
 
     it('promptPath should use path when "[Input.OPTION_KEY].name" is not provided', () => {
       const input = new Input({ [Input.PATH_KEY]: "aardvark" });
-      expect(input.promptPath).toBe("aardvark");
+      input.promptPath.should.equal("aardvark");
     });
   });
 
@@ -121,7 +103,7 @@ describe("Input", () => {
 
       input.setValue(22, { isTransformed: true });
 
-      expect(input.value).toBe(22);
+      input.value.should.equal(22);
       transform.verify();
     });
 
@@ -132,7 +114,7 @@ describe("Input", () => {
 
       input.setValue(22, { isTransformed: false });
 
-      expect(input.value).toBe("this is a robbery");
+      input.value.should.equal("this is a robbery");
       transform.verify();
     });
 
@@ -153,7 +135,7 @@ describe("Input", () => {
 
       input.setValue(8);
 
-      expect(input.value).toBe(8);
+      input.value.should.equal(8);
       validate.verify();
     });
 
@@ -165,15 +147,9 @@ describe("Input", () => {
         [Input.VALIDATE_KEY]: validate,
       });
 
-      try {
-        input.setValue(92);
-      } catch (err) {
-        expect(err).toBeInstanceOf(InvalidInputValueError);
-        expect(err.toString()).toContain("I don't like it");
-        expect(err.input).toBe(input);
-        expect(err.value).toBe(92);
-        expect(err.reason).toBe("I don't like it");
-      }
+      (() => input.setValue(92)).should
+        .throw(InvalidInputValueError, /I don't like it/)
+        .and.include({ input, value: 92, reason: "I don't like it" });
 
       validate.verify();
     });
@@ -202,7 +178,7 @@ describe("Input", () => {
 
       const prompt = input.asPrompt();
 
-      expect(prompt.when).toBeFalsy();
+      prompt.when.should.be.false;
     });
 
     it('sets "when" to true if the value is not defined', () => {
@@ -210,7 +186,7 @@ describe("Input", () => {
 
       const prompt = input.asPrompt();
 
-      expect(prompt.when).toBeTruthy();
+      prompt.when.should.be.true;
     });
 
     it('overrides "when" if given in Input.PROMPT_KEY', () => {
@@ -219,7 +195,7 @@ describe("Input", () => {
 
       const prompt = input.asPrompt();
 
-      expect(prompt.when).toBe(88);
+      prompt.when.should.equal(88);
     });
 
     it('sets "validate" to the passed value for Input.VALIDATE_KEY', () => {
@@ -227,7 +203,7 @@ describe("Input", () => {
 
       const prompt = input.asPrompt();
 
-      expect(prompt.validate).toBe("valid");
+      prompt.validate.should.equal("valid");
     });
 
     it('overrides "validate" if given in Input.PROMPT_KEY', () => {
@@ -238,7 +214,7 @@ describe("Input", () => {
 
       const prompt = input.asPrompt();
 
-      expect(prompt.validate).toBe(88);
+      prompt.validate.should.equal(88);
     });
   });
 });
