@@ -4,7 +4,7 @@ import chai from "chai";
 import chaiSubset from "chai-subset";
 import sinon from "sinon";
 
-import { Input, InvalidInputValueError } from "../lib/input.js";
+import { Input, InvalidInputValueError } from "../../lib/input.js";
 
 chai.use(chaiSubset);
 

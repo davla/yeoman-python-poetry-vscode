@@ -10,10 +10,9 @@ import _ from "lodash";
 import sinon from "sinon";
 import yeomanTest from "yeoman-test";
 
-import PoetryGenerator from "../generators/poetry/index.js";
-import { moduleDirName } from "../lib/paths.js";
-
-import { readToml, writeToml } from "./__lib__/toml.js";
+import PoetryGenerator from "../../generators/poetry/index.js";
+import { moduleDirName } from "../../lib/paths.js";
+import { readToml, writeToml } from "../../test-lib/toml.js";
 
 chai.use(chaiAsPromised);
 chai.use(chaiSubset);

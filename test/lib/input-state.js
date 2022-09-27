@@ -4,8 +4,8 @@ import chai from "chai";
 import chaiSubset from "chai-subset";
 import sinon from "sinon";
 
-import InputState from "../lib/input-state.js";
-import { Input } from "../lib/input.js";
+import InputState from "../../lib/input-state.js";
+import { Input } from "../../lib/input.js";
 
 chai.use(chaiSubset);
 

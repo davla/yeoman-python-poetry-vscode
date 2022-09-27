@@ -11,7 +11,7 @@ import {
   validatePythonPackageName,
   validatePythonPackageVersion,
   validateUrl,
-} from "../generators/poetry/validate-input.js";
+} from "../../generators/poetry/validate-input.js";
 
 describe("Poetry input validation", () => {
   describe("Author", () => {
@@ -21,9 +21,7 @@ describe("Poetry input validation", () => {
       { reason: "empty email", authorString: "Yoshimitsu <>" },
     ].forEach(({ reason, authorString }) =>
       it(`Should report author strings with ${reason}`, () =>
-        validateAuthor(authorString).should.include(
-          "Invalid author string"
-        ))
+        validateAuthor(authorString).should.include("Invalid author string"))
     );
 
     it("Should report invalid emails", () =>

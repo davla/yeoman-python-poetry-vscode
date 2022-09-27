@@ -80,7 +80,8 @@
   "mocha": {
     "checkLeaks": true,
     "failZero": true,
-    "parallel": true
+    "parallel": true,
+    "recursive": true
   },
   "eslintConfig": {
     "extends": [
