@@ -1,32 +1,35 @@
 "use strict";
-import fs from "fs/promises";
 import path from "path";
 
-import TOML from "@iarna/toml";
+import "chai/register-should.js";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import chaiSubset from "chai-subset";
 import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import sinon from "sinon";
 import yeomanTest from "yeoman-test";
 
-import PoetryGenerator from "../generators/poetry";
-import { moduleDirName } from "../lib/paths";
+import PoetryGenerator from "../../generators/poetry/index.js";
+import { moduleDirName } from "../../lib/paths.js";
+import { readToml, writeToml } from "../../test-lib/toml.js";
 
-import { assertTomlFileContent, readToml } from "./__lib__/toml-assertions.js";
+chai.use(chaiAsPromised);
+chai.use(chaiSubset);
 
 const generatorPath = path.join(
   moduleDirName(import.meta),
   "../generators/poetry"
 );
 
-const assertPyProjectTomlContains = (run, content) =>
-  assertTomlFileContent(run, "pyproject.toml", content);
-
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
 });
 
-const writePyProjectToml = (content, parentDir) =>
-  fs.writeFile(path.join(parentDir, "pyproject.toml"), TOML.stringify(content));
+const pyProjectToml = (runResult) => readToml(runResult, "pyproject.toml");
+
+const writePyProjectToml = (content, dir) =>
+  writeToml(dir, "pyproject.toml", content);
 
 const generatorInput = [
   {
@@ -118,14 +121,10 @@ describe("python-poetry-vscode:poetry", () => {
     userGitName = sinon.stub().returns("Jin Kazama");
     userGitEmail = sinon.stub().returns("jin.kazama@tekken.jp");
     context = yeomanTest
-      .run(
-        PoetryGenerator,
-        {
-          resolved: generatorPath,
-          namespace: "python-poetry-vscode:poetry",
-        },
-        {}
-      )
+      .run(PoetryGenerator, {
+        resolved: generatorPath,
+        namespace: "python-poetry-vscode:poetry",
+      })
       .withGenerators([
         [
           yeomanTest.createMockedGenerator(LicenseGenerator),
@@ -164,7 +163,7 @@ describe("python-poetry-vscode:poetry", () => {
           author: "Mokujin <mojukin@tekken.jp>",
           python: "^3.10.1",
         });
-      await assertPyProjectTomlContains(run, {
+      (await pyProjectToml(run)).should.containSubset({
         tool: {
           poetry: {
             authors: ["Mokujin <mojukin@tekken.jp>", "Jack <jack@tekken.ru"],
@@ -176,7 +175,9 @@ describe("python-poetry-vscode:poetry", () => {
 
     it('adds the "build-system" section', async () => {
       const run = await context;
-      await assertPyProjectTomlContains(run, PoetryGenerator.buildSystem);
+      (await pyProjectToml(run)).should.containSubset(
+        PoetryGenerator.buildSystem
+      );
     });
 
     it('leaves existing "build-system" sections untouched', async () => {
@@ -196,87 +197,83 @@ describe("python-poetry-vscode:poetry", () => {
         await readToml(run, "pyproject.toml"),
         "build-system"
       );
-      expect(actualBuildSystem).toStrictEqual(existingBuildSystem);
+      actualBuildSystem.should.containSubset(existingBuildSystem);
     });
   });
 
   describe("options", () => {
-    it.each(generatorInput)(
-      'utilizes option value for "$optionName"',
-      async ({ optionName, toolPoetryPath, optionValue }) => {
+    for (const { optionName, toolPoetryPath, optionValue } of generatorInput) {
+      it(`utilizes option value for "${optionName}"`, async () => {
         const expectedContent = inToolPoetry(toolPoetryPath, optionValue);
         const run = await context.withOptions({ [optionName]: optionValue });
-        await assertPyProjectTomlContains(run, expectedContent);
-      }
-    );
+        (await pyProjectToml(run)).should.containSubset(expectedContent);
+      });
+    }
 
-    it.each(generatorInput.filter((input) => input.invalidValue !== undefined))(
-      'validates the "$optionName" option',
-      ({ optionName, invalidValue }) =>
-        expect(() =>
-          context.withOptions({ [optionName]: invalidValue })
-        ).rejects.toThrow()
-    );
+    for (const { optionName, invalidValue } of generatorInput) {
+      it(`validates the "${optionName}" option`, () =>
+        context.withOptions({ [optionName]: invalidValue }).should.be.rejected);
+    }
   });
 
   describe("prompts", () => {
-    it.each(generatorInput)(
-      'utilizes prompt answers for "$promptName"',
-      async ({ promptName, toolPoetryPath, promptValue }) => {
+    for (const { promptName, toolPoetryPath, promptValue } of generatorInput) {
+      it(`utilizes prompt answers for "${promptName}"`, async () => {
         const expectedContent = inToolPoetry(toolPoetryPath, promptValue);
         const run = await context.withPrompts({ [promptName]: promptValue });
-        await assertPyProjectTomlContains(run, expectedContent);
-      }
-    );
+        (await pyProjectToml(run)).should.containSubset(expectedContent);
+      });
+    }
   });
 
   describe("precedence", () => {
-    it.each(generatorInput)(
-      'option "$optionName" has precedence over prompt "$promptName"',
-      async ({
-        optionName,
-        promptName,
-        toolPoetryPath,
-        optionValue,
-        promptValue,
-      }) => {
+    for (const {
+      optionName,
+      promptName,
+      toolPoetryPath,
+      optionValue,
+      promptValue,
+    } of generatorInput) {
+      it(`option "$optionName" has precedence over prompt "${promptName}"`, async () => {
         const expectedContent = inToolPoetry(toolPoetryPath, optionValue);
         const run = await context
           .withOptions({ [optionName]: optionValue })
           .withPrompts({ [promptName]: promptValue });
-        await assertPyProjectTomlContains(run, expectedContent);
-      }
-    );
+        (await pyProjectToml(run)).should.containSubset(expectedContent);
+      });
+    }
 
-    it.each(generatorInput)(
-      'existing content at "$toolPoetryPath" has precedence over prompt ' +
-        '"$promptName"',
-      async ({
-        promptName,
-        toolPoetryPath,
-        promptValue,
-        pyProjectTomlValue,
-      }) => {
-        const existingContent = inToolPoetry(
-          toolPoetryPath,
-          pyProjectTomlValue
-        );
-        const run = await context
-          .inTmpDir(writePyProjectToml.bind(null, existingContent))
-          .withPrompts({ [promptName]: promptValue });
-        await assertPyProjectTomlContains(run, existingContent);
-      }
-    );
+    for (const {
+      promptName,
+      toolPoetryPath,
+      promptValue,
+      pyProjectTomlValue,
+    } of generatorInput) {
+      it(
+        `existing content at "${toolPoetryPath}" has precedence over prompt ` +
+          promptName,
+        async () => {
+          const existingContent = inToolPoetry(
+            toolPoetryPath,
+            pyProjectTomlValue
+          );
+          const run = await context
+            .inTmpDir(writePyProjectToml.bind(null, existingContent))
+            .withPrompts({ [promptName]: promptValue });
+          (await pyProjectToml(run)).should.containSubset(existingContent);
+        }
+      );
+    }
   });
 
   describe("dynamic default values", () => {
     it("queries git config for the default author", async () => {
       const run = await context;
 
-      expect(userGitEmail.calledOnce).toBeTruthy();
-      expect(userGitName.calledOnce).toBeTruthy();
+      userGitEmail.calledOnce.should.be.true;
+      userGitName.calledOnce.should.be.true;
 
-      await assertPyProjectTomlContains(run, {
+      (await pyProjectToml(run)).should.containSubset({
         tool: { poetry: { authors: ["Jin Kazama <jin.kazama@tekken.jp>"] } },
       });
     });
@@ -284,43 +281,40 @@ describe("python-poetry-vscode:poetry", () => {
     it("queries current python version for default python", async () => {
       const run = await context;
 
-      expect(
-        spawnCommand.calledOnceWith("python", ["--version"], {
-          stdio: "pipe",
-        })
-      ).toBeTruthy();
+      spawnCommand.calledOnceWith("python", ["--version"], {
+        stdio: "pipe",
+      }).should.be.true;
 
-      await assertPyProjectTomlContains(run, {
+      (await pyProjectToml(run)).should.containSubset({
         tool: { poetry: { dependencies: { python: "^3.10.2" } } },
       });
     });
 
-    it.each([
+    [
       { protocol: "https", url: "https://github.com/hwoarang/https_package" },
       { protocol: "ssh", url: "git@github.com:hwoarang/https_package.git" },
-    ])(
-      "queries git config for the default project url ($protocol)",
-      async ({ url }) => {
+    ].forEach(({ protocol, url }) =>
+      it(`queries git config for the default project url (${protocol})`, async () => {
         queryGitOriginUrl.resolves(url);
         const run = await context;
 
-        expect(queryGitOriginUrl.calledOnce).toBeTruthy();
+        queryGitOriginUrl.calledOnce.should.be.true;
 
-        await assertPyProjectTomlContains(run, {
+        (await pyProjectToml(run)).should.containSubset({
           tool: {
             poetry: {
               repository: "https://github.com/hwoarang/https_package",
             },
           },
         });
-      }
+      })
     );
   });
 
   describe("install", () => {
     it("doesn't run poetry install", async () => {
       await context;
-      expect(spawnCommand.calledWith("poetry", ["install"])).toBeFalsy();
+      spawnCommand.calledWith("poetry", ["install"]).should.be.false;
     });
   });
 });

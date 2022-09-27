@@ -84,7 +84,11 @@ export function validatePoetryVersionRange(range) {
     return "Poetry doesn't support hyphen range syntax";
   }
 
-  if (semver.validRange(range) === null) {
+  /*
+   * Poetry version ranges allow commas, while node.js ones don't. However, the
+   * semantics are the same.
+   */
+  if (semver.validRange(range.replace(",", " ")) === null) {
     return "Invalid version range";
   }
 

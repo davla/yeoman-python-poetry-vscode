@@ -1,8 +1,13 @@
 "use strict";
+import "chai/register-should.js";
+import chai from "chai";
+import chaiSubset from "chai-subset";
 import sinon from "sinon";
 
-import InputState from "../lib/input-state.js";
-import { Input } from "../lib/input.js";
+import InputState from "../../lib/input-state.js";
+import { Input } from "../../lib/input.js";
+
+chai.use(chaiSubset);
 
 const nonTransformedMergeMethods = [
   {
@@ -40,8 +45,8 @@ describe("InputState", () => {
 
       const inputState = new InputState(args);
 
-      expect(inputState.values).toHaveProperty("an.input");
-      expect(inputState.values).toHaveProperty("another.input");
+      inputState.values.should.have.nested.property("an.input");
+      inputState.values.should.have.nested.property("another.input");
     });
 
     it("Should accept object arguments", () => {
@@ -52,8 +57,8 @@ describe("InputState", () => {
 
       const inputState = new InputState(args);
 
-      expect(inputState.values).toHaveProperty("an.input");
-      expect(inputState.values).toHaveProperty("another.input");
+      inputState.values.should.have.nested.property("an.input");
+      inputState.values.should.have.nested.property("another.input");
     });
 
     it("Should accept mixed arguments", () => {
@@ -64,8 +69,8 @@ describe("InputState", () => {
 
       const inputState = new InputState(args);
 
-      expect(inputState.values).toHaveProperty("an.input");
-      expect(inputState.values).toHaveProperty("another.input");
+      inputState.values.should.have.nested.property("an.input");
+      inputState.values.should.have.nested.property("another.input");
     });
   });
 
@@ -80,7 +85,7 @@ describe("InputState", () => {
 
       const inputState = new InputState(args);
 
-      expect(inputState.prompts).toStrictEqual([prompt0, prompt1]);
+      inputState.prompts.should.have.ordered.members([prompt0, prompt1]);
     });
 
     it("Should return all the inputs as options", () => {
@@ -93,9 +98,7 @@ describe("InputState", () => {
 
       const inputState = new InputState(args);
 
-      expect(inputState.options).toStrictEqual(
-        expect.arrayContaining([option0, option1])
-      );
+      inputState.options.should.have.members([option0, option1]);
     });
   });
 
@@ -110,12 +113,10 @@ describe("InputState", () => {
 
       inputState.mergeOptions({ fromPathKey: 7, fromOptionKey: false });
 
-      expect(inputState.values).toStrictEqual(
-        expect.objectContaining({
-          fromPathKey: 7,
-          fromOptionKey: false,
-        })
-      );
+      inputState.values.should.containSubset({
+        fromPathKey: 7,
+        fromOptionKey: false,
+      });
     });
 
     it("Should merge answers in by name", () => {
@@ -128,12 +129,10 @@ describe("InputState", () => {
 
       inputState.mergeAnswers({ fromPathKey: 7, fromPromptKey: false });
 
-      expect(inputState.values).toStrictEqual(
-        expect.objectContaining({
-          fromPathKey: 7,
-          fromPromptKey: false,
-        })
-      );
+      inputState.values.should.containSubset({
+        fromPathKey: 7,
+        fromPromptKey: false,
+      });
     });
 
     it("Should merge values in by name", () => {
@@ -146,19 +145,16 @@ describe("InputState", () => {
 
       inputState.mergeValues({ fromPathKey: 7, fromNameKey: false });
 
-      expect(inputState.values).toStrictEqual(
-        expect.objectContaining({
-          fromPathKey: 7,
-          fromNameKey: false,
-        })
-      );
+      inputState.values.should.containSubset({
+        fromPathKey: 7,
+        fromNameKey: false,
+      });
     });
   });
 
   describe("Transform", () => {
-    it.each(nonTransformedMergeMethods)(
-      "Should transform when merging $inputType",
-      ({ merge }) => {
+    for (const { inputType, merge } of nonTransformedMergeMethods) {
+      it(`Should transform when merging ${inputType}`, () => {
         // TODO: assess if sinon should be used
         const args = [
           {
@@ -170,15 +166,12 @@ describe("InputState", () => {
 
         merge.call(inputState, { fromPathKey: 7 });
 
-        expect(inputState.values).toStrictEqual(
-          expect.objectContaining({ fromPathKey: 42 })
-        );
-      }
-    );
+        inputState.values.should.containSubset({ fromPathKey: 42 });
+      });
+    }
 
-    it.each(transformedMergeMethods)(
-      "Should not transform when merging $inputType",
-      ({ merge }) => {
+    for (const { inputType, merge } of transformedMergeMethods) {
+      it(`Should not transform when merging ${inputType}`, () => {
         // TODO: assess if sinon should be used
         const args = [
           {
@@ -190,81 +183,80 @@ describe("InputState", () => {
 
         merge.call(inputState, { fromPathKey: 7 });
 
-        expect(inputState.values).toStrictEqual(
-          expect.objectContaining({ fromPathKey: 7 })
-        );
-      }
-    );
+        inputState.values.should.containSubset({ fromPathKey: 7 });
+      });
+    }
   });
 
   describe("Nested input paths", () => {
-    it.each(mergeMethods)(
-      "Should match nested keys with dotted input paths when merging $inputType",
-      ({ merge }) => {
-        const args = [{ [Input.PATH_KEY]: "a.nested.key" }];
-        const inputState = new InputState(args);
+    for (const { inputType, merge } of mergeMethods) {
+      it(
+        "Should match nested keys with dotted input paths when merging " +
+          inputType,
+        () => {
+          const args = [{ [Input.PATH_KEY]: "a.nested.key" }];
+          const inputState = new InputState(args);
 
-        merge.call(inputState, { a: { nested: { key: true } } });
+          merge.call(inputState, { a: { nested: { key: true } } });
 
-        expect(inputState.values).toStrictEqual(
-          expect.objectContaining({ a: { nested: { key: true } } })
-        );
-      }
-    );
+          inputState.values.should.containSubset({
+            a: { nested: { key: true } },
+          });
+        }
+      );
+    }
 
-    it.each(mergeMethods)(
-      "Should match dotted keys with dotted input paths when merging $inputType",
-      ({ merge }) => {
-        const args = [{ [Input.PATH_KEY]: "a.dotted.path" }];
-        const inputState = new InputState(args);
+    for (const { inputType, merge } of mergeMethods) {
+      it(
+        "Should match dotted keys with dotted input paths when merging " +
+          inputType,
+        () => {
+          const args = [{ [Input.PATH_KEY]: "a.dotted.path" }];
+          const inputState = new InputState(args);
 
-        merge.call(inputState, { "a.dotted.path": true });
+          merge.call(inputState, { "a.dotted.path": true });
 
-        expect(inputState.values).toStrictEqual(
-          expect.objectContaining({ a: { dotted: { path: true } } })
-        );
-      }
-    );
+          inputState.values.should.containSubset({
+            a: { dotted: { path: true } },
+          });
+        }
+      );
+    }
 
-    it.each(mergeMethods)(
-      "Should preserve array values when merging $inputType",
-      ({ merge }) => {
+    for (const { inputType, merge } of mergeMethods) {
+      it(`Should preserve array values when merging ${inputType}`, () => {
         const args = [{ [Input.PATH_KEY]: "array.input" }];
         const inputState = new InputState(args);
 
         merge.call(inputState, { "array.input": ["an", { array: true }] });
 
-        expect(inputState.values).toStrictEqual({
+        inputState.values.should.containSubset({
           array: { input: ["an", { array: true }] },
         });
-      }
-    );
+      });
+    }
   });
 
   describe("Missing input names", () => {
-    it.each(nonTransformedMergeMethods)(
-      "Should report missing input names when merging $inputType",
-      ({ merge }) => {
+    for (const { inputType, merge } of nonTransformedMergeMethods) {
+      it(`Should report missing input names when merging ${inputType}`, () => {
         const args = [{ [Input.PATH_KEY]: "a.present.name" }];
         const inputState = new InputState(args);
-        expect(() =>
-          merge.call(inputState, { "a.missing.name": 97 })
-        ).toThrowError("a.missing.name");
-      }
-    );
+        (() => merge.call(inputState, { "a.missing.name": 97 })).should.throw(
+          "a.missing.name"
+        );
+      });
+    }
 
-    it.each(transformedMergeMethods)(
-      "Should add missing input names to values when merging $inputType",
-      ({ merge }) => {
+    for (const { inputType, merge } of transformedMergeMethods) {
+      it(`Should add missing input names to values when merging ${inputType}`, () => {
         const args = [{ [Input.PATH_KEY]: "aPresentName" }];
         const inputState = new InputState(args);
 
         merge.call(inputState, { aMissingName: 97 });
 
-        expect(inputState.values).toStrictEqual(
-          expect.objectContaining({ aMissingName: 97 })
-        );
-      }
-    );
+        inputState.values.should.containSubset({ aMissingName: 97 });
+      });
+    }
   });
 });
