@@ -1,11 +1,10 @@
 "use strict";
-import fs from "fs/promises";
 import path from "path";
 
 import "chai/register-should.js";
-import TOML from "@iarna/toml";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+import chaiSubset from "chai-subset";
 import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import sinon from "sinon";
@@ -14,24 +13,24 @@ import yeomanTest from "yeoman-test";
 import PoetryGenerator from "../generators/poetry/index.js";
 import { moduleDirName } from "../lib/paths.js";
 
-import { assertTomlFileContent, readToml } from "./__lib__/toml-assertions.js";
+import { readToml, writeToml } from "./__lib__/toml.js";
 
 chai.use(chaiAsPromised);
+chai.use(chaiSubset);
 
 const generatorPath = path.join(
   moduleDirName(import.meta),
   "../generators/poetry"
 );
 
-const assertPyProjectTomlContains = (run, content) =>
-  assertTomlFileContent(run, "pyproject.toml", content);
-
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
 });
 
-const writePyProjectToml = (content, parentDir) =>
-  fs.writeFile(path.join(parentDir, "pyproject.toml"), TOML.stringify(content));
+const pyProjectToml = (runResult) => readToml(runResult, "pyproject.toml");
+
+const writePyProjectToml = (content, dir) =>
+  writeToml(dir, "pyproject.toml", content);
 
 const generatorInput = [
   {
@@ -165,7 +164,7 @@ describe("python-poetry-vscode:poetry", () => {
           author: "Mokujin <mojukin@tekken.jp>",
           python: "^3.10.1",
         });
-      await assertPyProjectTomlContains(run, {
+      (await pyProjectToml(run)).should.containSubset({
         tool: {
           poetry: {
             authors: ["Mokujin <mojukin@tekken.jp>", "Jack <jack@tekken.ru"],
@@ -177,7 +176,9 @@ describe("python-poetry-vscode:poetry", () => {
 
     it('adds the "build-system" section', async () => {
       const run = await context;
-      await assertPyProjectTomlContains(run, PoetryGenerator.buildSystem);
+      (await pyProjectToml(run)).should.containSubset(
+        PoetryGenerator.buildSystem
+      );
     });
 
     it('leaves existing "build-system" sections untouched', async () => {
@@ -197,7 +198,7 @@ describe("python-poetry-vscode:poetry", () => {
         await readToml(run, "pyproject.toml"),
         "build-system"
       );
-      actualBuildSystem.should.deep.include(existingBuildSystem);
+      actualBuildSystem.should.containSubset(existingBuildSystem);
     });
   });
 
@@ -206,7 +207,7 @@ describe("python-poetry-vscode:poetry", () => {
       it(`utilizes option value for "${optionName}"`, async () => {
         const expectedContent = inToolPoetry(toolPoetryPath, optionValue);
         const run = await context.withOptions({ [optionName]: optionValue });
-        await assertPyProjectTomlContains(run, expectedContent);
+        (await pyProjectToml(run)).should.containSubset(expectedContent);
       });
     }
 
@@ -221,7 +222,7 @@ describe("python-poetry-vscode:poetry", () => {
       it(`utilizes prompt answers for "${promptName}"`, async () => {
         const expectedContent = inToolPoetry(toolPoetryPath, promptValue);
         const run = await context.withPrompts({ [promptName]: promptValue });
-        await assertPyProjectTomlContains(run, expectedContent);
+        (await pyProjectToml(run)).should.containSubset(expectedContent);
       });
     }
   });
@@ -239,7 +240,7 @@ describe("python-poetry-vscode:poetry", () => {
         const run = await context
           .withOptions({ [optionName]: optionValue })
           .withPrompts({ [promptName]: promptValue });
-        await assertPyProjectTomlContains(run, expectedContent);
+        (await pyProjectToml(run)).should.containSubset(expectedContent);
       });
     }
 
@@ -260,7 +261,7 @@ describe("python-poetry-vscode:poetry", () => {
           const run = await context
             .inTmpDir(writePyProjectToml.bind(null, existingContent))
             .withPrompts({ [promptName]: promptValue });
-          await assertPyProjectTomlContains(run, existingContent);
+          (await pyProjectToml(run)).should.containSubset(existingContent);
         }
       );
     }
@@ -273,7 +274,7 @@ describe("python-poetry-vscode:poetry", () => {
       userGitEmail.calledOnce.should.be.true;
       userGitName.calledOnce.should.be.true;
 
-      await assertPyProjectTomlContains(run, {
+      (await pyProjectToml(run)).should.containSubset({
         tool: { poetry: { authors: ["Jin Kazama <jin.kazama@tekken.jp>"] } },
       });
     });
@@ -285,7 +286,7 @@ describe("python-poetry-vscode:poetry", () => {
         stdio: "pipe",
       }).should.be.true;
 
-      await assertPyProjectTomlContains(run, {
+      (await pyProjectToml(run)).should.containSubset({
         tool: { poetry: { dependencies: { python: "^3.10.2" } } },
       });
     });
@@ -300,7 +301,7 @@ describe("python-poetry-vscode:poetry", () => {
 
         queryGitOriginUrl.calledOnce.should.be.true;
 
-        await assertPyProjectTomlContains(run, {
+        (await pyProjectToml(run)).should.containSubset({
           tool: {
             poetry: {
               repository: "https://github.com/hwoarang/https_package",
