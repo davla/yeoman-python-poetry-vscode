@@ -9,14 +9,13 @@ import Generator from "yeoman-generator";
 
 import InputState from "../../lib/input-state.js";
 import { Input, InvalidInputValueError } from "../../lib/input.js";
+import sharedInputs from "../../lib/shared/inputs.js";
 
 import {
   validateAuthor,
   validateDescription,
   validateLicense,
   validatePoetryVersionRange,
-  validatePythonPackageName,
-  validatePythonPackageVersion,
   validateUrl,
 } from "./validate-input.js";
 
@@ -34,31 +33,8 @@ export default class PoetryGenerator extends Generator {
     super(args, opts, {});
 
     this.inputState = new InputState([
-      {
-        [Input.PATH_KEY]: "name",
-        [Input.VALIDATE_KEY]: validatePythonPackageName,
-        [Input.PROMPT_KEY]: {
-          message: "Python package name",
-          type: "input",
-        },
-        [Input.OPTION_KEY]: {
-          desc: "The name of the Python package.",
-          type: String,
-        },
-      },
-      {
-        [Input.PATH_KEY]: "version",
-        [Input.VALIDATE_KEY]: validatePythonPackageVersion,
-        [Input.PROMPT_KEY]: {
-          message: "Python package version",
-          type: "input",
-        },
-        [Input.OPTION_KEY]: {
-          name: "package-version",
-          desc: "The version of the Python package.",
-          type: String,
-        },
-      },
+      sharedInputs.pythonPackageName,
+      sharedInputs.pythonPackageVersion,
       {
         [Input.PATH_KEY]: "description",
         [Input.VALIDATE_KEY]: validateDescription,
