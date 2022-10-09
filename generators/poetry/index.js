@@ -5,10 +5,9 @@ import LicenseGenerator from "generator-license";
 import giturl from "giturl";
 import _ from "lodash";
 import gitOriginUrl from "remote-origin-url";
-import Generator from "yeoman-generator";
 
-import InputState from "../../lib/input-state.js";
-import { Input, InvalidInputValueError } from "../../lib/input.js";
+import InputStateGenerator from "../../lib/input-state-generator.js";
+import { Input } from "../../lib/input.js";
 import sharedInputs from "../../lib/shared/inputs.js";
 
 import {
@@ -21,7 +20,7 @@ import {
 
 const require = createRequire(import.meta.url);
 
-export default class PoetryGenerator extends Generator {
+export default class PoetryGenerator extends InputStateGenerator {
   static buildSystem = {
     "build-system": {
       requires: ["poetry-core"],
@@ -30,9 +29,7 @@ export default class PoetryGenerator extends Generator {
   };
 
   constructor(args, opts) {
-    super(args, opts, {});
-
-    this.inputState = new InputState([
+    super(args, opts, [
       sharedInputs.pythonPackageName,
       sharedInputs.pythonPackageVersion,
       {
@@ -106,25 +103,16 @@ export default class PoetryGenerator extends Generator {
         },
       },
     ]);
-
-    for (const option of this.inputState.options) {
-      this.option(option.name, option);
-    }
   }
 
   async initializing() {
     const diskToolPoetry = this._diskPyProjectToml.tool?.poetry ?? {};
     this.inputState.mergeValues(diskToolPoetry);
-    try {
-      this.inputState.mergeOptions(this._iterableOptions);
-    } catch (err) {
-      this._emitInvalidOptionValueError(err);
-    }
+    super.initializing();
   }
 
-  async prompting() {
-    const answers = await this.prompt(this.inputState.prompts);
-    this.inputState.mergeAnswers(answers);
+  prompting() {
+    return super.prompting();
   }
 
   default() {
@@ -155,32 +143,12 @@ export default class PoetryGenerator extends Generator {
     return this.destinationPath("pyproject.toml");
   }
 
-  /*
-   * The options field in Generator instances cannot be directly iterated on:
-   * it contains much more than just the options. Hence, this private property.
-   */
-  get _iterableOptions() {
-    const optionNames = this.inputState.options.map((option) => option.name);
-    return _.pick(this.options, optionNames);
-  }
-
   static _applyDefaultBuildSystem(pyProjectToml) {
     /*
      * Not use _.merge because we want to fully overwrite the default
      * "build-system" with the one on the disk, if any.
      */
     return _.assign(_.clone(PoetryGenerator.buildSystem), pyProjectToml);
-  }
-
-  _emitInvalidOptionValueError(err) {
-    if (!(err instanceof InvalidInputValueError)) {
-      throw err;
-    }
-
-    const errorMessage =
-      `Value "${err.value}" for option --${err.input.optionPath} is ` +
-      `invalid: ${_.lowerFirst(err.reason)}`;
-    this.emit("error", new TypeError(errorMessage));
   }
 
   _makeAuthor() {
