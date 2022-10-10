@@ -33,6 +33,7 @@
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
+    "dev-null-cli": "^2.0.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-xo": "^0.41.0",
@@ -146,6 +147,9 @@
     ]
   },
   "scripts": {
+    "format": "eslint . --ext js --fix --fix-type layout | dev-null",
+    "lint": "eslint . --ext js",
+    "lint-fix": "npm run lint -- --fix",
     "test": "mocha"
   },
   "repository": "git@github.com:davla/yeoman-python-poetry-vscode.git",
