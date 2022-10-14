@@ -138,7 +138,8 @@
           "ignoreDeclarationSort": true,
           "ignoreMemberSort": false
         }
-      ]
+      ],
+      "strict": "error"
     },
     "plugins": [
       "import",

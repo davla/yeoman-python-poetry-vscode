@@ -1,4 +1,3 @@
-"use strict";
 import { createRequire } from "node:module";
 
 import TOML from "@iarna/toml";

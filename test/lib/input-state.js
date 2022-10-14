@@ -1,4 +1,3 @@
-"use strict";
 import "chai/register-should.js";
 import chai from "chai";
 import chaiSubset from "chai-subset";

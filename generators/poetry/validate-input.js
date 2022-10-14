@@ -1,4 +1,3 @@
-"use strict";
 import { validate as validateEmail } from "email-validator";
 import LicenseGenerator from "generator-license";
 import semver from "semver";
