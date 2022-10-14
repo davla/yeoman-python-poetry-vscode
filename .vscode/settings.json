@@ -1,6 +1,7 @@
 {
   "editor.formatOnSave": true,
   "eslint.format.enable": true,
+  "javascript.preferences.importModuleSpecifierEnding": "js",
   "mochaExplorer.timeout": 20000,
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"

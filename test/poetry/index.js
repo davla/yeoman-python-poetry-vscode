@@ -1,5 +1,4 @@
-"use strict";
-import path from "path";
+import path from "node:path";
 
 import "chai/register-should.js";
 import chai from "chai";
