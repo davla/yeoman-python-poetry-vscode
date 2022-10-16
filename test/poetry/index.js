@@ -11,6 +11,7 @@ import yeomanTest from "yeoman-test";
 
 import PoetryGenerator from "../../generators/poetry/index.js";
 import { moduleDirName } from "../../lib/paths.js";
+import { readFileInCwd } from "../../test-lib/file-system.js";
 import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
@@ -128,8 +129,13 @@ describe("python-poetry-vscode:poetry", () => {
   });
 
   describe("pyproject.toml", () => {
-    it("creates the file", async () => {
-      (await generator).assertFile("pyproject.toml");
+    it("should populate pyproject.toml", async () =>
+      (await pyProjectToml(await generator)).should.matchSnapshot());
+
+    it("creates the file in toml format", async () => {
+      const runResult = await generator;
+      runResult.assertFile("pyproject.toml");
+      await readToml(runResult, "pyproject.toml").should.be.fulfilled;
     });
 
     it("merges with existing content", async () => {
@@ -158,12 +164,10 @@ describe("python-poetry-vscode:poetry", () => {
       });
     });
 
-    it('adds the "build-system" section', async () => {
-      const runResult = await generator;
-      (await pyProjectToml(runResult)).should.containSubset(
+    it('adds the "build-system" section', async () =>
+      (await pyProjectToml(await generator)).should.containSubset(
         PoetryGenerator.buildSystem
-      );
-    });
+      ));
 
     it('leaves existing "build-system" sections untouched', async () => {
       /*
@@ -178,11 +182,9 @@ describe("python-poetry-vscode:poetry", () => {
       const runResult = await generator.inTmpDir(
         writePyProjectToml.bind(null, existingBuildSystem)
       );
-      const actualBuildSystem = _.pick(
-        await readToml(runResult, "pyproject.toml"),
-        "build-system"
-      );
-      actualBuildSystem.should.containSubset(existingBuildSystem);
+      (await pyProjectToml(runResult)).should.have
+        .property("build-system")
+        .that.deep.equals(existingBuildSystem["build-system"]);
     });
   });
 
