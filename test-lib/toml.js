@@ -1,13 +1,9 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-
 import TOML from "@iarna/toml";
 
-const fileInCwd = (runResult, fileName) =>
-  path.join(runResult.cwd ?? runResult, fileName);
+import { readFileInCwd, writeFileInCwd } from "./file-system.js";
 
 export const readToml = async (runResult, fileName) =>
-  TOML.parse(await fs.readFile(fileInCwd(runResult, fileName), "utf-8"));
+  TOML.parse(await readFileInCwd(runResult, fileName));
 
 export const writeToml = (runResult, fileName, content) =>
-  fs.writeFile(fileInCwd(runResult, fileName), TOML.stringify(content));
+  writeFileInCwd(runResult, fileName, TOML.stringify(content));

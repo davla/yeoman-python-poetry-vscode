@@ -33,6 +33,7 @@
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0",
+    "cross-env": "^7.0.3",
     "dev-null-cli": "^2.0.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
@@ -44,6 +45,7 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "mocha": "^10.0.0",
+    "mocha-snapshots": "^4.2.0",
     "prettier": "^2.7.1",
     "sinon": "^14.0.0",
     "yeoman-test": "^6.3.0"
@@ -83,7 +85,10 @@
     "checkLeaks": true,
     "failZero": true,
     "parallel": true,
-    "recursive": true
+    "recursive": true,
+    "require": [
+      "mocha-snapshots"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -154,7 +159,8 @@
     "format": "eslint . --ext js --fix --fix-type layout | dev-null",
     "lint": "eslint . --ext js",
     "lint-fix": "npm run lint -- --fix",
-    "test": "mocha"
+    "test": "mocha",
+    "update-test-shapshots": "cross-env UPDATE=1 mocha"
   },
   "repository": "git@github.com:davla/yeoman-python-poetry-vscode.git",
   "license": "GPL-3.0"
