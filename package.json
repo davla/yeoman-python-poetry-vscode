@@ -158,7 +158,7 @@
   "scripts": {
     "format": "eslint . --ext js --fix --fix-type layout | dev-null",
     "lint": "eslint . --ext js",
-    "lint-fix": "npm run lint -- --fix",
+    "lint:fix": "npm run lint -- --fix",
     "test": "mocha",
     "update-test-shapshots": "cross-env UPDATE=1 mocha"
   },
