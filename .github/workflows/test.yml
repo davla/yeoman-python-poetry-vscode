@@ -12,6 +12,10 @@ jobs:
     name: Run tests
     runs-on: ${{ matrix.runner }}
     continue-on-error: true
+
+    env:
+      test-results-path: test-results.json
+
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
@@ -25,4 +29,13 @@ jobs:
       run: npm ci
 
     - name: Test
-      run: npm test
+      run: npm run test:ci -- output=${{ env.test-results-path }}
+
+    - name: Publish test results
+      uses: dorny/test-reporter@v1
+      if: '!cancelled()'
+      with:
+        name: Test results (${{ matrix.node-version }}, ${{ matrix.runner }})
+        fail-on-error: false
+        path: ${{ env.test-results-path }}
+        reporter: mocha-json
