@@ -28,8 +28,10 @@ const inToolPoetry = (toolPoetryPath, content) => ({
 
 const pyProjectToml = (runResult) => readToml(runResult, "pyproject.toml");
 
-const writePyProjectToml = (content, dir) =>
-  writeToml(dir, "pyproject.toml", content);
+function writePyProjectToml(content, dir) {
+  const done = this.async();
+  writeToml(dir, "pyproject.toml", content).then(done);
+}
 
 const generatorInput = [
   {
@@ -135,7 +137,7 @@ describe("python-poetry-vscode:poetry", () => {
     it("merges with existing content", async () => {
       const runResult = await generator
         .inTmpDir(
-          writePyProjectToml.bind(null, {
+          writePyProjectToml.bind(generator, {
             tool: {
               poetry: {
                 authors: ["King <king@tekken.mx>", "Jack <jack@tekken.ru"],
@@ -176,7 +178,7 @@ describe("python-poetry-vscode:poetry", () => {
         },
       };
       const runResult = await generator.inTmpDir(
-        writePyProjectToml.bind(null, existingBuildSystem)
+        writePyProjectToml.bind(generator, existingBuildSystem)
       );
       const actualBuildSystem = _.pick(
         await readToml(runResult, "pyproject.toml"),
@@ -208,7 +210,7 @@ describe("python-poetry-vscode:poetry", () => {
         const existingContent = inToolPoetry(outputPath, outputValue);
         const expectedContent = inToolPoetry(outputPath, inputValue);
         const runResult = await generator
-          .inTmpDir(writePyProjectToml.bind(null, existingContent))
+          .inTmpDir(writePyProjectToml.bind(generator, existingContent))
           .withOptions({ [optionName]: inputValue });
         (await pyProjectToml(runResult)).should.containSubset(expectedContent);
       });
@@ -226,7 +228,7 @@ describe("python-poetry-vscode:poetry", () => {
         async () => {
           const existingContent = inToolPoetry(outputPath, outputValue);
           const runResult = await generator
-            .inTmpDir(writePyProjectToml.bind(null, existingContent))
+            .inTmpDir(writePyProjectToml.bind(generator, existingContent))
             .withPrompts({ [promptName]: inputValue });
           (await pyProjectToml(runResult)).should.containSubset(
             existingContent
