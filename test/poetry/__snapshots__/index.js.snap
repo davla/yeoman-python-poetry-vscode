@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`python-poetry-vscode:poetry pyproject.toml should populate pyproject.toml 1`] = `
+Object {
+  "build-system": Object {
+    "build-backend": "poetry.core.masonry.api",
+    "requires": Array [
+      "poetry-core",
+    ],
+  },
+  "tool": Object {
+    "poetry": Object {
+      "authors": Array [
+        "Jin Kazama <jin.kazama@tekken.jp>",
+      ],
+      "dependencies": Object {
+        "python": "^3.10.2",
+      },
+      "description": "Non-empty description",
+      "license": "GPL-3.0",
+      "name": "mandatory_package",
+      "repository": "https://github.com/eddy-gordo/git_package",
+      "version": "1.9.0",
+    },
+  },
+}
+`;

@@ -6,16 +6,17 @@ import chaiAsPromised from "chai-as-promised";
 import chaiSubset from "chai-subset";
 import LicenseGenerator from "generator-license";
 import _ from "lodash";
+import { jestSnapshotPlugin as chaiSnapshot } from "mocha-chai-jest-snapshot";
 import sinon from "sinon";
 import yeomanTest from "yeoman-test";
 
 import PoetryGenerator from "../../generators/poetry/index.js";
 import { moduleDirName } from "../../lib/paths.js";
-import { readFileInCwd } from "../../test-lib/file-system.js";
 import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
 chai.use(chaiAsPromised);
+chai.use(chaiSnapshot());
 chai.use(chaiSubset);
 
 const generatorPath = path.join(
