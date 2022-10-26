@@ -1,5 +1,0 @@
-exports["python-poetry-vscode:python-package/sources/should populate the pacakge __init__.py file(0)"] = "__version__ = 1.9.0\n";
-
-exports["python-poetry-vscode:python-package/tests/should populate the test __init__.py file(0)"] = "";
-
-exports["python-poetry-vscode:python-package/tests/should populate the test file(0)"] = "from package_name import __version__\n\n\ndef test_version():\n    assert __version__ == '1.9.0'\n";
