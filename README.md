@@ -31,7 +31,7 @@ GPL-3.0 © [Davide Laezza](https://github.com/davla)
 
 [npm-image]: https://badge.fury.io/js/generator-python-poetry-vscode.svg
 [npm-url]: https://npmjs.org/package/generator-python-poetry-vscode
-[actions-image]: https://github.com/davla/yeoman-python-poetry-vscode/workflows/tests/badge.svg
-[travis-url]: https://github.com/davla/yeoman-python-poetry-vscode/actions
+[actions-image]: https://github.com/davla/yeoman-python-poetry-vscode/actions/workflows/test.yml/badge.svg
+[actions-url]: https://github.com/davla/yeoman-python-poetry-vscode/actions/workflows/test.yml
 [daviddm-image]: https://david-dm.org/davla/generator-python-poetry-vscode.svg?theme=shields.io
 [daviddm-url]: https://david-dm.org/davla/generator-python-poetry-vscode
