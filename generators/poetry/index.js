@@ -1,7 +1,6 @@
 import { createRequire } from "node:module";
 
 import TOML from "@iarna/toml";
-import flat from "flat";
 import giturl from "giturl";
 import _ from "lodash";
 import gitOriginUrl from "remote-origin-url";
@@ -18,7 +17,6 @@ import {
   validateUrl,
 } from "./validate-input.js";
 
-const { unflatten } = flat;
 const require = createRequire(import.meta.url);
 
 export default class PoetryGenerator extends InputGenerator {
@@ -158,12 +156,11 @@ export default class PoetryGenerator extends InputGenerator {
   }
 
   async _toolPoetry() {
-    const inputValues = this.inputs.map(async (input) => [
-      input.extras.toolPoetryPath,
-      await input.getValue(),
-    ]);
-    const keyValuePairs = Object.fromEntries(await Promise.all(inputValues));
-    return unflatten(keyValuePairs, { safe: true });
+    const inputPaths = this.inputs.map((input) => input.extras.toolPoetryPath);
+    const inputValues = await Promise.all(
+      this.inputs.map((input) => input.getValue())
+    );
+    return _.zipObjectDeep(inputPaths, inputValues);
   }
 
   _makeAuthor() {

@@ -16,5 +16,5 @@ export function withInput(runContext, inputData) {
   }));
   return runContext
     .withOptions(_.merge(...options))
-    .withPrompts(_.merge(...prompts));
+    .withAnswers(_.merge(...prompts));
 }

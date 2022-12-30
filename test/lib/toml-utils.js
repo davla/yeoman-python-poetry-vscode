@@ -57,33 +57,23 @@ describe("toml-utils", () => {
       reader.call(this.generator).should.equal(4);
     });
 
-    it('reads arrays from "tool.poetry" in pyproject.toml file', function () {
-      this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
-        `[tool.poetry]
-         e = [5]
-        `
-      );
-      const reader = toolPoetryPathReader("e");
-      reader.call(this.generator).should.deep.equal([5]);
-    });
-
     it('returns undefined on missing "tool" key', function () {
       this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
         `[not.tool.poetry]
-         f = 6
+         e = 5
         `
       );
-      const reader = toolPoetryPathReader("f");
+      const reader = toolPoetryPathReader("e");
       should.not.exist(reader.call(this.generator));
     });
 
     it('returns undefined on missing "tool.poetry" path', function () {
       this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
         `[tool.not.poetry]
-         g = 7
+         f = 6
         `
       );
-      const reader = toolPoetryPathReader("g");
+      const reader = toolPoetryPathReader("f");
       should.not.exist(reader.call(this.generator));
     });
   });
