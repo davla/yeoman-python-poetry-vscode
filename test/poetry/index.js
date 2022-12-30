@@ -41,49 +41,42 @@ const generatorInput = [
     promptName: "name",
     outputPath: "name",
     inputValue: "input_package",
-    outputValue: "output_package",
   },
   {
     optionName: "package-version",
     promptName: "version",
     outputPath: "version",
     inputValue: "2.0.2",
-    outputValue: "1.0.19",
   },
   {
     optionName: "description",
     promptName: "description",
     outputPath: "description",
     inputValue: "Input description",
-    outputValue: "Output description",
   },
   {
     optionName: "author",
     promptName: "author",
     outputPath: "authors.0",
-    inputValue: "Steve Fox <steve.fox@tekken.uk>",
-    outputValue: "Paul Phoenix <paul.phoenix@tekken.us>",
+    inputValue: "Paul Phoenix <paul.phoenix@tekken.us>",
   },
   {
     optionName: "license",
     promptName: "license",
     outputPath: "license",
     inputValue: LicenseGenerator.licenses[1].value,
-    outputValue: LicenseGenerator.licenses[2].value,
   },
   {
     optionName: "python",
     promptName: "python",
     outputPath: "dependencies.python",
     inputValue: "^3.10.1",
-    outputValue: "^3.7.0",
   },
   {
     optionName: "repository",
     promptName: "repository",
     outputPath: "repository",
     inputValue: "https://github.com/marshall-law/input_package",
-    outputValue: "https://github.com/marshall-law/output_package",
   },
 ];
 
@@ -194,50 +187,11 @@ describe("python-poetry-vscode:poetry", () => {
   describe("input", () => {
     for (const inputTestData of generatorInput) {
       const { optionName, inputValue, outputPath } = inputTestData;
-      it(`should output input "${optionName}" at "${outputPath}"`, async () => {
+      it(`should output input "${optionName}" at "tool.poetry.${outputPath}"`, async () => {
         const expectedContent = inToolPoetry(outputPath, inputValue);
         const runResult = await withInput(generator, inputTestData);
         (await pyProjectToml(runResult)).should.containSubset(expectedContent);
       });
-    }
-  });
-
-  describe("precedence", () => {
-    for (const {
-      optionName,
-      outputPath,
-      inputValue,
-      outputValue,
-    } of generatorInput) {
-      it(`option "${optionName}" has precedence over existing content at "${outputPath}"`, async () => {
-        const existingContent = inToolPoetry(outputPath, outputValue);
-        const expectedContent = inToolPoetry(outputPath, inputValue);
-        const runResult = await generator
-          .inTmpDir(writePyProjectToml.bind(generator, existingContent))
-          .withOptions({ [optionName]: inputValue });
-        (await pyProjectToml(runResult)).should.containSubset(expectedContent);
-      });
-    }
-
-    for (const {
-      promptName,
-      outputPath,
-      inputValue,
-      outputValue,
-    } of generatorInput) {
-      it(
-        `existing content at "${outputPath}" has precedence over prompt ` +
-          promptName,
-        async () => {
-          const existingContent = inToolPoetry(outputPath, outputValue);
-          const runResult = await generator
-            .inTmpDir(writePyProjectToml.bind(generator, existingContent))
-            .withPrompts({ [promptName]: inputValue });
-          (await pyProjectToml(runResult)).should.containSubset(
-            existingContent
-          );
-        }
-      );
     }
   });
 
