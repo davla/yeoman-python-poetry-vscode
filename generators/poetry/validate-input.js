@@ -1,5 +1,4 @@
 import { validate as validateEmail } from "email-validator";
-import LicenseGenerator from "generator-license";
 import semver from "semver";
 
 export function validateAuthor(authorString) {
@@ -19,13 +18,6 @@ export function validateDescription(description) {
   return (description ?? "") === ""
     ? "Python package descriptions can't be empty"
     : true;
-}
-
-export function validateLicense(license) {
-  return (
-    LicenseGenerator.licenses.map(({ value }) => value).includes(license) ||
-    `License "${license}" is not supported`
-  );
 }
 
 export function validatePoetryVersionRange(range) {
