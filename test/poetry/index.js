@@ -6,6 +6,7 @@ import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import { jestSnapshotPlugin as chaiSnapshot } from "mocha-chai-jest-snapshot";
 import sinon from "sinon";
+import sinonChai from "sinon-chai";
 import Generator from "yeoman-generator";
 import yeomanTest from "yeoman-test";
 
@@ -16,6 +17,7 @@ import { withInput } from "../../test-lib/yeoman-test-input.js";
 chai.use(chaiAsPromised);
 chai.use(chaiSnapshot());
 chai.use(chaiSubset);
+chai.use(sinonChai);
 
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
@@ -188,8 +190,8 @@ describe("python-poetry-vscode:poetry", () => {
     it("queries git config for the default author", async () => {
       const runResult = await generator;
 
-      userGitEmail.calledOnce.should.be.true;
-      userGitName.calledOnce.should.be.true;
+      userGitEmail.should.have.been.calledOnce;
+      userGitName.should.have.been.calledOnce;
 
       (await pyProjectToml(runResult)).should.containSubset({
         tool: { poetry: { authors: ["Jin Kazama <jin.kazama@tekken.jp>"] } },
@@ -199,9 +201,9 @@ describe("python-poetry-vscode:poetry", () => {
     it("queries current python version for default python", async () => {
       const runResult = await generator;
 
-      spawnCommand.calledOnceWith("python", ["--version"], {
+      spawnCommand.should.have.been.calledOnceWith("python", ["--version"], {
         stdio: "pipe",
-      }).should.be.true;
+      });
 
       (await pyProjectToml(runResult)).should.containSubset({
         tool: { poetry: { dependencies: { python: "^3.10.2" } } },
@@ -216,7 +218,7 @@ describe("python-poetry-vscode:poetry", () => {
         queryGitOriginUrl.resolves(url);
         const runResult = await generator;
 
-        queryGitOriginUrl.calledOnce.should.be.true;
+        queryGitOriginUrl.should.have.been.calledOnce;
 
         (await pyProjectToml(runResult)).should.containSubset({
           tool: {
@@ -232,7 +234,7 @@ describe("python-poetry-vscode:poetry", () => {
   describe("install", () => {
     it("doesn't run poetry install", async () => {
       await generator;
-      spawnCommand.calledWith("poetry", ["install"]).should.be.false;
+      spawnCommand.should.not.have.been.calledWith("poetry", ["install"]);
     });
   });
 });

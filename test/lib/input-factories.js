@@ -1,10 +1,14 @@
 import "chai/register-should.js";
+import chai from "chai";
 import sinon from "sinon";
+import sinonChai from "sinon-chai";
 
 import {
   InputFactory,
   PyProjectTomlInputFactory,
 } from "../../lib/input-factories.js";
+
+chai.use(sinonChai);
 
 describe("InputFactory", () => {
   it("forwards constructor arguments to created inputs", () => {
@@ -32,7 +36,7 @@ describe("InputFactory", () => {
     factory.create(generator);
 
     for (const valueFunction of Object.values(valueFunctions)) {
-      valueFunction.bind.calledOnceWith(generator).should.be.true;
+      valueFunction.bind.should.have.been.calledOnceWith(generator);
     }
   });
 });
