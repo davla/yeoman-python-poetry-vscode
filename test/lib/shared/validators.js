@@ -1,12 +1,22 @@
 import "chai/register-should.js";
+import LicenseGenerator from "generator-license";
 
 import {
   validPep440PrereleaseTags,
+  validateLicense,
   validatePythonPackageName,
   validatePythonPackageVersion,
 } from "../../../lib/shared/validators.js";
 
 describe("Shared validators", () => {
+  describe("License", () => {
+    it("Should report unsupported licenses", () =>
+      validateLicense("OFL-1.1").should.include("not supported"));
+
+    it("Should not report supported licenses", () =>
+      validateLicense(LicenseGenerator.licenses[0].value).should.be.true);
+  });
+
   describe("Python package name", () => {
     it("Should report empty names", () =>
       validatePythonPackageName("").should.include("empty"));

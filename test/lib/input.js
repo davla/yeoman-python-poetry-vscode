@@ -8,143 +8,159 @@ import { Input, InvalidInputValueError } from "../../lib/input.js";
 chai.use(chaiSubset);
 
 describe("Input", () => {
-  describe("Keys inclusion", () => {
-    it("shares any keys that's not Input.OPTION_KEY or Input.PROMPT_KEY between option and prompt", () => {
-      const input = new Input({ shared: 22, property: false });
-      input.asOption().should.containSubset({ shared: 22, property: false });
-      input.asPrompt().should.containSubset({ shared: 22, property: false });
+  describe("asOption", () => {
+    it('includes keys under "shared"', () => {
+      const input = new Input({ shared: { count: 22, property: false } });
+      input.asOption().should.containSubset({ count: 22, property: false });
     });
 
-    it("includes keys under Input.OPTION_KEY in options", () => {
-      const input = new Input({ [Input.OPTION_KEY]: { field: "shovel" } });
+    it('includes keys under "option"', () => {
+      const input = new Input({ option: { field: "shovel" } });
       input.asOption().should.containSubset({ field: "shovel" });
     });
 
-    it("includes keys under Input.PROMPT_KEY in prompts", () => {
-      const input = new Input({ [Input.PROMPT_KEY]: { here: ["stuff"] } });
-      input.asPrompt().should.containSubset({ here: ["stuff"] });
-    });
-
-    it("overrides shared keys with those from Input.OPTION_KEY", () => {
+    it('overrides shared keys with those from "option"', () => {
       const input = new Input({
-        shared: 22,
-        [Input.OPTION_KEY]: { shared: "shovel" },
+        shared: { property: 22 },
+        option: { property: "shovel" },
       });
-      input.asOption().should.containSubset({ shared: "shovel" });
+      input.asOption().should.containSubset({ property: "shovel" });
     });
 
-    it("overrides shared keys with those from Input.PROMPT_KEY", () => {
-      const input = new Input({
-        shared: 22,
-        [Input.PROMPT_KEY]: { shared: ["more", "stuff"] },
-      });
-      input.asPrompt().should.containSubset({ shared: ["more", "stuff"] });
-    });
-  });
-
-  describe("Keys exclusion", () => {
-    it("excludes keys under Input.PROMPT_KEY from options", () => {
-      const input = new Input({ [Input.PROMPT_KEY]: { here: ["stuff"] } });
+    it('excludes keys under "prompt"', () => {
+      const input = new Input({ prompt: { here: ["stuff"] } });
       input.asOption().should.not.containSubset({ here: ["stuff"] });
     });
 
-    it("excludes keys under Input.OPTION_KEY from prompts", () => {
-      const input = new Input({ [Input.OPTION_KEY]: { field: "shovel" } });
-      input.asPrompt().should.not.containSubset({ field: "shovel" });
+    it("should not add option keys to shared keys", () => {
+      const input = new Input({ shared: {}, option: { a: "key" } });
+      input.asOption();
+      input.asPrompt().should.not.containSubset({ a: "key" });
     });
   });
 
-  describe("Paths", () => {
-    it("Input path should use Input.PATH_KEY when provided", () => {
-      const input = new Input({ [Input.PATH_KEY]: "jellyfish" });
-      input.path.should.equal("jellyfish");
+  describe("asPrompt", () => {
+    it('includes keys under "shared"', () => {
+      const input = new Input({ shared: { count: 22, property: false } });
+      input.asPrompt().should.containSubset({ count: 22, property: false });
     });
 
-    it('path should default to "name" key when Input.PATH_KEY is not provided', () => {
-      const input = new Input({ name: "jellyfish" });
-      input.path.should.equal("jellyfish");
+    it('includes keys under "prompt"', () => {
+      const input = new Input({ prompt: { here: ["stuff"] } });
+      input.asPrompt().should.containSubset({ here: ["stuff"] });
     });
 
-    it('path should ignore to "name" key when Input.PATH_KEY is provided', () => {
+    it('overrides shared keys with those from "prompt"', () => {
       const input = new Input({
-        [Input.PATH_KEY]: "jellyfish",
-        name: "squid",
+        shared: { property: 22 },
+        prompt: { property: ["more", "stuff"] },
       });
-      input.path.should.equal("jellyfish");
+      input.asPrompt().should.containSubset({ property: ["more", "stuff"] });
     });
 
-    it('optionPath should use "[Input.OPTION_KEY].name" when provided', () => {
-      const input = new Input({ [Input.OPTION_KEY]: { name: "aye-aye" } });
-      input.optionPath.should.equal("aye-aye");
+    it('excludes keys under "option"', () => {
+      const input = new Input({ option: { field: "shovel" } });
+      input.asPrompt().should.not.containSubset({ field: "shovel" });
     });
 
-    it('optionPath should use path when "[Input.OPTION_KEY].name" is not provided', () => {
-      const input = new Input({ [Input.PATH_KEY]: "aye-aye" });
-      input.optionPath.should.equal("aye-aye");
+    it("should not add prompt keys to shared keys", () => {
+      const input = new Input({ shared: {}, prompt: { a: "key" } });
+      input.asPrompt();
+      input.asOption().should.not.containSubset({ a: "key" });
     });
 
-    it('promptPath should use "[Input.PROMPT_KEY].name" when provided', () => {
-      const input = new Input({ [Input.PROMPT_KEY]: { name: "aardvark" } });
-      input.promptPath.should.equal("aardvark");
+    it('sets "when" to false if the value is defined', () => {
+      const input = new Input({});
+      input.setValue(77);
+      input.asPrompt().when.should.be.false;
     });
 
-    it('promptPath should use path when "[Input.OPTION_KEY].name" is not provided', () => {
-      const input = new Input({ [Input.PATH_KEY]: "aardvark" });
-      input.promptPath.should.equal("aardvark");
+    it('sets "when" to true if the value is not defined', () => {
+      const input = new Input({});
+      input.asPrompt().when.should.be.true;
+    });
+
+    it('overrides "when" if given in "prompt"', () => {
+      new Input({ prompt: { when: 88 } }).asPrompt().when.should.equal(88);
+    });
+
+    for (const functionName of ["validate", "default"]) {
+      it(`sets "${functionName}" to the "${functionName}" value function`, () => {
+        new Input({}, { [functionName]: true })
+          .asPrompt()
+          [functionName].should.equal(true);
+      });
+
+      it(`overrides "${functionName}" if given in "prompt"`, () => {
+        const input = new Input(
+          { prompt: { [functionName]: 88 } },
+          { [functionName]: true }
+        );
+        input.asPrompt()[functionName].should.equal(88);
+      });
+    }
+  });
+
+  describe("Names", () => {
+    it('Input name should use "shared.name" when provided', () => {
+      const input = new Input({ shared: { name: "jellyfish" } });
+      input.name.should.equal("jellyfish");
+    });
+
+    it('optionName should use "option.name" when provided over "shared.name"', () => {
+      const input = new Input({
+        shared: { name: "jellyfish" },
+        option: { name: "aye-aye" },
+      });
+      input.optionName.should.equal("aye-aye");
+    });
+
+    it('optionName should use "shared.name" when "option.name" is not provided', () => {
+      const input = new Input({ shared: { name: "aye-aye" } });
+      input.optionName.should.equal("aye-aye");
+    });
+
+    it('promptName should use "prompt.name" when provided over "shared.name"', () => {
+      const input = new Input({
+        shared: { name: "jellyfish" },
+        prompt: { name: "aardvark" },
+      });
+      input.promptName.should.equal("aardvark");
+    });
+
+    it('promptName should use "shared.name" when "prompt.name" is not provided', () => {
+      const input = new Input({ shared: { name: "aardvark" } });
+      input.promptName.should.equal("aardvark");
     });
   });
 
   describe("setValue", () => {
-    it('should store the value directly if "isTransformed" is true', () => {
-      const transform = sinon.expectation.create();
-      transform.never();
-      const input = new Input({ [Input.TRANSFORM_KEY]: transform });
-
-      input.setValue(22, { isTransformed: true });
-
-      input.value.should.equal(22);
-      transform.verify();
-    });
-
-    it('should apply transform if "isTransformed" is true', () => {
+    it("should apply transform", async () => {
       const transform = sinon.expectation.create();
       transform.once().withArgs(22).returns("this is a robbery");
-      const input = new Input({ [Input.TRANSFORM_KEY]: transform });
+      const input = new Input({}, { transform });
 
-      input.setValue(22, { isTransformed: false });
+      input.setValue(22);
 
-      input.value.should.equal("this is a robbery");
+      (await input.getValue()).should.equal("this is a robbery");
       transform.verify();
     });
 
-    it('should not validate the new value if "isTransformed" is true', () => {
-      const validate = sinon.expectation.create();
-      validate.never();
-      const input = new Input({ [Input.VALIDATE_KEY]: validate });
-
-      input.setValue(true, { isTransformed: true });
-
-      validate.verify();
-    });
-
-    it("should set the new value if it's valid", () => {
+    it("should set the new value if it's valid", async () => {
       const validate = sinon.expectation.create();
       validate.once().withArgs(8).returns(true);
-      const input = new Input({ [Input.VALIDATE_KEY]: validate });
+      const input = new Input({}, { validate });
 
       input.setValue(8);
 
-      input.value.should.equal(8);
+      (await input.getValue()).should.equal(8);
       validate.verify();
     });
 
     it("shouldn't set the new value if it's not valid", () => {
       const validate = sinon.expectation.create();
       validate.once().withArgs(92).returns("I don't like it");
-      const input = new Input({
-        [Input.PATH_KEY]: "a.dotted.path",
-        [Input.VALIDATE_KEY]: validate,
-      });
+      const input = new Input({ shared: { name: "yaha" } }, { validate });
 
       (() => input.setValue(92)).should
         .throw(InvalidInputValueError, /I don't like it/)
@@ -159,10 +175,7 @@ describe("Input", () => {
 
       const transform = sinon.stub().returns("Aegislash");
 
-      const input = new Input({
-        [Input.VALIDATE_KEY]: validate,
-        [Input.TRANSFORM_KEY]: transform,
-      });
+      const input = new Input({}, { validate, transform });
 
       input.setValue("Doublade");
 
@@ -170,50 +183,57 @@ describe("Input", () => {
     });
   });
 
-  describe("Prompt-specific", () => {
-    it('sets "when" to false if the value is defined', () => {
-      const input = new Input({});
-      input.setValue(77);
+  describe("initValue", () => {
+    it(`should't use the "retrieve" value function if value is set`, async () => {
+      const retrieve = sinon.expectation.create();
+      retrieve.never();
+      const input = new Input({}, { retrieve });
+      input.setValue(false);
 
-      const prompt = input.asPrompt();
+      await input.initValue();
 
-      prompt.when.should.be.false;
+      (await input.getValue()).should.equal(false);
+      retrieve.verify();
     });
 
-    it('sets "when" to true if the value is not defined', () => {
-      const input = new Input({});
+    it('should use the "retrieve" value function if value is not set', async () => {
+      // TODO: use spy?
+      const retrieve = sinon.expectation.create();
+      retrieve.once().resolves("Buizel");
+      const input = new Input({}, { retrieve });
 
-      const prompt = input.asPrompt();
+      await input.initValue();
 
-      prompt.when.should.be.true;
+      (await input.getValue()).should.equal("Buizel");
+      retrieve.verify();
+    });
+  });
+
+  describe("getValue", () => {
+    it('should return the set value and not call the "retrieve" value function', async () => {
+      const retrieve = sinon.expectation.create();
+      retrieve.never();
+      const input = new Input({}, { retrieve });
+
+      input.setValue(false);
+
+      (await input.getValue()).should.equal(false);
+      retrieve.verify();
     });
 
-    it('overrides "when" if given in Input.PROMPT_KEY', () => {
-      const input = new Input({ [Input.PROMPT_KEY]: { when: 88 } });
-      input.setValue("nil");
+    it('should use the "retrieve" value function if the value is not set', async () => {
+      // TODO: use spy?
+      const retrieve = sinon.expectation.create();
+      retrieve.once().resolves("Pawmo");
+      const input = new Input({}, { retrieve });
 
-      const prompt = input.asPrompt();
-
-      prompt.when.should.equal(88);
+      (await input.getValue()).should.equal("Pawmo");
+      retrieve.verify();
     });
+  });
 
-    it('sets "validate" to the passed value for Input.VALIDATE_KEY', () => {
-      const input = new Input({ [Input.VALIDATE_KEY]: "valid" });
-
-      const prompt = input.asPrompt();
-
-      prompt.validate.should.equal("valid");
-    });
-
-    it('overrides "validate" if given in Input.PROMPT_KEY', () => {
-      const input = new Input({
-        [Input.VALIDATE_KEY]: true,
-        [Input.PROMPT_KEY]: { validate: 88 },
-      });
-
-      const prompt = input.asPrompt();
-
-      prompt.validate.should.equal(88);
-    });
+  describe("extras", () => {
+    it("stores extras", () =>
+      new Input({}, {}, { extra: 0 }).extras.should.deep.equal({ extra: 0 }));
   });
 });

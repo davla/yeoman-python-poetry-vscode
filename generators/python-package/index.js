@@ -1,12 +1,12 @@
 import path from "node:path";
 
-import InputStateGenerator from "../../lib/input-state-generator.js";
+import InputGenerator from "../../lib/input-generator.js";
 import { moduleDirName } from "../../lib/paths.js";
 import sharedInputs from "../../lib/shared/inputs.js";
 
 const parentDir = moduleDirName(import.meta);
 
-export default class PythonPackageGenerator extends InputStateGenerator {
+export default class PythonPackageGenerator extends InputGenerator {
   static inputs = [
     sharedInputs.pythonPackageName,
     sharedInputs.pythonPackageVersion,
@@ -16,8 +16,8 @@ export default class PythonPackageGenerator extends InputStateGenerator {
     super(args, opts, PythonPackageGenerator.inputs);
   }
 
-  initializing() {
-    super.initializing();
+  async initializing() {
+    await super.initializing();
     this.sourceRoot(path.join(parentDir, "templates"));
   }
 
@@ -25,8 +25,11 @@ export default class PythonPackageGenerator extends InputStateGenerator {
     return super.prompting();
   }
 
-  writing() {
-    const { name: packageName, version } = this.inputState.values;
+  async writing() {
+    const { name: packageName, version } = await this.getInputValues(
+      "name",
+      "version"
+    );
     this.fs.copyTpl(
       this.templatePath("__init__.py"),
       this.destinationPath(packageName, "__init__.py"),

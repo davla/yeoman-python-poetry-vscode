@@ -1,10 +1,8 @@
 import "chai/register-should.js";
-import LicenseGenerator from "generator-license";
 
 import {
   validateAuthor,
   validateDescription,
-  validateLicense,
   validatePoetryVersionRange,
   validateUrl,
 } from "../../generators/poetry/validate-input.js";
@@ -41,14 +39,6 @@ describe("Poetry input validation", () => {
 
     it("Should not report valid descriptions", () =>
       validateDescription("King of Iron Fist Tournament").should.be.true);
-  });
-
-  describe("License", () => {
-    it("Should report unsupported licenses", () =>
-      validateLicense("OFL-1.1").should.include("not supported"));
-
-    it("Should not report supported licenses", () =>
-      validateLicense(LicenseGenerator.licenses[0].value).should.be.true);
   });
 
   describe("Poetry version range", () => {

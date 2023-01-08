@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import "chai/register-should.js";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -8,21 +6,16 @@ import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import { jestSnapshotPlugin as chaiSnapshot } from "mocha-chai-jest-snapshot";
 import sinon from "sinon";
+import Generator from "yeoman-generator";
 import yeomanTest from "yeoman-test";
 
 import PoetryGenerator from "../../generators/poetry/index.js";
-import { moduleDirName } from "../../lib/paths.js";
 import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
 chai.use(chaiAsPromised);
 chai.use(chaiSnapshot());
 chai.use(chaiSubset);
-
-const generatorPath = path.join(
-  moduleDirName(import.meta),
-  "../generators/poetry"
-);
 
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
@@ -31,8 +24,7 @@ const inToolPoetry = (toolPoetryPath, content) => ({
 const pyProjectToml = (runResult) => readToml(runResult, "pyproject.toml");
 
 function writePyProjectToml(content, dir) {
-  const done = this.async();
-  writeToml(dir, "pyproject.toml", content).then(done);
+  return writeToml(dir, "pyproject.toml", content);
 }
 
 const generatorInput = [
@@ -41,49 +33,42 @@ const generatorInput = [
     promptName: "name",
     outputPath: "name",
     inputValue: "input_package",
-    outputValue: "output_package",
   },
   {
     optionName: "package-version",
     promptName: "version",
     outputPath: "version",
     inputValue: "2.0.2",
-    outputValue: "1.0.19",
   },
   {
     optionName: "description",
     promptName: "description",
     outputPath: "description",
     inputValue: "Input description",
-    outputValue: "Output description",
   },
   {
     optionName: "author",
     promptName: "author",
     outputPath: "authors.0",
-    inputValue: "Steve Fox <steve.fox@tekken.uk>",
-    outputValue: "Paul Phoenix <paul.phoenix@tekken.us>",
+    inputValue: "Paul Phoenix <paul.phoenix@tekken.us>",
   },
   {
     optionName: "license",
     promptName: "license",
     outputPath: "license",
     inputValue: LicenseGenerator.licenses[1].value,
-    outputValue: LicenseGenerator.licenses[2].value,
   },
   {
     optionName: "python",
     promptName: "python",
     outputPath: "dependencies.python",
     inputValue: "^3.10.1",
-    outputValue: "^3.7.0",
   },
   {
     optionName: "repository",
     promptName: "repository",
     outputPath: "repository",
     inputValue: "https://github.com/marshall-law/input_package",
-    outputValue: "https://github.com/marshall-law/output_package",
   },
 ];
 
@@ -110,11 +95,14 @@ describe("python-poetry-vscode:poetry", () => {
       .resolves({ stdout: "Python 3.10.2" });
     userGitName = sinon.stub().returns("Jin Kazama");
     userGitEmail = sinon.stub().returns("jin.kazama@tekken.jp");
+
+    Generator.prototype.user.git.email = userGitEmail;
+    Generator.prototype.user.git.name = userGitName;
+    PoetryGenerator.prototype._queryGitOriginUrl = queryGitOriginUrl;
+    Generator.prototype.spawnCommand = spawnCommand;
+
     generator = yeomanTest
-      .run(PoetryGenerator, {
-        resolved: generatorPath,
-        namespace: "python-poetry-vscode:poetry",
-      })
+      .run(PoetryGenerator)
       .withGenerators([
         [
           yeomanTest.createMockedGenerator(LicenseGenerator),
@@ -122,13 +110,7 @@ describe("python-poetry-vscode:poetry", () => {
         ],
       ])
       // Silence the annoying warnings
-      .withPrompts(mandatoryAnswers)
-      .on("ready", (generator) => {
-        generator.user.git.email = userGitEmail;
-        generator.user.git.name = userGitName;
-        generator._queryGitOriginUrl = queryGitOriginUrl;
-        generator.spawnCommand = spawnCommand;
-      });
+      .withAnswers(mandatoryAnswers);
   });
 
   describe("pyproject.toml", () => {
@@ -143,7 +125,7 @@ describe("python-poetry-vscode:poetry", () => {
 
     it("merges with existing content", async () => {
       const runResult = await generator
-        .inTmpDir(
+        .doInDir(
           writePyProjectToml.bind(generator, {
             tool: {
               poetry: {
@@ -182,7 +164,7 @@ describe("python-poetry-vscode:poetry", () => {
           requires: ["setuptools", "wheel"],
         },
       };
-      const runResult = await generator.inTmpDir(
+      const runResult = await generator.doInDir(
         writePyProjectToml.bind(generator, existingBuildSystem)
       );
       (await pyProjectToml(runResult)).should.have
@@ -194,50 +176,11 @@ describe("python-poetry-vscode:poetry", () => {
   describe("input", () => {
     for (const inputTestData of generatorInput) {
       const { optionName, inputValue, outputPath } = inputTestData;
-      it(`should output input "${optionName}" at "${outputPath}"`, async () => {
+      it(`should output input "${optionName}" at "tool.poetry.${outputPath}"`, async () => {
         const expectedContent = inToolPoetry(outputPath, inputValue);
         const runResult = await withInput(generator, inputTestData);
         (await pyProjectToml(runResult)).should.containSubset(expectedContent);
       });
-    }
-  });
-
-  describe("precedence", () => {
-    for (const {
-      optionName,
-      outputPath,
-      inputValue,
-      outputValue,
-    } of generatorInput) {
-      it(`option "${optionName}" has precedence over existing content at "${outputPath}"`, async () => {
-        const existingContent = inToolPoetry(outputPath, outputValue);
-        const expectedContent = inToolPoetry(outputPath, inputValue);
-        const runResult = await generator
-          .inTmpDir(writePyProjectToml.bind(generator, existingContent))
-          .withOptions({ [optionName]: inputValue });
-        (await pyProjectToml(runResult)).should.containSubset(expectedContent);
-      });
-    }
-
-    for (const {
-      promptName,
-      outputPath,
-      inputValue,
-      outputValue,
-    } of generatorInput) {
-      it(
-        `existing content at "${outputPath}" has precedence over prompt ` +
-          promptName,
-        async () => {
-          const existingContent = inToolPoetry(outputPath, outputValue);
-          const runResult = await generator
-            .inTmpDir(writePyProjectToml.bind(generator, existingContent))
-            .withPrompts({ [promptName]: inputValue });
-          (await pyProjectToml(runResult)).should.containSubset(
-            existingContent
-          );
-        }
-      );
     }
   });
 
