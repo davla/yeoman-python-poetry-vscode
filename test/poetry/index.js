@@ -4,7 +4,10 @@ import yeomanTest from "yeoman-test";
 
 import "../../test-lib/register-chai-snapshots.js";
 import PoetryGenerator from "../../generators/poetry/index.js";
-import setupSystemAccessStubs from "../../test-lib/setup-system-access-stubs.js";
+import {
+  cleanupSystemAccessStubs,
+  setupSystemAccessStubs,
+} from "../../test-lib/system-access-stubs.js";
 import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
@@ -86,15 +89,11 @@ describe("python-poetry-vscode:poetry", () => {
 
     generator = yeomanTest
       .run(PoetryGenerator)
-      .withGenerators([
-        [
-          yeomanTest.createMockedGenerator(LicenseGenerator),
-          "generator-license",
-        ],
-      ])
       // Silence the annoying warnings
       .withAnswers(mandatoryAnswers);
   });
+
+  afterEach(cleanupSystemAccessStubs);
 
   describe("pyproject.toml", () => {
     it("should populate pyproject.toml", async () =>

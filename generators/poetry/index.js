@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-
 import TOML from "@iarna/toml";
 import _ from "lodash";
 
@@ -12,8 +10,6 @@ import {
   validateDescription,
   validatePoetryVersionRange,
 } from "./validate-input.js";
-
-const require = createRequire(import.meta.url);
 
 export default class PoetryGenerator extends SharedInputGenerator {
   static buildSystem = {
@@ -64,9 +60,9 @@ export default class PoetryGenerator extends SharedInputGenerator {
     super(args, opts, [
       sharedInputs.pythonPackageName,
       sharedInputs.pythonPackageVersion,
-      sharedInputs.license,
-      sharedInputs.repository,
       sharedInputs.author,
+      sharedInputs.repository,
+      sharedInputs.license,
       ...PoetryGenerator.inputFactories,
     ]);
   }
@@ -77,22 +73,6 @@ export default class PoetryGenerator extends SharedInputGenerator {
 
   prompting() {
     return super.prompting();
-  }
-
-  async default() {
-    const { author, repository, license } = await this.getInputValues(
-      "author",
-      "repository",
-      "license"
-    );
-    const [name, email] = author[0].match(/(.*) <(.*)>$/).slice(1);
-
-    this.composeWith(require.resolve("generator-license"), {
-      name,
-      email,
-      website: repository,
-      license,
-    });
   }
 
   async writing() {

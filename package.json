@@ -42,6 +42,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-unicorn": "^45.0.2",
+    "fast-glob": "^3.2.12",
     "husky": "^8.0.2",
     "lint-staged": "^13.1.0",
     "mocha": "^10.2.0",
