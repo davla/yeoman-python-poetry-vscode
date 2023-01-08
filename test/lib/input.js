@@ -2,10 +2,12 @@ import "chai/register-should.js";
 import chai from "chai";
 import chaiSubset from "chai-subset";
 import sinon from "sinon";
+import sinonChai from "sinon-chai";
 
 import { Input, InvalidInputValueError } from "../../lib/input.js";
 
 chai.use(chaiSubset);
+chai.use(sinonChai);
 
 describe("Input", () => {
   describe("asOption", () => {
@@ -136,99 +138,88 @@ describe("Input", () => {
 
   describe("setValue", () => {
     it("should apply transform", async () => {
-      const transform = sinon.expectation.create();
-      transform.once().withArgs(22).returns("this is a robbery");
+      const transform = sinon.stub().withArgs(22).returns("this is a robbery");
       const input = new Input({}, { transform });
 
       input.setValue(22);
 
       (await input.getValue()).should.equal("this is a robbery");
-      transform.verify();
+      transform.should.have.been.calledOnceWith(22);
     });
 
     it("should set the new value if it's valid", async () => {
-      const validate = sinon.expectation.create();
-      validate.once().withArgs(8).returns(true);
+      const validate = sinon.stub().withArgs(8).returns(true);
       const input = new Input({}, { validate });
 
       input.setValue(8);
 
       (await input.getValue()).should.equal(8);
-      validate.verify();
+      validate.should.have.been.calledOnceWith(8);
     });
 
     it("shouldn't set the new value if it's not valid", () => {
-      const validate = sinon.expectation.create();
-      validate.once().withArgs(92).returns("I don't like it");
+      const validate = sinon.stub().withArgs(92).returns("I don't like it");
       const input = new Input({ shared: { name: "yaha" } }, { validate });
 
       (() => input.setValue(92)).should
         .throw(InvalidInputValueError, /I don't like it/)
         .and.include({ input, value: 92, reason: "I don't like it" });
 
-      validate.verify();
+      validate.should.have.been.calledOnceWith(92);
     });
 
     it("should validate the value before transformation", () => {
-      const validate = sinon.expectation.create();
-      validate.once().withArgs("Doublade").returns(true);
-
+      const validate = sinon.stub().withArgs("Doublade").returns(true);
       const transform = sinon.stub().returns("Aegislash");
 
       const input = new Input({}, { validate, transform });
 
       input.setValue("Doublade");
 
-      validate.verify();
+      validate.should.have.been.calledOnceWith("Doublade");
     });
   });
 
   describe("initValue", () => {
     it(`should't use the "retrieve" value function if value is set`, async () => {
-      const retrieve = sinon.expectation.create();
-      retrieve.never();
+      const retrieve = sinon.spy();
       const input = new Input({}, { retrieve });
       input.setValue(false);
 
       await input.initValue();
 
       (await input.getValue()).should.equal(false);
-      retrieve.verify();
+      retrieve.should.not.have.been.called;
     });
 
     it('should use the "retrieve" value function if value is not set', async () => {
-      // TODO: use spy?
-      const retrieve = sinon.expectation.create();
-      retrieve.once().resolves("Buizel");
+      const retrieve = sinon.stub().resolves("Buizel");
       const input = new Input({}, { retrieve });
 
       await input.initValue();
 
       (await input.getValue()).should.equal("Buizel");
-      retrieve.verify();
+      retrieve.should.have.been.calledOnce;
     });
   });
 
   describe("getValue", () => {
     it('should return the set value and not call the "retrieve" value function', async () => {
-      const retrieve = sinon.expectation.create();
-      retrieve.never();
+      const retrieve = sinon.spy();
       const input = new Input({}, { retrieve });
 
       input.setValue(false);
 
       (await input.getValue()).should.equal(false);
-      retrieve.verify();
+      retrieve.should.have.not.been.called;
     });
 
     it('should use the "retrieve" value function if the value is not set', async () => {
-      // TODO: use spy?
-      const retrieve = sinon.expectation.create();
-      retrieve.once().resolves("Pawmo");
+      const retrieve = sinon.stub().resolves("Pawmo");
       const input = new Input({}, { retrieve });
 
       (await input.getValue()).should.equal("Pawmo");
-      retrieve.verify();
+      retrieve.should.have.been.calledOnce;
     });
   });
 
