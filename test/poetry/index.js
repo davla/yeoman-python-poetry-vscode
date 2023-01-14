@@ -1,23 +1,12 @@
-import "chai/register-should.js";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import chaiSubset from "chai-subset";
 import LicenseGenerator from "generator-license";
 import _ from "lodash";
-import { jestSnapshotPlugin as chaiSnapshot } from "mocha-chai-jest-snapshot";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import Generator from "yeoman-generator";
 import yeomanTest from "yeoman-test";
 
+import "../../test-lib/register-chai-snapshots.js";
 import PoetryGenerator from "../../generators/poetry/index.js";
 import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
-
-chai.use(chaiAsPromised);
-chai.use(chaiSnapshot());
-chai.use(chaiSubset);
-chai.use(sinonChai);
 
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },

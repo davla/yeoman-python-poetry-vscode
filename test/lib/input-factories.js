@@ -1,14 +1,7 @@
-import "chai/register-should.js";
-import chai from "chai";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
-
 import {
   InputFactory,
   PyProjectTomlInputFactory,
 } from "../../lib/input-factories.js";
-
-chai.use(sinonChai);
 
 describe("InputFactory", () => {
   it("forwards constructor arguments to created inputs", () => {

@@ -1,14 +1,11 @@
 import path from "node:path";
 
-import chai from "chai";
-import { jestSnapshotPlugin as chaiSnapshot } from "mocha-chai-jest-snapshot";
 import yeomanTest from "yeoman-test";
 
+import "../../test-lib/register-chai-snapshots.js";
 import PythonPackageGenerator from "../../generators/python-package/index.js";
 import { readFileInCwd } from "../../test-lib/file-system.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
-
-chai.use(chaiSnapshot());
 
 const generatorInput = [
   {

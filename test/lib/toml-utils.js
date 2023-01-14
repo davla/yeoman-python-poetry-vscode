@@ -1,14 +1,7 @@
-import chai from "chai";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
-
 import {
   readPyProjectToml,
   toolPoetryPathReader,
 } from "../../lib/toml-utils.js";
-
-chai.use(sinonChai);
-const should = chai.should();
 
 describe("toml-utils", () => {
   beforeEach(function () {

@@ -85,7 +85,10 @@
     "checkLeaks": true,
     "failZero": true,
     "parallel": true,
-    "recursive": true
+    "recursive": true,
+    "require": [
+      "./test-lib/global-setup.js"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -97,6 +100,10 @@
       "es6": true,
       "mocha": true,
       "node": true
+    },
+    "globals": {
+      "sinon": "readonly",
+      "should": "readonly"
     },
     "rules": {
       "import/default": "error",

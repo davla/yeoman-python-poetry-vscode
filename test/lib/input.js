@@ -1,13 +1,4 @@
-import "chai/register-should.js";
-import chai from "chai";
-import chaiSubset from "chai-subset";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
-
 import { Input, InvalidInputValueError } from "../../lib/input.js";
-
-chai.use(chaiSubset);
-chai.use(sinonChai);
 
 describe("Input", () => {
   describe("asOption", () => {

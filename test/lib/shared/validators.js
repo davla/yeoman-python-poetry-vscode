@@ -1,4 +1,3 @@
-import "chai/register-should.js";
 import LicenseGenerator from "generator-license";
 
 import {
