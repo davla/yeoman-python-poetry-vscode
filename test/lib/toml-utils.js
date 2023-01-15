@@ -1,12 +1,7 @@
-import chai from "chai";
-import sinon from "sinon";
-
 import {
   readPyProjectToml,
   toolPoetryPathReader,
 } from "../../lib/toml-utils.js";
-
-const should = chai.should();
 
 describe("toml-utils", () => {
   beforeEach(function () {
@@ -21,7 +16,9 @@ describe("toml-utils", () => {
   describe("readPyProjectToml", () => {
     it("reads pyproject.toml in the generator destination path", function () {
       readPyProjectToml.call(this.generator);
-      this.generator.destinationPath.calledOnceWith("pyproject.toml");
+      this.generator.destinationPath.should.have.been.calledOnceWith(
+        "pyproject.toml"
+      );
     });
 
     it("returns pyproject.toml content", function () {

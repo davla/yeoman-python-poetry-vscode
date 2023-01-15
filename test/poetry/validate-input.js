@@ -1,5 +1,3 @@
-import "chai/register-should.js";
-
 import {
   validateAuthor,
   validateDescription,

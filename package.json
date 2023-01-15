@@ -27,6 +27,7 @@
     "@types/mocha": "^10.0.1",
     "@types/semver": "^7.3.13",
     "@types/sinon": "^10.0.13",
+    "@types/sinon-chai": "^3.2.9",
     "@types/yeoman-generator": "^5.2.11",
     "@types/yeoman-test": "^4.0.3",
     "chai": "^4.3.7",
@@ -47,6 +48,7 @@
     "mocha-chai-jest-snapshot": "^1.1.4",
     "prettier": "^2.8.1",
     "sinon": "^15.0.1",
+    "sinon-chai": "^3.7.0",
     "yeoman-test": "^7.1.0"
   },
   "engines": {
@@ -83,7 +85,10 @@
     "checkLeaks": true,
     "failZero": true,
     "parallel": true,
-    "recursive": true
+    "recursive": true,
+    "require": [
+      "./test-lib/global-setup.js"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -95,6 +100,10 @@
       "es6": true,
       "mocha": true,
       "node": true
+    },
+    "globals": {
+      "sinon": "readonly",
+      "should": "readonly"
     },
     "rules": {
       "import/default": "error",

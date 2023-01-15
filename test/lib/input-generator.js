@@ -1,14 +1,9 @@
-import "chai/register-should.js";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 import yeomanTest from "yeoman-test";
 
 import { InputFactory } from "../../lib/input-factories.js";
 import InputGenerator from "../../lib/input-generator.js";
 import { fileName } from "../../lib/paths.js";
 import { readFileInCwd } from "../../test-lib/file-system.js";
-
-chai.use(chaiAsPromised);
 
 export default class JsonInputGenerator extends InputGenerator {
   static inputFactories = [

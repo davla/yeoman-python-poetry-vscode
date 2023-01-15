@@ -1,6 +1,3 @@
-import "chai/register-should.js";
-import sinon from "sinon";
-
 import {
   InputFactory,
   PyProjectTomlInputFactory,
@@ -32,7 +29,7 @@ describe("InputFactory", () => {
     factory.create(generator);
 
     for (const valueFunction of Object.values(valueFunctions)) {
-      valueFunction.bind.calledOnceWith(generator).should.be.true;
+      valueFunction.bind.should.have.been.calledOnceWith(generator);
     }
   });
 });
