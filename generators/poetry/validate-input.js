@@ -35,12 +35,3 @@ export function validatePoetryVersionRange(range) {
 
   return true;
 }
-
-export function validateUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return "Invalid URL";
-  }
-}

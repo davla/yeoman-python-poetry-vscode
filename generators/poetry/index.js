@@ -1,7 +1,6 @@
 import { createRequire } from "node:module";
 
 import TOML from "@iarna/toml";
-import giturl from "giturl";
 import _ from "lodash";
 
 import { PyProjectTomlInputFactory } from "../../lib/input-factories.js";
@@ -82,25 +81,6 @@ export default class PoetryGenerator extends SharedInputGenerator {
         validate: validatePoetryVersionRange,
       },
     }),
-    new PyProjectTomlInputFactory({
-      name: "repository",
-      ioConfig: {
-        option: {
-          desc: "The URL of the project repository",
-          type: String,
-        },
-        prompt: {
-          message: "Project repository URL",
-          type: "input",
-        },
-      },
-      valueFunctions: {
-        default() {
-          return this._makeRepositoryUrl();
-        },
-        validate: validateUrl,
-      },
-    }),
   ];
 
   constructor(args, opts) {
@@ -108,6 +88,7 @@ export default class PoetryGenerator extends SharedInputGenerator {
       sharedInputs.pythonPackageName,
       sharedInputs.pythonPackageVersion,
       sharedInputs.license,
+      sharedInputs.repository,
       ...PoetryGenerator.inputFactories,
     ]);
   }
@@ -170,11 +151,6 @@ export default class PoetryGenerator extends SharedInputGenerator {
     }
 
     return `${userName} <${email}>`;
-  }
-
-  async _makeRepositoryUrl() {
-    const url = await this._queryGitOriginUrl();
-    return url === undefined ? null : giturl.parse(url);
   }
 
   async _queryCurrentPythonVersion() {

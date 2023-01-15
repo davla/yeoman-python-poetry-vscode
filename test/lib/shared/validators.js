@@ -5,6 +5,7 @@ import {
   validateLicense,
   validatePythonPackageName,
   validatePythonPackageVersion,
+  validateUrl,
 } from "../../../lib/shared/validators.js";
 
 describe("Shared validators", () => {
@@ -65,5 +66,23 @@ describe("Shared validators", () => {
 
     it("Should not report versions that comply to PEP 440 and semantic versioning", () =>
       validatePythonPackageVersion("1.7.0").should.be.true);
+  });
+
+  describe("URL", () => {
+    it("Should report non-URL strings", () =>
+      validateUrl("not-an-url").should.include("Invalid URL"));
+
+    it("Should report SSH URLs", () =>
+      validateUrl("git@github.com:heihachi/mishima.git").should.include(
+        "Invalid URL"
+      ));
+
+    [
+      { protocol: "http", url: "http://github.com/heihachi/mishima" },
+      { protocol: "https", url: "https://github.com/heihachi/mishima" },
+    ].forEach(({ protocol, url }) =>
+      it(`Should not report valid ${protocol} addresses`, () =>
+        validateUrl(url).should.be.true)
+    );
   });
 });

@@ -194,26 +194,6 @@ describe("python-poetry-vscode:poetry", () => {
         tool: { poetry: { dependencies: { python: "^3.10.2" } } },
       });
     });
-
-    [
-      { protocol: "https", url: "https://github.com/hwoarang/https_package" },
-      { protocol: "ssh", url: "git@github.com:hwoarang/https_package.git" },
-    ].forEach(({ protocol, url }) =>
-      it(`queries git config for the default project url (${protocol})`, async () => {
-        queryGitOriginUrl.resolves(url);
-        const runResult = await generator;
-
-        queryGitOriginUrl.should.have.been.calledOnce;
-
-        (await pyProjectToml(runResult)).should.containSubset({
-          tool: {
-            poetry: {
-              repository: "https://github.com/hwoarang/https_package",
-            },
-          },
-        });
-      })
-    );
   });
 
   describe("install", () => {
