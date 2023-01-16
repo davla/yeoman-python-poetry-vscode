@@ -2,6 +2,7 @@ import LicenseGenerator from "generator-license";
 
 import {
   validPep440PrereleaseTags,
+  validateAuthor,
   validateLicense,
   validatePythonPackageName,
   validatePythonPackageVersion,
@@ -9,6 +10,25 @@ import {
 } from "../../../lib/shared/validators.js";
 
 describe("Shared validators", () => {
+  describe("Author", () => {
+    [
+      { reason: "different format", authorString: "not-an-author-string" },
+      { reason: "empty name", authorString: "<valid@email.com>" },
+      { reason: "empty email", authorString: "Yoshimitsu <>" },
+    ].forEach(({ reason, authorString }) =>
+      it(`Should report author strings with ${reason}`, () =>
+        validateAuthor(authorString).should.include("Invalid author string"))
+    );
+
+    it("Should report invalid emails", () =>
+      validateAuthor("Yoshimitsu <not@an-email#for%sure>").should.include(
+        "Invalid email"
+      ));
+
+    it("Should not report valid author strings", () =>
+      validateAuthor("Yoshimitsu <yoshimitsu@tekken.jp>").should.be.true);
+  });
+
   describe("License", () => {
     it("Should report unsupported licenses", () =>
       validateLicense("OFL-1.1").should.include("not supported"));

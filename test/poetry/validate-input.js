@@ -1,29 +1,9 @@
 import {
-  validateAuthor,
   validateDescription,
   validatePoetryVersionRange,
 } from "../../generators/poetry/validate-input.js";
 
 describe("Poetry input validation", () => {
-  describe("Author", () => {
-    [
-      { reason: "different format", authorString: "not-an-author-string" },
-      { reason: "empty name", authorString: "<valid@email.com>" },
-      { reason: "empty email", authorString: "Yoshimitsu <>" },
-    ].forEach(({ reason, authorString }) =>
-      it(`Should report author strings with ${reason}`, () =>
-        validateAuthor(authorString).should.include("Invalid author string"))
-    );
-
-    it("Should report invalid emails", () =>
-      validateAuthor("Yoshimitsu <not@an-email#for%sure>").should.include(
-        "Invalid email"
-      ));
-
-    it("Should not report valid author strings", () =>
-      validateAuthor("Yoshimitsu <yoshimitsu@tekken.jp>").should.be.true);
-  });
-
   describe("Description", () => {
     [
       { testText: "empty", description: "" },

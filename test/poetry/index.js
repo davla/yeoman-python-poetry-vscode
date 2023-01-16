@@ -168,17 +168,6 @@ describe("python-poetry-vscode:poetry", () => {
   });
 
   describe("dynamic default values", () => {
-    it("queries git config for the default author", async () => {
-      const runResult = await generator;
-
-      stubs.userGitEmail.should.have.been.calledOnce;
-      stubs.userGitName.should.have.been.calledOnce;
-
-      (await pyProjectToml(runResult)).should.containSubset({
-        tool: { poetry: { authors: ["Jin Kazama <jin.kazama@tekken.jp>"] } },
-      });
-    });
-
     it("queries current python version for default python", async () => {
       const runResult = await generator;
 

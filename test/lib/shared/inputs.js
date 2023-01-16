@@ -32,4 +32,41 @@ describe("Shared inputs", () => {
       this.generator._queryGitOriginUrl.should.have.been.calledOnce;
     });
   });
+
+  describe("author", () => {
+    beforeEach(function () {
+      this.generator = {
+        user: {
+          git: {
+            email: sinon.stub().returns("jin.kazama@tekken.jp"),
+            name: sinon.stub().returns("Jin Kazama"),
+          },
+        },
+      };
+      this.input = sharedInputs.author.create(this.generator);
+    });
+
+    it("defaults to query git config", async function () {
+      this.generator.user.git.email.returns("jin.kazama@tekken.jp");
+      this.generator.user.git.name.returns("Jin Kazama");
+
+      const promptDefault = await this.input.asPrompt().default();
+
+      promptDefault.should.equal("Jin Kazama <jin.kazama@tekken.jp>");
+      this.generator.user.git.email.should.have.been.calledOnce;
+      this.generator.user.git.name.should.have.been.calledOnce;
+    });
+
+    for (const method of ["email", "name"]) {
+      it(`defaults to null on undefined git config ${method}`, async function () {
+        this.generator.user.git[method].returns(undefined);
+
+        const promptDefault = await this.input.asPrompt().default();
+
+        should.equal(promptDefault, null);
+        this.generator.user.git.email.callCount.should.be.at.most(1);
+        this.generator.user.git.name.callCount.should.be.at.most(1);
+      });
+    }
+  });
 });

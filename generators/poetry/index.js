@@ -9,7 +9,6 @@ import sharedInputs from "../../lib/shared/inputs.js";
 import { pyProjectTomlPath, readPyProjectToml } from "../../lib/toml-utils.js";
 
 import {
-  validateAuthor,
   validateDescription,
   validatePoetryVersionRange,
 } from "./validate-input.js";
@@ -40,28 +39,6 @@ export default class PoetryGenerator extends SharedInputGenerator {
       valueFunctions: { validate: validateDescription },
     }),
     new PyProjectTomlInputFactory({
-      name: "author",
-      toolPoetryPath: "authors",
-      ioConfig: {
-        option: {
-          desc: "Name and email of the Python package author.",
-          type: String,
-        },
-        prompt: {
-          name: "author",
-          message: "Python package author (name <email>)",
-          type: "input",
-        },
-      },
-      valueFunctions: {
-        default() {
-          return this._makeAuthor();
-        },
-        transform: (author) => [author],
-        validate: validateAuthor,
-      },
-    }),
-    new PyProjectTomlInputFactory({
       name: "python",
       toolPoetryPath: "dependencies.python",
       ioConfig: {
@@ -89,6 +66,7 @@ export default class PoetryGenerator extends SharedInputGenerator {
       sharedInputs.pythonPackageVersion,
       sharedInputs.license,
       sharedInputs.repository,
+      sharedInputs.author,
       ...PoetryGenerator.inputFactories,
     ]);
   }
@@ -140,17 +118,6 @@ export default class PoetryGenerator extends SharedInputGenerator {
       this.inputs.map((input) => input.getValue())
     );
     return _.zipObjectDeep(inputPaths, inputValues);
-  }
-
-  _makeAuthor() {
-    const userName = this.user.git.name();
-    const email = this.user.git.email();
-
-    if (userName === undefined || email === undefined) {
-      return null;
-    }
-
-    return `${userName} <${email}>`;
   }
 
   async _queryCurrentPythonVersion() {
