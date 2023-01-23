@@ -1,10 +1,10 @@
 import LicenseGenerator from "generator-license";
 import _ from "lodash";
-import Generator from "yeoman-generator";
 import yeomanTest from "yeoman-test";
 
 import "../../test-lib/register-chai-snapshots.js";
 import PoetryGenerator from "../../generators/poetry/index.js";
+import setupSystemAccessStubs from "../../test-lib/setup-system-access-stubs.js";
 import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
@@ -71,26 +71,18 @@ const mandatoryAnswers = {
 
 describe("python-poetry-vscode:poetry", () => {
   let generator;
-  let queryGitOriginUrl;
-  let spawnCommand;
-  let userGitEmail;
-  let userGitName;
+  let stubs;
 
   beforeEach(() => {
-    queryGitOriginUrl = sinon
-      .stub()
-      .resolves("https://github.com/eddy-gordo/git_package");
-    spawnCommand = sinon
-      .stub()
+    stubs = setupSystemAccessStubs();
+    stubs.queryGitOriginUrl.resolves(
+      "https://github.com/eddy-gordo/git_package"
+    );
+    stubs.spawnCommand
       .withArgs("python", ["--version"], { stdio: "pipe" })
       .resolves({ stdout: "Python 3.10.2" });
-    userGitName = sinon.stub().returns("Jin Kazama");
-    userGitEmail = sinon.stub().returns("jin.kazama@tekken.jp");
-
-    Generator.prototype.user.git.email = userGitEmail;
-    Generator.prototype.user.git.name = userGitName;
-    PoetryGenerator.prototype._queryGitOriginUrl = queryGitOriginUrl;
-    Generator.prototype.spawnCommand = spawnCommand;
+    stubs.userGitEmail.returns("jin.kazama@tekken.jp");
+    stubs.userGitName.returns("Jin Kazama");
 
     generator = yeomanTest
       .run(PoetryGenerator)
@@ -179,8 +171,8 @@ describe("python-poetry-vscode:poetry", () => {
     it("queries git config for the default author", async () => {
       const runResult = await generator;
 
-      userGitEmail.should.have.been.calledOnce;
-      userGitName.should.have.been.calledOnce;
+      stubs.userGitEmail.should.have.been.calledOnce;
+      stubs.userGitName.should.have.been.calledOnce;
 
       (await pyProjectToml(runResult)).should.containSubset({
         tool: { poetry: { authors: ["Jin Kazama <jin.kazama@tekken.jp>"] } },
@@ -190,9 +182,13 @@ describe("python-poetry-vscode:poetry", () => {
     it("queries current python version for default python", async () => {
       const runResult = await generator;
 
-      spawnCommand.should.have.been.calledOnceWith("python", ["--version"], {
-        stdio: "pipe",
-      });
+      stubs.spawnCommand.should.have.been.calledOnceWith(
+        "python",
+        ["--version"],
+        {
+          stdio: "pipe",
+        }
+      );
 
       (await pyProjectToml(runResult)).should.containSubset({
         tool: { poetry: { dependencies: { python: "^3.10.2" } } },
@@ -223,7 +219,7 @@ describe("python-poetry-vscode:poetry", () => {
   describe("install", () => {
     it("doesn't run poetry install", async () => {
       await generator;
-      spawnCommand.should.not.have.been.calledWith("poetry", ["install"]);
+      stubs.spawnCommand.should.not.have.been.calledWith("poetry", ["install"]);
     });
   });
 });

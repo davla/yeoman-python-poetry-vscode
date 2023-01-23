@@ -3,10 +3,9 @@ import { createRequire } from "node:module";
 import TOML from "@iarna/toml";
 import giturl from "giturl";
 import _ from "lodash";
-import gitOriginUrl from "remote-origin-url";
 
 import { PyProjectTomlInputFactory } from "../../lib/input-factories.js";
-import InputGenerator from "../../lib/input-generator.js";
+import SharedInputGenerator from "../../lib/shared/input-generator.js";
 import sharedInputs from "../../lib/shared/inputs.js";
 import { pyProjectTomlPath, readPyProjectToml } from "../../lib/toml-utils.js";
 
@@ -14,12 +13,11 @@ import {
   validateAuthor,
   validateDescription,
   validatePoetryVersionRange,
-  validateUrl,
 } from "./validate-input.js";
 
 const require = createRequire(import.meta.url);
 
-export default class PoetryGenerator extends InputGenerator {
+export default class PoetryGenerator extends SharedInputGenerator {
   static buildSystem = {
     "build-system": {
       requires: ["poetry-core"],
@@ -184,10 +182,6 @@ export default class PoetryGenerator extends InputGenerator {
       stdio: "pipe",
     });
     return stdout.split(" ")[1];
-  }
-
-  _queryGitOriginUrl() {
-    return gitOriginUrl();
   }
 
   _writeToml(filePath, content = {}) {
