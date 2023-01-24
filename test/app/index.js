@@ -7,6 +7,7 @@ import "../../test-lib/register-chai-snapshots.js";
 import PythonPoetryVSCodeGenerator from "../../generators/app/index.js";
 import PoetryGenerator from "../../generators/poetry/index.js";
 import PythonPackageGenerator from "../../generators/python-package/index.js";
+import VSCodeGenerator from "../../generators/vscode/index.js";
 import { readCwd } from "../../test-lib/file-system.js";
 import {
   cleanupSystemAccessStubs,
@@ -18,15 +19,15 @@ const require = createRequire(import.meta.url);
 
 describe("python-poetry-vscode", () => {
   beforeEach(function () {
-    const stubs = setupSystemAccessStubs();
-    stubs.queryGitOriginUrl.resolves(
+    this.stubs = setupSystemAccessStubs();
+    this.stubs.queryGitOriginUrl.resolves(
       "https://github.com/eddy-gordo/git_package"
     );
-    stubs.spawnCommand
+    this.stubs.spawnCommand
       .withArgs("python", ["--version"], { stdio: "pipe" })
       .resolves({ stdout: "Python 3.10.2" });
-    stubs.userGitEmail.returns("jin.kazama@tekken.jp");
-    stubs.userGitName.returns("Jin Kazama");
+    this.stubs.userGitEmail.returns("jin.kazama@tekken.jp");
+    this.stubs.userGitName.returns("Jin Kazama");
 
     this.generator = yeomanTest.run(PythonPoetryVSCodeGenerator).withAnswers({
       name: "mandatory_package",
@@ -122,6 +123,23 @@ describe("python-poetry-vscode", () => {
           "package-version": "0.5.3",
         }
       );
+    });
+
+    it('should call "python-poetry-vscode:vscode"', async function () {
+      await this.generator;
+      this.composeWith.should.have.been.calledWith({
+        Generator: VSCodeGenerator,
+        path: require.resolve("../../generators/vscode/index.js"),
+      });
+    });
+  });
+
+  describe("install", () => {
+    it("runs poetry install exactly once", async function () {
+      await this.generator;
+      this.stubs.spawnCommand.should.have.been.calledWith("poetry", [
+        "install",
+      ]);
     });
   });
 });

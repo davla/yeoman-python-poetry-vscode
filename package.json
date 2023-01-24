@@ -85,7 +85,7 @@
   "mocha": {
     "checkLeaks": true,
     "failZero": true,
-    "parallel": true,
+    "parallel": false,
     "recursive": true,
     "require": [
       "./test-lib/global-setup.js"
