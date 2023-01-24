@@ -1,40 +1,71 @@
-'use strict';
-const Generator = require('yeoman-generator');
-const chalk = require('chalk');
-const yosay = require('yosay');
+import { createRequire } from "node:module";
 
-module.exports = class extends Generator {
-  prompting() {
-    // Have Yeoman greet the user.
+import chalk from "chalk";
+import yosay from "yosay";
+
+import SharedInputGenerator from "../../lib/shared/input-generator.js";
+import sharedInputs from "../../lib/shared/inputs.js";
+import PoetryGenerator from "../poetry/index.js";
+import PythonPackageGenerator from "../python-package/index.js";
+
+const require = createRequire(import.meta.url);
+
+export default class PythonPoetryVSCodeGenerator extends SharedInputGenerator {
+  constructor(args, opts) {
+    super(args, opts, [
+      sharedInputs.pythonPackageName,
+      sharedInputs.pythonPackageVersion,
+      sharedInputs.author,
+      sharedInputs.repository,
+      sharedInputs.license,
+    ]);
+  }
+
+  initializing() {
     this.log(
-      yosay(
-        `Welcome to the dazzling ${chalk.red('generator-python-poetry-vscode')} generator!`
-      )
+      yosay(`Welcome to the ${chalk.red("python-poetry-vscode")} generator!`)
     );
 
-    const prompts = [
-      {
-        type: 'confirm',
-        name: 'someAnswer',
-        message: 'Would you like to enable this option?',
-        default: true
-      }
-    ];
+    return super.initializing();
+  }
 
-    return this.prompt(prompts).then(props => {
-      // To access props later use this.props.someAnswer;
-      this.props = props;
+  prompting() {
+    return super.prompting();
+  }
+
+  async default() {
+    const { repository, license } = await this.getInputValues(
+      "repository",
+      "license"
+    );
+    const [name, email] = await this._getNameAndEmail();
+    this.composeWith(require.resolve("generator-license"), {
+      name,
+      email,
+      website: repository,
+      license,
     });
+
+    await this._compose(PoetryGenerator, "../poetry/index.js", [
+      "name",
+      "version",
+      "license",
+      "author",
+      "repository",
+    ]);
+    await this._compose(PythonPackageGenerator, "../python-package/index.js", [
+      "name",
+      "version",
+    ]);
   }
 
-  writing() {
-    this.fs.copy(
-      this.templatePath('dummyfile.txt'),
-      this.destinationPath('dummyfile.txt')
+  async _compose(generatorClass, generatorPath, optionNames) {
+    this.composeWith(
+      {
+        Generator: generatorClass,
+        path: require.resolve(generatorPath),
+      },
+      await this.getOptionValues(...optionNames)
     );
   }
-
-  install() {
-    this.installDependencies();
-  }
-};
+}

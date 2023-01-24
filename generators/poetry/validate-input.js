@@ -1,18 +1,4 @@
-import { validate as validateEmail } from "email-validator";
 import semver from "semver";
-
-export function validateAuthor(authorString) {
-  const match = authorString.match(/^(.+)\s*<(.+)>/);
-  if (match === null) {
-    return "Invalid author string";
-  }
-
-  if (!validateEmail(match[2])) {
-    return "Invalid email";
-  }
-
-  return true;
-}
 
 export function validateDescription(description) {
   return (description ?? "") === ""
@@ -34,13 +20,4 @@ export function validatePoetryVersionRange(range) {
   }
 
   return true;
-}
-
-export function validateUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return "Invalid URL";
-  }
 }

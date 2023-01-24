@@ -1,25 +1,17 @@
-import { createRequire } from "node:module";
-
 import TOML from "@iarna/toml";
-import giturl from "giturl";
 import _ from "lodash";
-import gitOriginUrl from "remote-origin-url";
 
 import { PyProjectTomlInputFactory } from "../../lib/input-factories.js";
-import InputGenerator from "../../lib/input-generator.js";
+import SharedInputGenerator from "../../lib/shared/input-generator.js";
 import sharedInputs from "../../lib/shared/inputs.js";
 import { pyProjectTomlPath, readPyProjectToml } from "../../lib/toml-utils.js";
 
 import {
-  validateAuthor,
   validateDescription,
   validatePoetryVersionRange,
-  validateUrl,
 } from "./validate-input.js";
 
-const require = createRequire(import.meta.url);
-
-export default class PoetryGenerator extends InputGenerator {
+export default class PoetryGenerator extends SharedInputGenerator {
   static buildSystem = {
     "build-system": {
       requires: ["poetry-core"],
@@ -43,28 +35,6 @@ export default class PoetryGenerator extends InputGenerator {
       valueFunctions: { validate: validateDescription },
     }),
     new PyProjectTomlInputFactory({
-      name: "author",
-      toolPoetryPath: "authors",
-      ioConfig: {
-        option: {
-          desc: "Name and email of the Python package author.",
-          type: String,
-        },
-        prompt: {
-          name: "author",
-          message: "Python package author (name <email>)",
-          type: "input",
-        },
-      },
-      valueFunctions: {
-        default() {
-          return this._makeAuthor();
-        },
-        transform: (author) => [author],
-        validate: validateAuthor,
-      },
-    }),
-    new PyProjectTomlInputFactory({
       name: "python",
       toolPoetryPath: "dependencies.python",
       ioConfig: {
@@ -84,31 +54,14 @@ export default class PoetryGenerator extends InputGenerator {
         validate: validatePoetryVersionRange,
       },
     }),
-    new PyProjectTomlInputFactory({
-      name: "repository",
-      ioConfig: {
-        option: {
-          desc: "The URL of the project repository",
-          type: String,
-        },
-        prompt: {
-          message: "Project repository URL",
-          type: "input",
-        },
-      },
-      valueFunctions: {
-        default() {
-          return this._makeRepositoryUrl();
-        },
-        validate: validateUrl,
-      },
-    }),
   ];
 
   constructor(args, opts) {
     super(args, opts, [
       sharedInputs.pythonPackageName,
       sharedInputs.pythonPackageVersion,
+      sharedInputs.author,
+      sharedInputs.repository,
       sharedInputs.license,
       ...PoetryGenerator.inputFactories,
     ]);
@@ -120,22 +73,6 @@ export default class PoetryGenerator extends InputGenerator {
 
   prompting() {
     return super.prompting();
-  }
-
-  async default() {
-    const { author, repository, license } = await this.getInputValues(
-      "author",
-      "repository",
-      "license"
-    );
-    const [name, email] = author[0].match(/(.*) <(.*)>$/).slice(1);
-
-    this.composeWith(require.resolve("generator-license"), {
-      name,
-      email,
-      website: repository,
-      license,
-    });
   }
 
   async writing() {
@@ -163,31 +100,11 @@ export default class PoetryGenerator extends InputGenerator {
     return _.zipObjectDeep(inputPaths, inputValues);
   }
 
-  _makeAuthor() {
-    const userName = this.user.git.name();
-    const email = this.user.git.email();
-
-    if (userName === undefined || email === undefined) {
-      return null;
-    }
-
-    return `${userName} <${email}>`;
-  }
-
-  async _makeRepositoryUrl() {
-    const url = await this._queryGitOriginUrl();
-    return url === undefined ? null : giturl.parse(url);
-  }
-
   async _queryCurrentPythonVersion() {
     const { stdout } = await this.spawnCommand("python", ["--version"], {
       stdio: "pipe",
     });
     return stdout.split(" ")[1];
-  }
-
-  _queryGitOriginUrl() {
-    return gitOriginUrl();
   }
 
   _writeToml(filePath, content = {}) {

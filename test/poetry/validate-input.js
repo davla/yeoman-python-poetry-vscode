@@ -1,30 +1,9 @@
 import {
-  validateAuthor,
   validateDescription,
   validatePoetryVersionRange,
-  validateUrl,
 } from "../../generators/poetry/validate-input.js";
 
 describe("Poetry input validation", () => {
-  describe("Author", () => {
-    [
-      { reason: "different format", authorString: "not-an-author-string" },
-      { reason: "empty name", authorString: "<valid@email.com>" },
-      { reason: "empty email", authorString: "Yoshimitsu <>" },
-    ].forEach(({ reason, authorString }) =>
-      it(`Should report author strings with ${reason}`, () =>
-        validateAuthor(authorString).should.include("Invalid author string"))
-    );
-
-    it("Should report invalid emails", () =>
-      validateAuthor("Yoshimitsu <not@an-email#for%sure>").should.include(
-        "Invalid email"
-      ));
-
-    it("Should not report valid author strings", () =>
-      validateAuthor("Yoshimitsu <yoshimitsu@tekken.jp>").should.be.true);
-  });
-
   describe("Description", () => {
     [
       { testText: "empty", description: "" },
@@ -65,23 +44,5 @@ describe("Poetry input validation", () => {
       it(`Should not report inequality requirements with "${operator}"`, () =>
         validatePoetryVersionRange(`${operator}22.7`).should.be.true);
     }
-  });
-
-  describe("URL", () => {
-    it("Should report non-URL strings", () =>
-      validateUrl("not-an-url").should.include("Invalid URL"));
-
-    it("Should report SSH URLs", () =>
-      validateUrl("git@github.com:heihachi/mishima.git").should.include(
-        "Invalid URL"
-      ));
-
-    [
-      { protocol: "http", url: "http://github.com/heihachi/mishima" },
-      { protocol: "https", url: "https://github.com/heihachi/mishima" },
-    ].forEach(({ protocol, url }) =>
-      it(`Should not report valid ${protocol} addresses`, () =>
-        validateUrl(url).should.be.true)
-    );
   });
 });
