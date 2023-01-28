@@ -1,17 +1,19 @@
-import TOML from "@iarna/toml";
 import _ from "lodash";
 
+import BaseGenerator from "../../lib/base-generator.js";
 import { PyProjectTomlInputFactory } from "../../lib/input-factories.js";
-import SharedInputGenerator from "../../lib/shared/input-generator.js";
+import {
+  pyProjectTomlPath,
+  readPyProjectToml,
+} from "../../lib/pyproject-toml-utils.js";
 import sharedInputs from "../../lib/shared/inputs.js";
-import { pyProjectTomlPath, readPyProjectToml } from "../../lib/toml-utils.js";
 
 import {
   validateDescription,
   validatePoetryVersionRange,
 } from "./validate-input.js";
 
-export default class PoetryGenerator extends SharedInputGenerator {
+export default class PoetryGenerator extends BaseGenerator {
   static buildSystem = {
     "build-system": {
       requires: ["poetry-core"],
@@ -105,9 +107,5 @@ export default class PoetryGenerator extends SharedInputGenerator {
       stdio: "pipe",
     });
     return stdout.split(" ")[1];
-  }
-
-  _writeToml(filePath, content = {}) {
-    return this.fs.write(filePath, TOML.stringify(content));
   }
 }

@@ -3,14 +3,14 @@ import { createRequire } from "node:module";
 import chalk from "chalk";
 import yosay from "yosay";
 
-import SharedInputGenerator from "../../lib/shared/input-generator.js";
+import BaseGenerator from "../../lib/base-generator.js";
 import sharedInputs from "../../lib/shared/inputs.js";
 import PoetryGenerator from "../poetry/index.js";
 import PythonPackageGenerator from "../python-package/index.js";
 
 const require = createRequire(import.meta.url);
 
-export default class PythonPoetryVSCodeGenerator extends SharedInputGenerator {
+export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   constructor(args, opts) {
     super(args, opts, [
       sharedInputs.pythonPackageName,
