@@ -4,21 +4,21 @@ import yeomanTest from "yeoman-test";
 
 import "../../test-lib/register-chai-snapshots.js";
 import PoetryGenerator from "../../generators/poetry/index.js";
+import { readTomlInCwd, writeTomlInCwd } from "../../test-lib/file-system.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
 } from "../../test-lib/system-access-stubs.js";
-import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
 });
 
-const pyProjectToml = (runResult) => readToml(runResult, "pyproject.toml");
+const pyProjectToml = (runResult) => readTomlInCwd(runResult, "pyproject.toml");
 
 function writePyProjectToml(content, dir) {
-  return writeToml(dir, "pyproject.toml", content);
+  return writeTomlInCwd(dir, "pyproject.toml", content);
 }
 
 const generatorInput = [
@@ -100,7 +100,7 @@ describe("python-poetry-vscode:poetry", () => {
     it("creates the file in toml format", async function () {
       const runResult = await this.generator;
       runResult.assertFile("pyproject.toml");
-      await readToml(runResult, "pyproject.toml").should.be.fulfilled;
+      await readTomlInCwd(runResult, "pyproject.toml").should.be.fulfilled;
     });
 
     it("merges with existing content", async function () {
