@@ -695,8 +695,9 @@ Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
 ",
-  "mandatory_package/__init__.py": "__version__ = 3.18.0
-",
+  "mandatory_package/__init__.py": Object {
+    "__version__": "3.18.0",
+  },
   "pyproject.toml": Object {
     "build-system": Object {
       "build-backend": "poetry.core.masonry.api",

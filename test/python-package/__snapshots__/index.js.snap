@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`python-poetry-vscode:python-package sources should populate the pacakge __init__.py file 1`] = `
-"__version__ = 1.9.0
+"__version__ = \\"1.9.0\\"
 "
 `;
 
