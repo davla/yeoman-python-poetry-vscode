@@ -733,7 +733,7 @@ Public License instead of this License.  But first, please read
 
 
 def test_version():
-    assert __version__ == '3.18.0'
+    assert __version__ == \\"3.18.0\\"
 ",
 }
 `;

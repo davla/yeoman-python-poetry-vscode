@@ -12,6 +12,6 @@ exports[`python-poetry-vscode:python-package tests should populate the test file
 
 
 def test_version():
-    assert __version__ == '1.9.0'
+    assert __version__ == \\"1.9.0\\"
 "
 `;
