@@ -5,6 +5,7 @@ import yeomanTest from "yeoman-test";
 import "../../test-lib/register-chai-snapshots.js";
 import PythonPackageGenerator from "../../generators/python-package/index.js";
 import { readFileInCwd } from "../../test-lib/file-system.js";
+import restoreRunResult from "../../test-lib/generator-hooks.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
 const generatorInput = [
@@ -29,16 +30,18 @@ describe("python-poetry-vscode:python-package", () => {
   });
 
   describe("sources", () => {
-    it("should create __init__.py in a directory named after the package", async function () {
-      const runResult = await this.generator;
+    afterEach(restoreRunResult);
 
-      runResult.assertFile(path.join("package_name", "__init__.py"));
+    it("should create __init__.py in a directory named after the package", async function () {
+      this.runResult = await this.generator;
+
+      this.runResult.assertFile(path.join("package_name", "__init__.py"));
     });
 
     it("should populate the pacakge __init__.py file", async function () {
-      const runResult = await this.generator;
+      this.runResult = await this.generator;
       const fileContent = await readFileInCwd(
-        runResult,
+        this.runResult,
         path.join("package_name", "__init__.py")
       );
       fileContent.should.matchSnapshot();
@@ -46,31 +49,33 @@ describe("python-poetry-vscode:python-package", () => {
   });
 
   describe("tests", () => {
-    it("should create __init__.py in the tests directory", async function () {
-      const runResult = await this.generator;
+    afterEach(restoreRunResult);
 
-      runResult.assertFile(path.join("tests", "__init__.py"));
+    it("should create __init__.py in the tests directory", async function () {
+      this.runResult = await this.generator;
+
+      this.runResult.assertFile(path.join("tests", "__init__.py"));
     });
 
     it("should populate the test __init__.py file", async function () {
-      const runResult = await this.generator;
+      this.runResult = await this.generator;
       const fileContent = await readFileInCwd(
-        runResult,
+        this.runResult,
         path.join("tests", "__init__.py")
       );
       fileContent.should.matchSnapshot();
     });
 
     it("should create a tests file named after the package in the tests directory", async function () {
-      const runResult = await this.generator;
+      this.runResult = await this.generator;
 
-      runResult.assertFile(path.join("tests", "test_package_name.py"));
+      this.runResult.assertFile(path.join("tests", "test_package_name.py"));
     });
 
     it("should populate the test file", async function () {
-      const runResult = await this.generator;
+      this.runResult = await this.generator;
       const fileContent = await readFileInCwd(
-        runResult,
+        this.runResult,
         path.join("tests", "test_package_name.py")
       );
       fileContent.should.matchSnapshot();

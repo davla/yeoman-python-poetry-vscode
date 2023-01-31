@@ -10,6 +10,7 @@ import {
   readTomlInCwd,
   writeTomlInCwd,
 } from "../../test-lib/file-system.js";
+import restoreRunResult from "../../test-lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
@@ -32,18 +33,20 @@ describe("python-poetry-vscode:vscode", () => {
   afterEach(cleanupSystemAccessStubs);
 
   describe("vscode config", () => {
+    afterEach(restoreRunResult);
+
     for (const fileName of ["settings", "extensions"]) {
       const filePath = path.join(".vscode", `${fileName}.json`);
 
       it(`creates ${toPosixPath(filePath)} in JSON format`, async function () {
-        const runResult = await this.generator;
-        runResult.assertFile(filePath);
-        await readJsonInCwd(runResult, filePath).should.be.fulfilled;
+        this.runResult = await this.generator;
+        this.runResult.assertFile(filePath);
+        await readJsonInCwd(this.runResult, filePath).should.be.fulfilled;
       });
 
       it(`populates ${toPosixPath(filePath)}`, async function () {
-        const runResult = await this.generator;
-        (await readJsonInCwd(runResult, filePath)).should.matchSnapshot();
+        this.runResult = await this.generator;
+        (await readJsonInCwd(this.runResult, filePath)).should.matchSnapshot();
       });
     }
 
@@ -54,11 +57,11 @@ describe("python-poetry-vscode:vscode", () => {
           "editor.guides.indentation": true,
         },
       };
-      const runResult = await this.generator.doInDir(
+      this.runResult = await this.generator.doInDir(
         writeVsCodeConfig.bind(this.generator, "settings.json", content)
       );
       const fileInDst = path.join(".vscode", "settings.json");
-      (await readJsonInCwd(runResult, fileInDst)).should.containSubset({
+      (await readJsonInCwd(this.runResult, fileInDst)).should.containSubset({
         "python.linting.ignorePatterns": ["**/site-packages/**/*.py", ".venv"],
         "[python]": {
           "editor.defaultFormatter": "ms-python.black-formatter",
@@ -71,7 +74,7 @@ describe("python-poetry-vscode:vscode", () => {
       const existingContent = {
         recommendations: ["BriteSnow.vscode-toggle-quotes"],
       };
-      const runResult = await this.generator.doInDir(
+      this.runResult = await this.generator.doInDir(
         writeVsCodeConfig.bind(
           this.generator,
           "extensions.json",
@@ -79,7 +82,7 @@ describe("python-poetry-vscode:vscode", () => {
         )
       );
       const fileInDst = path.join(".vscode", "extensions.json");
-      (await readJsonInCwd(runResult, fileInDst)).should.containSubset({
+      (await readJsonInCwd(this.runResult, fileInDst)).should.containSubset({
         recommendations: [
           "ms-python.black-formatter",
           "BriteSnow.vscode-toggle-quotes",
@@ -89,18 +92,20 @@ describe("python-poetry-vscode:vscode", () => {
   });
 
   describe("poetry config", () => {
+    afterEach(restoreRunResult);
+
     for (const fileName of ["poetry", "pyproject"]) {
       const filePath = fileName + ".toml";
 
       it(`creates ${toPosixPath(filePath)} in TOML format`, async function () {
-        const runResult = await this.generator;
-        runResult.assertFile(filePath);
-        await readTomlInCwd(runResult, filePath).should.be.fulfilled;
+        this.runResult = await this.generator;
+        this.runResult.assertFile(filePath);
+        await readTomlInCwd(this.runResult, filePath).should.be.fulfilled;
       });
 
       it(`populates ${toPosixPath(filePath)}`, async function () {
-        const runResult = await this.generator;
-        (await readTomlInCwd(runResult, filePath)).should.matchSnapshot();
+        this.runResult = await this.generator;
+        (await readTomlInCwd(this.runResult, filePath)).should.matchSnapshot();
       });
     }
 
@@ -109,13 +114,15 @@ describe("python-poetry-vscode:vscode", () => {
         virtualenvs: { create: true },
         installer: { parallel: false },
       };
-      const runResult = await this.generator.doInDir((dstDir) =>
+      this.runResult = await this.generator.doInDir((dstDir) =>
         writeTomlInCwd(dstDir, "poetry.toml", existingContent)
       );
-      (await readTomlInCwd(runResult, "poetry.toml")).should.containSubset({
-        virtualenvs: { create: true, "in-project": true },
-        installer: { parallel: false },
-      });
+      (await readTomlInCwd(this.runResult, "poetry.toml")).should.containSubset(
+        {
+          virtualenvs: { create: true, "in-project": true },
+          installer: { parallel: false },
+        }
+      );
     });
 
     it("merges pyproject.toml with existing content", async function () {
@@ -127,10 +134,12 @@ describe("python-poetry-vscode:vscode", () => {
           },
         },
       };
-      const runResult = await this.generator.doInDir((dstDir) =>
+      this.runResult = await this.generator.doInDir((dstDir) =>
         writeTomlInCwd(dstDir, "pyproject.toml", existingContent)
       );
-      (await readTomlInCwd(runResult, "pyproject.toml")).should.containSubset({
+      (
+        await readTomlInCwd(this.runResult, "pyproject.toml")
+      ).should.containSubset({
         tool: {
           poetry: {
             dependencies: {
@@ -146,8 +155,10 @@ describe("python-poetry-vscode:vscode", () => {
   });
 
   describe("install", () => {
+    afterEach(restoreRunResult);
+
     it("doesn't run poetry install", async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.stubs.spawnCommand.should.not.have.been.calledWith("poetry", [
         "install",
       ]);

@@ -9,6 +9,7 @@ import PoetryGenerator from "../../generators/poetry/index.js";
 import PythonPackageGenerator from "../../generators/python-package/index.js";
 import VSCodeGenerator from "../../generators/vscode/index.js";
 import { readCwd } from "../../test-lib/file-system.js";
+import restoreRunResult from "../../test-lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
@@ -36,11 +37,14 @@ describe("python-poetry-vscode", () => {
     });
   });
 
-  afterEach(cleanupSystemAccessStubs);
+  afterEach(function () {
+    cleanupSystemAccessStubs();
+    restoreRunResult.call(this);
+  });
 
   it("should create the project scaffold files", async function () {
-    const runResult = await this.generator;
-    (await readCwd(runResult)).should.matchSnapshot();
+    this.runResult = await this.generator;
+    (await readCwd(this.runResult)).should.matchSnapshot();
   });
 
   describe("subgenerators", () => {
@@ -77,12 +81,13 @@ describe("python-poetry-vscode", () => {
         .returnsThis();
     });
 
-    afterEach(() => {
+    afterEach(function () {
       Generator.prototype.composeWith.restore();
+      restoreRunResult.call(this);
     });
 
     it('should call "generator-license"', async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith(
         require.resolve("generator-license"),
         {
@@ -95,7 +100,7 @@ describe("python-poetry-vscode", () => {
     });
 
     it('should call "python-poetry-vscode:poetry"', async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith(
         {
           Generator: PoetryGenerator,
@@ -112,7 +117,7 @@ describe("python-poetry-vscode", () => {
     });
 
     it('should call "python-poetry-vscode:python-package"', async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith(
         {
           Generator: PythonPackageGenerator,
@@ -126,7 +131,7 @@ describe("python-poetry-vscode", () => {
     });
 
     it('should call "python-poetry-vscode:vscode"', async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith({
         Generator: VSCodeGenerator,
         path: require.resolve("../../generators/vscode/index.js"),
@@ -135,8 +140,10 @@ describe("python-poetry-vscode", () => {
   });
 
   describe("install", () => {
+    afterEach(restoreRunResult);
+
     it("runs poetry install exactly once", async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.stubs.spawnCommand.should.have.been.calledWith("poetry", [
         "install",
       ]);
