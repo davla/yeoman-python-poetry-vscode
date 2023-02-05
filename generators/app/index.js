@@ -12,13 +12,7 @@ const require = createRequire(import.meta.url);
 
 export default class PythonPoetryVSCodeGenerator extends SharedInputGenerator {
   constructor(args, opts) {
-    super(args, opts, [
-      sharedInputs.pythonPackageName,
-      sharedInputs.pythonPackageVersion,
-      sharedInputs.author,
-      sharedInputs.repository,
-      sharedInputs.license,
-    ]);
+    super(args, opts, Object.values(sharedInputs));
   }
 
   initializing() {
