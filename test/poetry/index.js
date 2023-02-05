@@ -4,21 +4,22 @@ import yeomanTest from "yeoman-test";
 
 import "../../test-lib/register-chai-snapshots.js";
 import PoetryGenerator from "../../generators/poetry/index.js";
+import { readTomlInCwd, writeTomlInCwd } from "../../test-lib/file-system.js";
+import restoreRunResult from "../../test-lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
 } from "../../test-lib/system-access-stubs.js";
-import { readToml, writeToml } from "../../test-lib/toml.js";
 import { withInput } from "../../test-lib/yeoman-test-input.js";
 
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
 });
 
-const pyProjectToml = (runResult) => readToml(runResult, "pyproject.toml");
+const pyProjectToml = (runResult) => readTomlInCwd(runResult, "pyproject.toml");
 
 function writePyProjectToml(content, dir) {
-  return writeToml(dir, "pyproject.toml", content);
+  return writeTomlInCwd(dir, "pyproject.toml", content);
 }
 
 const generatorInput = [
@@ -93,18 +94,21 @@ describe("python-poetry-vscode:poetry", () => {
   afterEach(cleanupSystemAccessStubs);
 
   describe("pyproject.toml", () => {
+    afterEach(restoreRunResult);
+
     it("should populate pyproject.toml", async function () {
-      return (await pyProjectToml(await this.generator)).should.matchSnapshot();
+      this.runResult = await this.generator;
+      return (await pyProjectToml(this.runResult)).should.matchSnapshot();
     });
 
     it("creates the file in toml format", async function () {
-      const runResult = await this.generator;
-      runResult.assertFile("pyproject.toml");
-      await readToml(runResult, "pyproject.toml").should.be.fulfilled;
+      this.runResult = await this.generator;
+      this.runResult.assertFile("pyproject.toml");
+      await readTomlInCwd(this.runResult, "pyproject.toml").should.be.fulfilled;
     });
 
     it("merges with existing content", async function () {
-      const runResult = await this.generator
+      this.runResult = await this.generator
         .doInDir(
           writePyProjectToml.bind(this.generator, {
             tool: {
@@ -119,7 +123,7 @@ describe("python-poetry-vscode:poetry", () => {
           author: "Mokujin <mojukin@tekken.jp>",
           python: "^3.10.1",
         });
-      (await pyProjectToml(runResult)).should.containSubset({
+      (await pyProjectToml(this.runResult)).should.containSubset({
         tool: {
           poetry: {
             authors: ["Mokujin <mojukin@tekken.jp>", "Jack <jack@tekken.ru"],
@@ -130,7 +134,8 @@ describe("python-poetry-vscode:poetry", () => {
     });
 
     it('adds the "build-system" section', async function () {
-      return (await pyProjectToml(await this.generator)).should.containSubset(
+      this.runResult = await this.generator;
+      return (await pyProjectToml(this.runResult)).should.containSubset(
         PoetryGenerator.buildSystem
       );
     });
@@ -145,29 +150,35 @@ describe("python-poetry-vscode:poetry", () => {
           requires: ["setuptools", "wheel"],
         },
       };
-      const runResult = await this.generator.doInDir(
+      this.runResult = await this.generator.doInDir(
         writePyProjectToml.bind(this.generator, existingBuildSystem)
       );
-      (await pyProjectToml(runResult)).should.have
+      (await pyProjectToml(this.runResult)).should.have
         .property("build-system")
         .that.deep.equals(existingBuildSystem["build-system"]);
     });
   });
 
   describe("input", () => {
+    afterEach(restoreRunResult);
+
     for (const inputTestData of generatorInput) {
       const { optionName, inputValue, outputPath } = inputTestData;
       it(`should output input "${optionName}" at "tool.poetry.${outputPath}"`, async function () {
         const expectedContent = inToolPoetry(outputPath, inputValue);
-        const runResult = await withInput(this.generator, inputTestData);
-        (await pyProjectToml(runResult)).should.containSubset(expectedContent);
+        this.runResult = await withInput(this.generator, inputTestData);
+        (await pyProjectToml(this.runResult)).should.containSubset(
+          expectedContent
+        );
       });
     }
   });
 
   describe("dynamic default values", () => {
+    afterEach(restoreRunResult);
+
     it("queries current python version for default python", async function () {
-      const runResult = await this.generator;
+      this.runResult = await this.generator;
       this.stubs.spawnCommand.should.have.been.calledOnceWith(
         "python",
         ["--version"],
@@ -176,15 +187,17 @@ describe("python-poetry-vscode:poetry", () => {
         }
       );
 
-      (await pyProjectToml(runResult)).should.containSubset({
+      (await pyProjectToml(this.runResult)).should.containSubset({
         tool: { poetry: { dependencies: { python: "^3.10.2" } } },
       });
     });
   });
 
   describe("install", () => {
+    afterEach(restoreRunResult);
+
     it("doesn't run poetry install", async function () {
-      await this.generator;
+      this.runResult = await this.generator;
       this.stubs.spawnCommand.should.not.have.been.calledWith("poetry", [
         "install",
       ]);

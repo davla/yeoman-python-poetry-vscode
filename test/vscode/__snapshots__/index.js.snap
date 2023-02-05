@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`python-poetry-vscode:vscode poetry config populates poetry.toml 1`] = `
+Object {
+  "virtualenvs": Object {
+    "in-project": true,
+  },
+}
+`;
+
+exports[`python-poetry-vscode:vscode poetry config populates pyproject.toml 1`] = `
+Object {
+  "tool": Object {
+    "poetry": Object {
+      "dependencies": Object {
+        "black": "^22.12.0",
+        "isort": "^5.12.0",
+      },
+    },
+  },
+}
+`;
+
+exports[`python-poetry-vscode:vscode vscode config populates .vscode/extensions.json 1`] = `
+Object {
+  "recommendations": Array [
+    "bungcip.better-toml",
+    "editorconfig.editorconfig",
+    "ms-python.black-formatter",
+    "ms-python.isort",
+    "ms-python.python",
+  ],
+  "unwantedRecommendations": Array [],
+}
+`;
+
+exports[`python-poetry-vscode:vscode vscode config populates .vscode/settings.json 1`] = `
+Object {
+  "[python]": Object {
+    "editor.codeActionsOnSave": Object {
+      "source.organizeImports": true,
+    },
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.rulers": Array [
+      88,
+    ],
+  },
+  "black-formatter.importStrategy": "fromEnvironment",
+  "isort.args": Array [
+    "--profile",
+    "black",
+  ],
+  "isort.importStrategy": "fromEnvironment",
+  "python.formatting.provider": "none",
+  "python.linting.ignorePatterns": Array [
+    "**/site-packages/**/*.py",
+  ],
+}
+`;

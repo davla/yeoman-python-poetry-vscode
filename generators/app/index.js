@@ -3,23 +3,22 @@ import { createRequire } from "node:module";
 import chalk from "chalk";
 import yosay from "yosay";
 
-import SharedInputGenerator from "../../lib/shared/input-generator.js";
+import BaseGenerator from "../../lib/base-generator.js";
 import sharedInputs from "../../lib/shared/inputs.js";
 import PoetryGenerator from "../poetry/index.js";
 import PythonPackageGenerator from "../python-package/index.js";
+import VSCodeGenerator from "../vscode/index.js";
 
 const require = createRequire(import.meta.url);
 
-export default class PythonPoetryVSCodeGenerator extends SharedInputGenerator {
+export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   constructor(args, opts) {
     super(args, opts, Object.values(sharedInputs));
   }
 
   initializing() {
-    this.log(
-      yosay(`Welcome to the ${chalk.red("python-poetry-vscode")} generator!`)
-    );
-
+    const pythonPoetryVscode = chalk.blue("python-poetry-vscode");
+    this.log(yosay(`Welcome to the ${pythonPoetryVscode} generator!`));
     return super.initializing();
   }
 
@@ -51,15 +50,50 @@ export default class PythonPoetryVSCodeGenerator extends SharedInputGenerator {
       "name",
       "version",
     ]);
+    await this._compose(VSCodeGenerator, "../vscode/index.js");
   }
 
-  async _compose(generatorClass, generatorPath, optionNames) {
+  async install() {
+    const poetryInstall = chalk.green("poetry install");
+    this.log(
+      yosay(`I'll now run ${poetryInstall} to bootstrap your workspace.`)
+    );
+
+    try {
+      await this.spawnCommand("poetry", ["install"]);
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        this._logUninstalledPoetry();
+        process.exit(1);
+      }
+
+      throw err;
+    }
+  }
+
+  async _compose(generatorClass, generatorPath, optionNames = []) {
     this.composeWith(
       {
         Generator: generatorClass,
         path: require.resolve(generatorPath),
       },
       await this.getOptionValues(...optionNames)
+    );
+  }
+
+  _logUninstalledPoetry() {
+    const url = "https://python-poetry.org/docs/#installation";
+    const oops = chalk.red("Oops!");
+    const poetry = chalk.blue("poetry");
+    const intallLink = chalk.green(url);
+    this.log(
+      yosay(
+        `${oops} It looks like you don't have ${poetry} installed. ` +
+          `You can install it here: ${intallLink}.`,
+        {
+          maxLength: url.length + 1,
+        }
+      )
     );
   }
 }
