@@ -23,6 +23,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   }
 
   prompting() {
+    this._logDefaultAnswers();
     return super.prompting();
   }
 
@@ -78,6 +79,19 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
         path: require.resolve(generatorPath),
       },
       await this.getOptionValues(...optionNames)
+    );
+  }
+
+  _logDefaultAnswers() {
+    const defaultAnswers = chalk.blue("default answers");
+    const pyprojectToml = chalk.blue("pyproject.toml");
+    const git = chalk.blue("git");
+    this.log(
+      yosay(
+        `I'll now ask you some questions. The ${defaultAnswers} are derived` +
+          `from the environment (e.g. existing ${pyprojectToml}, ` +
+          `${git} configuration...).`
+      )
     );
   }
 
