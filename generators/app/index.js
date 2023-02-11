@@ -28,14 +28,16 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   }
 
   async default() {
-    const { repository, license } = await this.getInputValues(
-      "repository",
-      "license"
-    );
-    const [name, email] = await this._getNameAndEmail();
+    const { authorName, authorEmail, repository, license } =
+      await this.getInputValues(
+        "authorName",
+        "authorEmail",
+        "repository",
+        "license"
+      );
     this.composeWith(require.resolve("generator-license"), {
-      name,
-      email,
+      name: authorName,
+      email: authorEmail,
       website: repository,
       license,
     });
@@ -44,7 +46,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       "name",
       "version",
       "license",
-      "author",
+      "authorName",
+      "authorEmail",
       "repository",
     ]);
     await this._compose(PythonPackageGenerator, "../python-package/index.js", [

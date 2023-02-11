@@ -2,6 +2,7 @@ import _ from "lodash";
 
 import BaseGenerator from "../../lib/base-generator.js";
 import { PyProjectTomlInputFactory } from "../../lib/input-factories.js";
+import mergeConfig from "../../lib/merge-config.js";
 import {
   pyProjectTomlPath,
   readPyProjectToml,
@@ -14,6 +15,7 @@ import {
 } from "./validate-input.js";
 
 export default class PoetryGenerator extends BaseGenerator {
+  static authorInputNames = ["authorName", "authorEmail"];
   static buildSystem = {
     "build-system": {
       requires: ["poetry-core"],
@@ -62,7 +64,8 @@ export default class PoetryGenerator extends BaseGenerator {
     super(args, opts, [
       sharedInputs.pythonPackageName,
       sharedInputs.pythonPackageVersion,
-      sharedInputs.author,
+      sharedInputs.authorName,
+      sharedInputs.authorEmail,
       sharedInputs.repository,
       sharedInputs.license,
       ...PoetryGenerator.inputFactories,
@@ -81,7 +84,7 @@ export default class PoetryGenerator extends BaseGenerator {
     const diskPyProjectToml = readPyProjectToml.call(this);
     const statePyProjectToml = { tool: { poetry: await this._toolPoetry() } };
     const newPyProjectToml = PoetryGenerator._applyDefaultBuildSystem(
-      _.merge(diskPyProjectToml, statePyProjectToml)
+      mergeConfig(diskPyProjectToml, statePyProjectToml)
     );
     this._writeToml(pyProjectTomlPath.call(this), newPyProjectToml);
   }
@@ -94,12 +97,28 @@ export default class PoetryGenerator extends BaseGenerator {
     return _.assign(_.clone(PoetryGenerator.buildSystem), pyProjectToml);
   }
 
-  async _toolPoetry() {
-    const inputPaths = this.inputs.map((input) => input.extras.toolPoetryPath);
-    const inputValues = await Promise.all(
-      this.inputs.map((input) => input.getValue())
+  async _makeAuthors() {
+    const { authorName, authorEmail } = await this.getInputValues(
+      "authorName",
+      "authorEmail"
     );
-    return _.zipObjectDeep(inputPaths, inputValues);
+    return { authors: [`${authorName} <${authorEmail}>`] };
+  }
+
+  async _toolPoetry() {
+    const verbatimInputs = this.inputs.filter(
+      (input) => !PoetryGenerator.authorInputNames.includes(input.name)
+    );
+    const inputPaths = verbatimInputs.map(
+      (input) => input.extras.toolPoetryPath
+    );
+    const inputValues = await Promise.all(
+      verbatimInputs.map((input) => input.getValue())
+    );
+    return {
+      ..._.zipObjectDeep(inputPaths, inputValues),
+      ...(await this._makeAuthors()),
+    };
   }
 
   async _queryCurrentPythonVersion() {
