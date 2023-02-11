@@ -37,8 +37,7 @@ describe("toml-utils", () => {
     it('reads keys from "tool.poetry" in pyproject.toml file', function () {
       this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
         `[tool.poetry]
-         b = 2
-        `
+         b = 2`
       );
       const reader = toolPoetryPathReader("b");
       reader.call(this.generator).should.equal(2);
@@ -47,8 +46,7 @@ describe("toml-utils", () => {
     it('reads paths from "tool.poetry" in pyproject.toml file', function () {
       this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
         `[tool.poetry.c]
-         d = 4
-        `
+         d = 4`
       );
       const reader = toolPoetryPathReader("c.d");
       reader.call(this.generator).should.equal(4);
@@ -57,8 +55,7 @@ describe("toml-utils", () => {
     it('returns undefined on missing "tool" key', function () {
       this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
         `[not.tool.poetry]
-         e = 5
-        `
+         e = 5`
       );
       const reader = toolPoetryPathReader("e");
       should.not.exist(reader.call(this.generator));
@@ -67,11 +64,34 @@ describe("toml-utils", () => {
     it('returns undefined on missing "tool.poetry" path', function () {
       this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
         `[tool.not.poetry]
-         f = 6
-        `
+         f = 6`
       );
       const reader = toolPoetryPathReader("f");
       should.not.exist(reader.call(this.generator));
+    });
+
+    it("applies the transform function when the path exists", function () {
+      this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
+        `[tool.poetry]
+         g = 7`
+      );
+      const transform = sinon.stub().withArgs(7).returns("bananas");
+      const reader = toolPoetryPathReader("g", transform);
+
+      reader.call(this.generator, transform).should.equal("bananas");
+      transform.should.have.been.calledOnceWith(7);
+    });
+
+    it("doesn't apply the transform function when the path doesn't exists", function () {
+      this.generator.fs.read.withArgs(this.pyProjectTomlDst).returns(
+        `[tool.poetry]
+         h = 8`
+      );
+      const transform = sinon.spy();
+      const reader = toolPoetryPathReader("i", transform);
+
+      reader.call(this.generator);
+      transform.should.have.not.been.called;
     });
   });
 });

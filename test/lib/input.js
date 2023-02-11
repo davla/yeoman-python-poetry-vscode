@@ -128,16 +128,6 @@ describe("Input", () => {
   });
 
   describe("setValue", () => {
-    it("should apply transform", async () => {
-      const transform = sinon.stub().withArgs(22).returns("this is a robbery");
-      const input = new Input({}, { transform });
-
-      input.setValue(22);
-
-      (await input.getValue()).should.equal("this is a robbery");
-      transform.should.have.been.calledOnceWith(22);
-    });
-
     it("should set the new value if it's valid", async () => {
       const validate = sinon.stub().withArgs(8).returns(true);
       const input = new Input({}, { validate });
@@ -157,17 +147,6 @@ describe("Input", () => {
         .and.include({ input, value: 92, reason: "I don't like it" });
 
       validate.should.have.been.calledOnceWith(92);
-    });
-
-    it("should validate the value before transformation", () => {
-      const validate = sinon.stub().withArgs("Doublade").returns(true);
-      const transform = sinon.stub().returns("Aegislash");
-
-      const input = new Input({}, { validate, transform });
-
-      input.setValue("Doublade");
-
-      validate.should.have.been.calledOnceWith("Doublade");
     });
   });
 
