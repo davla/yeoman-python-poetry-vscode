@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import sharedInputs from "../../../lib/shared/inputs.js";
 
 describe("Shared inputs", () => {
@@ -33,40 +35,49 @@ describe("Shared inputs", () => {
     });
   });
 
-  describe("author", () => {
-    beforeEach(function () {
-      this.generator = {
-        user: {
-          git: {
-            email: sinon.stub().returns("jin.kazama@tekken.jp"),
-            name: sinon.stub().returns("Jin Kazama"),
-          },
-        },
-      };
-      this.input = sharedInputs.author.create(this.generator);
-    });
+  [
+    { gitConfigName: "email", value: "jin.kazama@tekken.jp" },
+    { gitConfigName: "name", value: "Jin Kazama" },
+  ].forEach(({ gitConfigName, value }) => {
+    const inputName = "author" + _.capitalize(gitConfigName);
+    describe(inputName, () => {
+      beforeEach(function () {
+        this.gitConfigStub = sinon.stub().returns(value);
+        this.generator = {
+          user: { git: { [gitConfigName]: this.gitConfigStub } },
+        };
+        this.input = sharedInputs[inputName].create(this.generator);
+      });
 
-    it("defaults to query git config", async function () {
-      this.generator.user.git.email.returns("jin.kazama@tekken.jp");
-      this.generator.user.git.name.returns("Jin Kazama");
+      it("defaults to query git config", async function () {
+        this.gitConfigStub.returns(value);
 
-      const promptDefault = await this.input.asPrompt().default();
+        const promptDefault = await this.input.asPrompt().default();
 
-      promptDefault.should.equal("Jin Kazama <jin.kazama@tekken.jp>");
-      this.generator.user.git.email.should.have.been.calledOnce;
-      this.generator.user.git.name.should.have.been.calledOnce;
-    });
+        promptDefault.should.equal(value);
+        this.gitConfigStub.should.have.been.calledOnce;
+      });
 
-    for (const method of ["email", "name"]) {
-      it(`defaults to null on undefined git config ${method}`, async function () {
-        this.generator.user.git[method].returns(undefined);
+      it(`defaults to null on undefined git config ${gitConfigName}`, async function () {
+        this.gitConfigStub.returns(undefined);
 
         const promptDefault = await this.input.asPrompt().default();
 
         should.equal(promptDefault, null);
-        this.generator.user.git.email.callCount.should.be.at.most(1);
-        this.generator.user.git.name.callCount.should.be.at.most(1);
+        this.gitConfigStub.should.have.been.calledOnce;
       });
-    }
+
+      it("is retrieved from the authors field in pyproject.toml", async function () {
+        this.generator.fs = {
+          read: sinon.stub().returns(
+            `[tool.poetry]
+             authors = [ "Jin Kazama <jin.kazama@tekken.jp>" ]`
+          ),
+        };
+        this.generator.destinationPath = sinon.fake();
+
+        (await this.input.getValue()).should.equal(value);
+      });
+    });
   });
 });
