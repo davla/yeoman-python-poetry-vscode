@@ -59,13 +59,27 @@ describe("PyProjectTomlInputFactory", () => {
 
   it("should retrieve toolPoetryPath from pyproject.toml", async function () {
     const factory = new PyProjectTomlInputFactory({
-      name: "yeah",
+      name: "Grotle",
       toolPoetryPath: "a",
       ioConfig: {},
     });
     const input = factory.create(this.generator);
     await input.initValue();
     (await input.getValue()).should.be.false;
+  });
+
+  it("should transform the value at toolPoetryPath upon retrieval", async function () {
+    const retrieveTransform = sinon.stub().withArgs(false).returns("Muk");
+    const factory = new PyProjectTomlInputFactory({
+      name: "Grovyle",
+      toolPoetryPath: "a",
+      retrieveTransform,
+      ioConfig: {},
+    });
+    const input = factory.create(this.generator);
+    await input.initValue();
+    (await input.getValue()).should.equal("Muk");
+    retrieveTransform.should.have.been.calledOnceWith(false);
   });
 
   it("should add toolPoetryPath as extras", () => {

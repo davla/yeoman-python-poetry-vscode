@@ -61,9 +61,14 @@ describe("python-poetry-vscode", () => {
           inputValue: "0.5.3",
         },
         {
-          optionName: "author",
-          promptName: "author",
-          inputValue: "Anna Williams <anna.williamsa@tekken.ie>",
+          optionName: "author-name",
+          promptName: "authorName",
+          inputValue: "Anna Williams",
+        },
+        {
+          optionName: "author-email",
+          promptName: "authorEmail",
+          inputValue: "anna.williamsa@tekken.ie",
         },
         {
           optionName: "repository",
@@ -107,7 +112,8 @@ describe("python-poetry-vscode", () => {
           path: require.resolve("../../generators/poetry/index.js"),
         },
         {
-          author: ["Anna Williams <anna.williamsa@tekken.ie>"],
+          "author-name": "Anna Williams",
+          "author-email": "anna.williamsa@tekken.ie",
           license: "GPL-3.0",
           name: "tekken",
           "package-version": "0.5.3",

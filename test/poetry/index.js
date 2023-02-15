@@ -42,12 +42,6 @@ const generatorInput = [
     inputValue: "Input description",
   },
   {
-    optionName: "author",
-    promptName: "author",
-    outputPath: "authors.0",
-    inputValue: "Paul Phoenix <paul.phoenix@tekken.us>",
-  },
-  {
     optionName: "license",
     promptName: "license",
     outputPath: "license",
@@ -113,20 +107,24 @@ describe("python-poetry-vscode:poetry", () => {
           writePyProjectToml.bind(this.generator, {
             tool: {
               poetry: {
-                authors: ["King <king@tekken.mx>", "Jack <jack@tekken.ru"],
+                authors: ["Combot <combot@tekken.jp>"],
                 dependencies: { black: "^2.31.0" },
               },
             },
           })
         )
         .withOptions({
-          author: "Mokujin <mojukin@tekken.jp>",
+          "author-name": "Mokujin",
+          "author-email": "mojukin@tekken.jp",
           python: "^3.10.1",
         });
       (await pyProjectToml(this.runResult)).should.containSubset({
         tool: {
           poetry: {
-            authors: ["Mokujin <mojukin@tekken.jp>", "Jack <jack@tekken.ru"],
+            authors: [
+              "Mokujin <mojukin@tekken.jp>",
+              "Combot <combot@tekken.jp>",
+            ],
             dependencies: { black: "^2.31.0", python: "^3.10.1" },
           },
         },
@@ -172,6 +170,28 @@ describe("python-poetry-vscode:poetry", () => {
         );
       });
     }
+
+    it('should output inputs authorName and authorEmail at "tool.poetry.author.0"', async function () {
+      const expectedContent = inToolPoetry(
+        "authors.0",
+        "Paul Phoenix <paul.phoenix@tekken.us>"
+      );
+      this.runResult = await withInput(this.generator, [
+        {
+          optionName: "author-name",
+          promptName: "authorName",
+          inputValue: "Paul Phoenix",
+        },
+        {
+          optionName: "author-email",
+          promptName: "authorEmail",
+          inputValue: "paul.phoenix@tekken.us",
+        },
+      ]);
+      (await pyProjectToml(this.runResult)).should.containSubset(
+        expectedContent
+      );
+    });
   });
 
   describe("dynamic default values", () => {
