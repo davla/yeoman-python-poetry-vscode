@@ -32,7 +32,7 @@ describe("python-poetry-vscode", () => {
 
     this.generator = yeomanTest.run(PythonPoetryVSCodeGenerator).withAnswers({
       packageName: "mandatory_package",
-      version: "3.18.0",
+      packageVersion: "3.18.0",
       description: "I don't actually like fighting games",
     });
   });
@@ -57,7 +57,7 @@ describe("python-poetry-vscode", () => {
         },
         {
           optionName: "package-version",
-          promptName: "version",
+          promptName: "packageVersion",
           inputValue: "0.5.3",
         },
         {

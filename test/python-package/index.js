@@ -16,7 +16,7 @@ const generatorInput = [
   },
   {
     optionName: "package-version",
-    promptName: "version",
+    promptName: "packageVersion",
     inputValue: "1.9.0",
   },
 ];

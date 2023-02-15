@@ -63,7 +63,7 @@ export default class PoetryGenerator extends BaseGenerator {
   constructor(args, opts) {
     super(args, opts, [
       sharedInputs.packageName,
-      sharedInputs.pythonPackageVersion,
+      sharedInputs.packageVersion,
       sharedInputs.authorName,
       sharedInputs.authorEmail,
       sharedInputs.repository,

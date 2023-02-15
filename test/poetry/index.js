@@ -31,7 +31,7 @@ const generatorInput = [
   },
   {
     optionName: "package-version",
-    promptName: "version",
+    promptName: "packageVersion",
     outputPath: "version",
     inputValue: "2.0.2",
   },
@@ -63,7 +63,7 @@ const generatorInput = [
 
 const mandatoryAnswers = {
   packageName: "mandatory_package",
-  version: "1.9.0",
+  packageVersion: "1.9.0",
   description: "Non-empty description",
 };
 
