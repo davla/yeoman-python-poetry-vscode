@@ -7,10 +7,7 @@ import sharedInputs from "../../lib/shared/inputs.js";
 const parentDir = moduleDirName(import.meta);
 
 export default class PythonPackageGenerator extends InputGenerator {
-  static inputs = [
-    sharedInputs.pythonPackageName,
-    sharedInputs.pythonPackageVersion,
-  ];
+  static inputs = [sharedInputs.packageName, sharedInputs.pythonPackageVersion];
 
   constructor(args, opts) {
     super(args, opts, PythonPackageGenerator.inputs);
@@ -26,8 +23,8 @@ export default class PythonPackageGenerator extends InputGenerator {
   }
 
   async writing() {
-    const { name: packageName, version } = await this.getInputValues(
-      "name",
+    const { packageName, version } = await this.getInputValues(
+      "packageName",
       "version"
     );
     this.fs.copyTpl(

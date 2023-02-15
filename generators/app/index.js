@@ -43,7 +43,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
     });
 
     await this._compose(PoetryGenerator, "../poetry/index.js", [
-      "name",
+      "packageName",
       "version",
       "license",
       "authorName",
@@ -51,7 +51,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       "repository",
     ]);
     await this._compose(PythonPackageGenerator, "../python-package/index.js", [
-      "name",
+      "packageName",
       "version",
     ]);
     await this._compose(VSCodeGenerator, "../vscode/index.js");

@@ -24,8 +24,8 @@ function writePyProjectToml(content, dir) {
 
 const generatorInput = [
   {
-    optionName: "name",
-    promptName: "name",
+    optionName: "package-name",
+    promptName: "packageName",
     outputPath: "name",
     inputValue: "input_package",
   },
@@ -62,7 +62,7 @@ const generatorInput = [
 ];
 
 const mandatoryAnswers = {
-  name: "mandatory_package",
+  packageName: "mandatory_package",
   version: "1.9.0",
   description: "Non-empty description",
 };

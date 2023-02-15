@@ -10,8 +10,8 @@ import { withInput } from "../../test-lib/yeoman-test-input.js";
 
 const generatorInput = [
   {
-    optionName: "name",
-    promptName: "name",
+    optionName: "package-name",
+    promptName: "packageName",
     inputValue: "package_name",
   },
   {
