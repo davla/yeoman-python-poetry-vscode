@@ -39,10 +39,11 @@ export default class PoetryGenerator extends BaseGenerator {
       valueFunctions: { validate: validateDescription },
     }),
     new PyProjectTomlInputFactory({
-      name: "python",
+      name: "pythonVersion",
       toolPoetryPath: "dependencies.python",
       ioConfig: {
         option: {
+          name: "python-version",
           desc: "The range of Python versions compatible with the package ",
           type: String,
         },

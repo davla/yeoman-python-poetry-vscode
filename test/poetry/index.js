@@ -48,8 +48,8 @@ const generatorInput = [
     inputValue: LicenseGenerator.licenses[1].value,
   },
   {
-    optionName: "python",
-    promptName: "python",
+    optionName: "python-version",
+    promptName: "pythonVersion",
     outputPath: "dependencies.python",
     inputValue: "^3.10.1",
   },
@@ -116,7 +116,7 @@ describe("python-poetry-vscode:poetry", () => {
         .withOptions({
           "author-name": "Mokujin",
           "author-email": "mojukin@tekken.jp",
-          python: "^3.10.1",
+          "python-version": "^3.10.1",
         });
       (await pyProjectToml(this.runResult)).should.containSubset({
         tool: {
