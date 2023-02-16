@@ -197,6 +197,17 @@ describe("python-poetry-vscode:poetry", () => {
   describe("dynamic default values", () => {
     afterEach(restoreRunResult);
 
+    it("reads python version from pyproject.toml", async function () {
+      const toolPoetry = {
+        tool: { poetry: { dependencies: { python: "^3.7.2" } } },
+      };
+      this.runResult = await this.generator.doInDir(
+        writePyProjectToml.bind(this.generator, toolPoetry)
+      );
+      this.stubs.spawnCommand.should.not.have.been.called;
+      (await pyProjectToml(this.runResult)).should.containSubset(toolPoetry);
+    });
+
     it("queries current python version for default python", async function () {
       this.runResult = await this.generator;
       this.stubs.spawnCommand.should.have.been.calledOnceWith(
