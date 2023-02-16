@@ -64,7 +64,7 @@ describe("Input", () => {
 
     it('sets "when" to false if the value is defined', () => {
       const input = new Input({});
-      input.setValue(77);
+      input.value = 77;
       input.asPrompt().when.should.be.false;
     });
 
@@ -127,14 +127,14 @@ describe("Input", () => {
     });
   });
 
-  describe("setValue", () => {
+  describe("value setter", () => {
     it("should set the new value if it's valid", async () => {
       const validate = sinon.stub().withArgs(8).returns(true);
       const input = new Input({}, { validate });
 
-      input.setValue(8);
+      input.value = 8;
 
-      (await input.getValue()).should.equal(8);
+      input.value.should.equal(8);
       validate.should.have.been.calledOnceWith(8);
     });
 
@@ -142,54 +142,13 @@ describe("Input", () => {
       const validate = sinon.stub().withArgs(92).returns("I don't like it");
       const input = new Input({ shared: { name: "yaha" } }, { validate });
 
-      (() => input.setValue(92)).should
+      (function () {
+        input.value = 92;
+      }.should
         .throw(InvalidInputValueError, /I don't like it/)
-        .and.include({ input, value: 92, reason: "I don't like it" });
+        .and.include({ input, value: 92, reason: "I don't like it" }));
 
       validate.should.have.been.calledOnceWith(92);
-    });
-  });
-
-  describe("initValue", () => {
-    it(`should't use the "retrieve" value function if value is set`, async () => {
-      const retrieve = sinon.spy();
-      const input = new Input({}, { retrieve });
-      input.setValue(false);
-
-      await input.initValue();
-
-      (await input.getValue()).should.equal(false);
-      retrieve.should.not.have.been.called;
-    });
-
-    it('should use the "retrieve" value function if value is not set', async () => {
-      const retrieve = sinon.stub().resolves("Buizel");
-      const input = new Input({}, { retrieve });
-
-      await input.initValue();
-
-      (await input.getValue()).should.equal("Buizel");
-      retrieve.should.have.been.calledOnce;
-    });
-  });
-
-  describe("getValue", () => {
-    it('should return the set value and not call the "retrieve" value function', async () => {
-      const retrieve = sinon.spy();
-      const input = new Input({}, { retrieve });
-
-      input.setValue(false);
-
-      (await input.getValue()).should.equal(false);
-      retrieve.should.have.not.been.called;
-    });
-
-    it('should use the "retrieve" value function if the value is not set', async () => {
-      const retrieve = sinon.stub().resolves("Pawmo");
-      const input = new Input({}, { retrieve });
-
-      (await input.getValue()).should.equal("Pawmo");
-      retrieve.should.have.been.calledOnce;
     });
   });
 
