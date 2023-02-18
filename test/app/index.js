@@ -31,8 +31,8 @@ describe("python-poetry-vscode", () => {
     this.stubs.userGitName.returns("Jin Kazama");
 
     this.generator = yeomanTest.run(PythonPoetryVSCodeGenerator).withAnswers({
-      name: "mandatory_package",
-      version: "3.18.0",
+      packageName: "mandatory_package",
+      packageVersion: "3.18.0",
       description: "I don't actually like fighting games",
     });
   });
@@ -51,13 +51,13 @@ describe("python-poetry-vscode", () => {
     beforeEach(function () {
       this.generator = withInput(this.generator, [
         {
-          optionName: "name",
-          promptName: "name",
+          optionName: "package-name",
+          promptName: "packageName",
           inputValue: "tekken",
         },
         {
           optionName: "package-version",
-          promptName: "version",
+          promptName: "packageVersion",
           inputValue: "0.5.3",
         },
         {
@@ -115,7 +115,7 @@ describe("python-poetry-vscode", () => {
           "author-name": "Anna Williams",
           "author-email": "anna.williamsa@tekken.ie",
           license: "GPL-3.0",
-          name: "tekken",
+          "package-name": "tekken",
           "package-version": "0.5.3",
           repository: "https://github.com/steve-fox/git_package",
         }
@@ -130,7 +130,7 @@ describe("python-poetry-vscode", () => {
           path: require.resolve("../../generators/python-package/index.js"),
         },
         {
-          name: "tekken",
+          "package-name": "tekken",
           "package-version": "0.5.3",
         }
       );

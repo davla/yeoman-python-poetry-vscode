@@ -24,14 +24,14 @@ function writePyProjectToml(content, dir) {
 
 const generatorInput = [
   {
-    optionName: "name",
-    promptName: "name",
+    optionName: "package-name",
+    promptName: "packageName",
     outputPath: "name",
     inputValue: "input_package",
   },
   {
     optionName: "package-version",
-    promptName: "version",
+    promptName: "packageVersion",
     outputPath: "version",
     inputValue: "2.0.2",
   },
@@ -48,8 +48,8 @@ const generatorInput = [
     inputValue: LicenseGenerator.licenses[1].value,
   },
   {
-    optionName: "python",
-    promptName: "python",
+    optionName: "python-version",
+    promptName: "pythonVersion",
     outputPath: "dependencies.python",
     inputValue: "^3.10.1",
   },
@@ -62,8 +62,8 @@ const generatorInput = [
 ];
 
 const mandatoryAnswers = {
-  name: "mandatory_package",
-  version: "1.9.0",
+  packageName: "mandatory_package",
+  packageVersion: "1.9.0",
   description: "Non-empty description",
 };
 
@@ -116,7 +116,7 @@ describe("python-poetry-vscode:poetry", () => {
         .withOptions({
           "author-name": "Mokujin",
           "author-email": "mojukin@tekken.jp",
-          python: "^3.10.1",
+          "python-version": "^3.10.1",
         });
       (await pyProjectToml(this.runResult)).should.containSubset({
         tool: {
