@@ -19,8 +19,8 @@ export default class JsonInputGenerator extends InputGenerator {
         },
       },
       valueFunctions: {
-        validate: (value) => value === "is good" || "you're lying",
-        retrieve: () => Promise.resolve("is fantastic"),
+        validate: (value) =>
+          value === null || value === "is good" || "you're lying",
       },
     }),
     new InputFactory({
@@ -76,21 +76,13 @@ describe("InputGenerator", () => {
       });
     });
 
-    it("should use init values for inputs if options are not given", async function () {
-      this.runResult = await this.generator.withOptions({
-        "licorice-option": "is too",
-      });
-      this.runResult.assertJsonFileContent("output.json", {
-        anice: "is fantastic",
-        licorice: "is too",
-      });
-    });
-
-    it("should use prompts as input values if options and init values are not given", async function () {
+    it("should use prompts as input values if options are not given", async function () {
       this.runResult = await this.generator.withPrompts({
+        anice: "is good",
         licorice: "is too",
       });
       this.runResult.assertJsonFileContent("output.json", {
+        anice: "is good",
         licorice: "is too",
       });
     });
@@ -118,7 +110,6 @@ describe("InputGenerator", () => {
 
     it("should ingore options that don't map to inputs", async function () {
       this.runResult = await this.generator.withOptions({
-        "licorice-option": "is too",
         fennel: "and this too",
       });
       const fileContent = JSON.parse(
@@ -129,9 +120,7 @@ describe("InputGenerator", () => {
 
     it("should report invalid options values", function () {
       return this.generator
-        .withOptions({
-          anice: "is not very good",
-        })
+        .withOptions({ anice: "is not very good" })
         .should.be.rejectedWith(
           TypeError,
           /.*is not very good.+option --anice.+you're lying.*/
@@ -152,18 +141,17 @@ describe("InputGenerator", () => {
     afterEach(restoreRunResult);
 
     it("should return name and value of all the given inputs", function () {
-      return this.generatorObj
-        .getInputValues("anice", "licorice")
-        .should.eventually.deep.equal({
-          anice: "is good",
-          licorice: "is too",
-        });
+      this.generatorObj.getInputValues("anice", "licorice").should.deep.equal({
+        anice: "is good",
+        licorice: "is too",
+      });
     });
 
     it("should report missing input names", function () {
-      return this.generatorObj
-        .getInputValues("fennel")
-        .should.be.rejectedWith(TypeError, /No input.*fennel/);
+      (() => this.generatorObj.getInputValues("fennel")).should.throw(
+        TypeError,
+        /No input.*fennel/
+      );
     });
   });
 
@@ -172,18 +160,17 @@ describe("InputGenerator", () => {
     afterEach(restoreRunResult);
 
     it("should return option name and value of all the given inputs", function () {
-      return this.generatorObj
-        .getOptionValues("anice", "licorice")
-        .should.eventually.deep.equal({
-          anice: "is good",
-          "licorice-option": "is too",
-        });
+      this.generatorObj.getOptionValues("anice", "licorice").should.deep.equal({
+        anice: "is good",
+        "licorice-option": "is too",
+      });
     });
 
     it("should report missing input names", function () {
-      return this.generatorObj
-        .getInputValues("fennel")
-        .should.be.rejectedWith(TypeError, /No input.*fennel/);
+      (() => this.generatorObj.getInputValues("fennel")).should.throw(
+        TypeError,
+        /No input.*fennel/
+      );
     });
   });
 });

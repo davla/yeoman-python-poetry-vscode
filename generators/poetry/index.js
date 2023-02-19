@@ -114,7 +114,7 @@ export default class PoetryGenerator extends BaseGenerator {
       (input) => input.extras.toolPoetryPath
     );
     const inputValues = await Promise.all(
-      verbatimInputs.map((input) => input.getValue())
+      verbatimInputs.map((input) => input.value)
     );
     return {
       ..._.zipObjectDeep(inputPaths, inputValues),
