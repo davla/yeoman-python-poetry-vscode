@@ -1,4 +1,4 @@
-name: Test
+name: Test and publish
 
 on: push
 
@@ -17,7 +17,7 @@ jobs:
       test-results-path: test-results.json
 
     steps:
-    - name: Check out repository code
+    - name: Checkout repository code
       uses: actions/checkout@v3
 
     - name: Install node.js
@@ -39,3 +39,29 @@ jobs:
         fail-on-error: false
         path: ${{ env.test-results-path }}
         reporter: mocha-json
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main'
+    name: Publish
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "lts/*"
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npx semantic-release
