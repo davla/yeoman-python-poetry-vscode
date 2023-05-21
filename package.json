@@ -121,8 +121,8 @@
         "release": "minor"
       }
     ],
-    "generateNotesCmd": "npm run release-notes --silent -- read-unreleased",
-    "prepareCmd": "npm run release-notes -- update --version ${nextRelease.version}"
+    "generateNotesCmd": "npm run changelog --silent -- read-unreleased",
+    "publishCmd": "npm run changelog -- update --version ${nextRelease.version}"
   },
   "eslintConfig": {
     "extends": [
@@ -194,13 +194,13 @@
     ]
   },
   "scripts": {
+    "changelog": "node ./scripts/changelog.js",
     "format": "eslint . --ext js --fix --fix-type layout | dev-null",
     "lint": "eslint . --ext js",
     "lint:fix": "npm run lint -- --fix",
     "test": "mocha",
     "test:ci": "npm run test -- --reporter json --reporter-option",
     "test:update-snapshots": "cross-env UPDATE_SNAPSHOT=1 npm run test",
-    "release-notes": "node ./scripts/release-notes.js",
     "semantic-release": "semantic-release"
   },
   "repository": "git@github.com:davla/yeoman-python-poetry-vscode.git",
