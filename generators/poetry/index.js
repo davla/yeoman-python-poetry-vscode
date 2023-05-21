@@ -1,8 +1,11 @@
+import path from "node:path";
+
 import _ from "lodash";
 
 import BaseGenerator from "../../lib/base-generator.js";
 import { PyProjectTomlInputFactory } from "../../lib/input-factories.js";
 import mergeConfig from "../../lib/merge-config.js";
+import { moduleDirName } from "../../lib/paths.js";
 import {
   pyProjectTomlPath,
   readPyProjectToml,
@@ -14,14 +17,10 @@ import {
   validatePoetryVersionRange,
 } from "./validate-input.js";
 
+const parentDir = moduleDirName(import.meta);
+
 export default class PoetryGenerator extends BaseGenerator {
   static authorInputNames = ["authorName", "authorEmail"];
-  static buildSystem = {
-    "build-system": {
-      requires: ["poetry-core"],
-      "build-backend": "poetry.core.masonry.api",
-    },
-  };
 
   static inputFactories = [
     new PyProjectTomlInputFactory({
@@ -74,6 +73,7 @@ export default class PoetryGenerator extends BaseGenerator {
   }
 
   initializing() {
+    this.sourceRoot(path.join(parentDir, "templates"));
     return super.initializing();
   }
 
@@ -84,18 +84,21 @@ export default class PoetryGenerator extends BaseGenerator {
   async writing() {
     const diskPyProjectToml = readPyProjectToml.call(this);
     const statePyProjectToml = { tool: { poetry: await this._toolPoetry() } };
-    const newPyProjectToml = PoetryGenerator._applyDefaultBuildSystem(
+    const newPyProjectToml = this._applyDefaultBuildSystem(
       mergeConfig(diskPyProjectToml, statePyProjectToml)
     );
     this._writeToml(pyProjectTomlPath.call(this), newPyProjectToml);
   }
 
-  static _applyDefaultBuildSystem(pyProjectToml) {
+  _applyDefaultBuildSystem(pyProjectToml) {
     /*
      * Not use _.merge because we want to fully overwrite the default
      * "build-system" with the one on the disk, if any.
      */
-    return _.assign(_.clone(PoetryGenerator.buildSystem), pyProjectToml);
+    return _.assign(
+      this._readToml(this.templatePath("pyproject.toml")),
+      pyProjectToml
+    );
   }
 
   async _makeAuthors() {

@@ -133,9 +133,12 @@ describe("python-poetry-vscode:poetry", () => {
 
     it('adds the "build-system" section', async function () {
       this.runResult = await this.generator;
-      return (await pyProjectToml(this.runResult)).should.containSubset(
-        PoetryGenerator.buildSystem
-      );
+      return (await pyProjectToml(this.runResult)).should.containSubset({
+        "build-system": {
+          requires: ["poetry-core"],
+          "build-backend": "poetry.core.masonry.api",
+        },
+      });
     });
 
     it('leaves existing "build-system" sections untouched', async function () {
