@@ -721,6 +721,13 @@ Public License instead of this License.  But first, please read
           "python": "^3.10.2",
         },
         "description": "I don't actually like fighting games",
+        "group": Object {
+          "dev": Object {
+            "dependencies": Object {
+              "pytest": "^7.3.1",
+            },
+          },
+        },
         "license": "GPL-3.0",
         "name": "mandatory_package",
         "repository": "https://github.com/eddy-gordo/git_package",
