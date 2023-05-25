@@ -143,7 +143,7 @@ describe("python-poetry-vscode:vscode", () => {
         tool: {
           poetry: {
             dependencies: {
-              black: "^22.12.0",
+              black: "^23.3.0",
               isort: "^5.12.0",
               pylint: "^2.15.0",
             },
