@@ -3,6 +3,84 @@ import _ from "lodash";
 import sharedInputs from "../../../../lib/shared/inputs.js";
 
 describe("Shared inputs", () => {
+  describe("packageName", () => {
+    beforeEach(function () {
+      this.generator = {
+        destinationPath: sinon.fake(),
+        fs: { read: sinon.stub() },
+      };
+      this.input = sharedInputs.packageName.create(this.generator);
+      this.cwd = sinon.stub(process, "cwd");
+    });
+
+    afterEach(function () {
+      this.cwd.restore();
+    });
+
+    it('defaults to read "name" from pyproject.toml', async function () {
+      this.generator.fs.read.returns(`
+        [tool.poetry]
+        name = "ganryu"
+      `);
+
+      const promptDefault = await this.input.asPrompt().default();
+
+      promptDefault.should.equal("ganryu");
+      this.generator.fs.read.should.have.been.calledOnce;
+      process.cwd.should.not.have.been.called;
+    });
+
+    it("defaults to the current working directory name when reading pyproject.toml is undefined", async function () {
+      this.generator.fs.read.returns("");
+      process.cwd.returns("/an/absolute/path/to/here");
+
+      const promptDefault = await this.input.asPrompt().default();
+
+      promptDefault.should.equal("here");
+      process.cwd.should.have.been.calledOnce;
+    });
+
+    it("defaults to null if the current working directory is not a valid python package name", async function () {
+      this.generator.fs.read.returns("");
+      process.cwd.returns("/an/absolute/path/to-here");
+
+      const promptDefault = await this.input.asPrompt().default();
+
+      should.equal(promptDefault, null);
+      process.cwd.should.have.been.calledOnce;
+    });
+  });
+
+  describe("packageVersion", () => {
+    beforeEach(function () {
+      this.generator = {
+        destinationPath: sinon.fake(),
+        fs: { read: sinon.stub() },
+      };
+      this.input = sharedInputs.packageVersion.create(this.generator);
+    });
+
+    it('defaults to read "version" from pyproject.toml', async function () {
+      this.generator.fs.read.returns(`
+        [tool.poetry]
+        version = "0.0.7"
+      `);
+
+      const promptDefault = await this.input.asPrompt().default();
+
+      promptDefault.should.equal("0.0.7");
+      this.generator.fs.read.should.have.been.calledOnce;
+    });
+
+    it('defaults to the "0.0.0" when reading pyproject.toml is undefined', async function () {
+      this.generator.fs.read.returns("");
+
+      const promptDefault = await this.input.asPrompt().default();
+
+      promptDefault.should.equal("0.0.0");
+    });
+  });
+
   describe("repository", () => {
     beforeEach(function () {
       this.generator = {
