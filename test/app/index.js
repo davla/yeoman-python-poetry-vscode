@@ -104,6 +104,18 @@ describe("python-poetry-vscode", () => {
       );
     });
 
+    it('should call "generator-editorconf"', async function () {
+      this.runResult = await this.generator;
+      this.composeWith.should.have.been.calledWith(
+        require.resolve("generator-editorconf"),
+        {
+          languages: ["python"],
+          name: "tekken",
+          destination: this.runResult.cwd,
+        }
+      );
+    });
+
     it('should call "python-poetry-vscode:poetry"', async function () {
       this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith(

@@ -2,6 +2,27 @@
 
 exports[`python-poetry-vscode should create the project scaffold files 1`] = `
 Object {
+  ".editorconfig": "root = true
+
+[*]
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.py]
+charset = utf-8
+indent_size = 4
+
+[*.{md,rst}]
+charset = utf-8
+trim_trailing_whitespace = false
+
+[{m,M}akefile]
+charset = utf-8
+indent_style = tab
+",
   "LICENSE": "Copyright (c) 2023 Jin Kazama <jin.kazama@tekken.jp> (https://github.com/eddy-gordo/git_package)
 
 This program is free software: you can redistribute it and/or modify

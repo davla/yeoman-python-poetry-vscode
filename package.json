@@ -67,6 +67,7 @@
     "@iarna/toml": "^2.2.5",
     "chalk": "^5.2.0",
     "email-validator": "^2.0.4",
+    "generator-editorconf": "^0.3.1",
     "generator-license": "^5.4.0",
     "giturl": "^1.0.1",
     "lodash": "^4.17.21",
@@ -97,6 +98,15 @@
     "recursive": true,
     "require": [
       "./test-lib/global-setup.js"
+    ],
+    "globals": [
+      "__core-js_shared__",
+      "core",
+      "System",
+      "asap",
+      "Observable",
+      "regeneratorRuntime",
+      "_babelPolyfill"
     ]
   },
   "release": {

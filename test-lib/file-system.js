@@ -42,7 +42,7 @@ async function tryParseInCwd(runResult, fileName) {
 }
 
 export async function readCwd(runResult) {
-  const filesInCwd = await glob("**", {
+  const filesInCwd = await glob(["**", ".**"], {
     cwd: (runResult.cwd ?? runResult).replace(path.sep, path.posix.sep),
     absolute: false,
     onlyFiles: true,

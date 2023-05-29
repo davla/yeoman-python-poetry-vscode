@@ -28,13 +28,24 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   }
 
   default() {
-    const { authorName, authorEmail, repository, license } =
-      this.getInputValues("authorName", "authorEmail", "repository", "license");
+    const { packageName, authorName, authorEmail, repository, license } =
+      this.getInputValues(
+        "authorName",
+        "authorEmail",
+        "repository",
+        "license",
+        "packageName"
+      );
     this.composeWith(require.resolve("generator-license"), {
       name: authorName,
       email: authorEmail,
       website: repository,
       license,
+    });
+    this.composeWith(require.resolve("generator-editorconf"), {
+      languages: ["python"],
+      name: packageName,
+      destination: this.destinationRoot(),
     });
 
     this._compose(PoetryGenerator, "../poetry/index.js", [
