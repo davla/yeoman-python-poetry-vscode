@@ -1,4 +1,4 @@
-# generator-python-poetry-vscode [![NPM version][npm-image]][npm-url] [![Build Status][actions-image]][actions-url] [![Dependency Status][daviddm-image]][daviddm-url]
+# generator-python-poetry-vscode [![Build Status][actions-image]][actions-url] [![NPM version][npm-image]][npm-url] [![Dependency status][deps-image]][deps-url]
 > Yeoman generator for Python packages, using [Poetry](https://python-poetry.org/) and integrated with [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Installation
@@ -79,9 +79,9 @@ displayed.
 GPL-3.0 © [Davide Laezza](https://github.com/davla)
 
 
-[npm-image]: https://badge.fury.io/js/generator-python-poetry-vscode.svg
+[npm-image]: https://img.shields.io/npm/v/generator-python-poetry-vscode.svg?logo=npm
 [npm-url]: https://npmjs.org/package/generator-python-poetry-vscode
-[actions-image]: https://github.com/davla/yeoman-python-poetry-vscode/actions/workflows/test-and-publish.yml/badge.svg
+[actions-image]: https://img.shields.io/github/actions/workflow/status/davla/yeoman-python-poetry-vscode/test-and-publish.yml?branch=main&logo=github
 [actions-url]: https://github.com/davla/yeoman-python-poetry-vscode/actions/workflows/test-and-publish.yml
-[daviddm-image]: https://david-dm.org/davla/generator-python-poetry-vscode.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/davla/generator-python-poetry-vscode
+[deps-image]: https://img.shields.io/librariesio/github/davla/yeoman-python-poetry-vscode?logo=librariesdotio
+[deps-url]: https://libraries.io/github/davla/yeoman-python-poetry-vscode
