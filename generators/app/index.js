@@ -27,14 +27,9 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
     return super.prompting();
   }
 
-  async default() {
+  default() {
     const { authorName, authorEmail, repository, license } =
-      await this.getInputValues(
-        "authorName",
-        "authorEmail",
-        "repository",
-        "license"
-      );
+      this.getInputValues("authorName", "authorEmail", "repository", "license");
     this.composeWith(require.resolve("generator-license"), {
       name: authorName,
       email: authorEmail,
@@ -42,7 +37,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       license,
     });
 
-    await this._compose(PoetryGenerator, "../poetry/index.js", [
+    this._compose(PoetryGenerator, "../poetry/index.js", [
       "packageName",
       "packageVersion",
       "license",
@@ -50,11 +45,11 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       "authorEmail",
       "repository",
     ]);
-    await this._compose(PythonPackageGenerator, "../python-package/index.js", [
+    this._compose(PythonPackageGenerator, "../python-package/index.js", [
       "packageName",
       "packageVersion",
     ]);
-    await this._compose(VSCodeGenerator, "../vscode/index.js");
+    this._compose(VSCodeGenerator, "../vscode/index.js");
   }
 
   async install() {
@@ -75,13 +70,13 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
     }
   }
 
-  async _compose(generatorClass, generatorPath, optionNames = []) {
+  _compose(generatorClass, generatorPath, optionNames = []) {
     this.composeWith(
       {
         Generator: generatorClass,
         path: require.resolve(generatorPath),
       },
-      await this.getOptionValues(...optionNames)
+      this.getOptionValues(...optionNames)
     );
   }
 

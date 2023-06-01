@@ -22,8 +22,8 @@ export default class PythonPackageGenerator extends InputGenerator {
     return super.prompting();
   }
 
-  async writing() {
-    const { packageName, packageVersion: version } = await this.getInputValues(
+  writing() {
+    const { packageName, packageVersion: version } = this.getInputValues(
       "packageName",
       "packageVersion"
     );

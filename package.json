@@ -119,6 +119,10 @@
       {
         "type": "feature",
         "release": "minor"
+      },
+      {
+        "type": "performance",
+        "release": "patch"
       }
     ],
     "generateNotesCmd": "npm run changelog --silent -- read-unreleased",

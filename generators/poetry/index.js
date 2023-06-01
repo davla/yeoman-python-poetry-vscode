@@ -81,9 +81,9 @@ export default class PoetryGenerator extends BaseGenerator {
     return super.prompting();
   }
 
-  async writing() {
+  writing() {
     const diskPyProjectToml = readPyProjectToml.call(this);
-    const statePyProjectToml = { tool: { poetry: await this._toolPoetry() } };
+    const statePyProjectToml = { tool: { poetry: this._toolPoetry() } };
     const newPyProjectToml = this._applyDefaultBuildSystem(
       mergeConfig(diskPyProjectToml, statePyProjectToml)
     );
@@ -101,27 +101,25 @@ export default class PoetryGenerator extends BaseGenerator {
     );
   }
 
-  async _makeAuthors() {
-    const { authorName, authorEmail } = await this.getInputValues(
+  _makeAuthors() {
+    const { authorName, authorEmail } = this.getInputValues(
       "authorName",
       "authorEmail"
     );
     return { authors: [`${authorName} <${authorEmail}>`] };
   }
 
-  async _toolPoetry() {
+  _toolPoetry() {
     const verbatimInputs = this.inputs.filter(
       (input) => !PoetryGenerator.authorInputNames.includes(input.name)
     );
     const inputPaths = verbatimInputs.map(
       (input) => input.extras.toolPoetryPath
     );
-    const inputValues = await Promise.all(
-      verbatimInputs.map((input) => input.value)
-    );
+    const inputValues = verbatimInputs.map((input) => input.value);
     return {
       ..._.zipObjectDeep(inputPaths, inputValues),
-      ...(await this._makeAuthors()),
+      ...this._makeAuthors(),
     };
   }
 
