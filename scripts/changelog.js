@@ -14,8 +14,8 @@ const globalOptions =
 
 const doc = `
 Usage:
-  release-notes read-unreleased ${globalOptions}
-  release-notes update --version <version> ${globalOptions}
+  changelog read-unreleased ${globalOptions}
+  changelog update --version <version> ${globalOptions}
 
 Options:
   --help, -H                Show this text.
@@ -43,7 +43,7 @@ function makeHeadings(unreleasedHeadingContent, headingLevel, version = null) {
  *         Read unreleased
  **************************************/
 
-const findSection = (unreleasedHeadingContent, headingLevel) =>
+const findUnreleasedSection = (unreleasedHeadingContent, headingLevel) =>
   async function* (lines) {
     const { headingStart, unreleasedHeading } = makeHeadings(
       unreleasedHeadingContent,
@@ -51,20 +51,28 @@ const findSection = (unreleasedHeadingContent, headingLevel) =>
     );
 
     let isHeadingFound = false;
-    let isEndSectionFound = false;
-    for await (const line of lines) {
-      if (line.trim() === unreleasedHeading) {
+    let sectionHasContent = false;
+    for await (const rawLine of lines) {
+      const line = rawLine.trim();
+
+      if (line === unreleasedHeading) {
         isHeadingFound = true;
         continue;
       }
 
       if (isHeadingFound && line.startsWith(headingStart)) {
-        isEndSectionFound = true;
+        break;
       }
 
-      if (isHeadingFound && !isEndSectionFound) {
+      if (isHeadingFound) {
         yield line + EOL;
+        sectionHasContent ||= line !== "";
       }
+    }
+
+    if (!sectionHasContent) {
+      console.error("Changelog not updated for next release!");
+      process.exit(64);
     }
   };
 
@@ -85,7 +93,7 @@ export const readUnreleased = async (
 ) =>
   pipeline(
     await readLines(changelogFile),
-    findSection(unreleasedHeadingContent, headingLevel),
+    findUnreleasedSection(unreleasedHeadingContent, headingLevel),
     process.stdout
   );
 
