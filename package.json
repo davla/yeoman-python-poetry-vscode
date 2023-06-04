@@ -164,7 +164,14 @@
       "import/no-named-as-default": "error",
       "import/no-relative-packages": "error",
       "import/no-self-import": "error",
-      "import/no-unresolved": "error",
+      "import/no-unresolved": [
+        "error",
+        {
+          "ignore": [
+            "yeoman-test"
+          ]
+        }
+      ],
       "import/no-unused-modules": "error",
       "import/no-useless-path-segments": "error",
       "import/order": [

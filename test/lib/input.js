@@ -144,9 +144,9 @@ describe("Input", () => {
 
       (function () {
         input.value = 92;
-      }.should
+      }).should
         .throw(InvalidInputValueError, /I don't like it/)
-        .and.include({ input, value: 92, reason: "I don't like it" }));
+        .and.include({ input, value: 92, reason: "I don't like it" });
 
       validate.should.have.been.calledOnceWith(92);
     });
