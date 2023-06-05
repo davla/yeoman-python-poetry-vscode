@@ -33,7 +33,7 @@ function makeHeadings(unreleasedHeadingContent, headingLevel, version = null) {
   const headingStart = "#".repeat(headingLevel);
   const releaseDate = formatDate("yyyy-MM-dd", new Date());
   return {
-    headingStart,
+    headingStart: new RegExp(`^${headingStart}\\s`),
     newReleaseHeading: `${headingStart} [${version}] - ${releaseDate}`,
     unreleasedHeading: `${headingStart} ${unreleasedHeadingContent}`,
   };
@@ -60,7 +60,7 @@ const findUnreleasedSection = (unreleasedHeadingContent, headingLevel) =>
         continue;
       }
 
-      if (isHeadingFound && line.startsWith(headingStart)) {
+      if (isHeadingFound && line.search(headingStart) !== -1) {
         break;
       }
 
