@@ -9,6 +9,8 @@
   "python.linting.ignorePatterns": [
     "**/site-packages/**/*.py"
   ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
   "[python]": {
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
