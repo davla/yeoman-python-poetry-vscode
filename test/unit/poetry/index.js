@@ -189,6 +189,13 @@ describe("python-poetry-vscode:poetry", () => {
         expectedContent,
       );
     });
+
+    it(`should not output input "repository" at "tool.poetry.repository" if value is null`, async function () {
+      this.runResult = await this.generator.withOptions({ repository: null });
+      (await pyProjectToml(this.runResult)).should.not.have.nested.property(
+        `tool.poetry.repository`,
+      );
+    });
   });
 
   describe("dynamic default values", () => {

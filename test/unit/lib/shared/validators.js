@@ -93,5 +93,7 @@ describe("Shared validators", () => {
       it(`Should not report valid ${protocol} addresses`, () =>
         validateUrl(url).should.be.true),
     );
+
+    it("Should not report null", () => validateUrl(null).should.be.true);
   });
 });

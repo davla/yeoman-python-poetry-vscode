@@ -113,14 +113,15 @@ export default class PoetryGenerator extends BaseGenerator {
     const verbatimInputs = this.inputs.filter(
       (input) => !PoetryGenerator.authorInputNames.includes(input.name),
     );
-    const inputPaths = verbatimInputs.map(
+    const toolPoertyPaths = verbatimInputs.map(
       (input) => input.extras.toolPoetryPath,
     );
-    const inputValues = verbatimInputs.map((input) => input.value);
-    return {
-      ..._.zipObjectDeep(inputPaths, inputValues),
+    const toolPoetryValues = verbatimInputs.map((input) => input.value);
+    const toolPoetry = {
+      ..._.zipObjectDeep(toolPoertyPaths, toolPoetryValues),
       ...this._makeAuthors(),
     };
+    return _.pickBy(toolPoetry, (value) => value !== null);
   }
 
   async _queryCurrentPythonVersion() {
