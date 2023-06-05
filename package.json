@@ -68,6 +68,7 @@
     "chalk": "^5.2.0",
     "email-validator": "^2.0.4",
     "generator-editorconf": "^0.3.1",
+    "generator-gi": "^0.0.2",
     "generator-license": "^5.4.0",
     "giturl": "^1.0.1",
     "lodash": "^4.17.21",
@@ -96,6 +97,7 @@
     "failZero": true,
     "parallel": false,
     "recursive": true,
+    "timeout": 4000,
     "require": [
       "./test-lib/global-setup.js"
     ],

@@ -91,6 +91,26 @@ describe("python-poetry-vscode", () => {
       restoreRunResult.call(this);
     });
 
+    it('should call "generator-editorconf"', async function () {
+      this.runResult = await this.generator;
+      this.composeWith.should.have.been.calledWith(
+        require.resolve("generator-editorconf"),
+        {
+          languages: ["python"],
+          name: "tekken",
+          destination: this.runResult.cwd,
+        }
+      );
+    });
+
+    it('should call "generator-gi"', async function () {
+      this.runResult = await this.generator;
+      this.composeWith.should.have.been.calledWith(
+        require.resolve("generator-gi/generators/app"),
+        { arguments: ["python", "visualstudiocode"] }
+      );
+    });
+
     it('should call "generator-license"', async function () {
       this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith(
@@ -100,18 +120,6 @@ describe("python-poetry-vscode", () => {
           license: "GPL-3.0",
           name: "Anna Williams",
           website: "https://github.com/steve-fox/git_package",
-        }
-      );
-    });
-
-    it('should call "generator-editorconf"', async function () {
-      this.runResult = await this.generator;
-      this.composeWith.should.have.been.calledWith(
-        require.resolve("generator-editorconf"),
-        {
-          languages: ["python"],
-          name: "tekken",
-          destination: this.runResult.cwd,
         }
       );
     });

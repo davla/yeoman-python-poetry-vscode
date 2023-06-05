@@ -36,16 +36,20 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
         "license",
         "packageName"
       );
+
+    this.composeWith(require.resolve("generator-editorconf"), {
+      languages: ["python"],
+      name: packageName,
+      destination: this.destinationRoot(),
+    });
+    this.composeWith(require.resolve("generator-gi/generators/app"), {
+      arguments: ["python", "visualstudiocode"],
+    });
     this.composeWith(require.resolve("generator-license"), {
       name: authorName,
       email: authorEmail,
       website: repository,
       license,
-    });
-    this.composeWith(require.resolve("generator-editorconf"), {
-      languages: ["python"],
-      name: packageName,
-      destination: this.destinationRoot(),
     });
 
     this._compose(PoetryGenerator, "../poetry/index.js", [
