@@ -33,24 +33,31 @@ The `python-poetry-vscode` Yeoman generator provides the following:
 - [Visual Studio Code](https://code.visualstudio.com/) configuration for
   Python, including:
   + Code navigation, autocompletion and running (courtesy of the
-    [VSCode Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)).
+    [VSCode Python extension][vscode-python-url]).
   + Formatting on save with [black](https://black.readthedocs.io/en/stable/)
     and [isort](https://pycqa.github.io/isort/).
+  + [Pytest](https://docs.pytest.org/en) debugging (still courtesy of
+    [VSCode Python extension][vscode-python-url]).
+
+- [EditorConfig](https://editorconfig.org/) file (courtesy of
+  [`generator-editorconf`](https://github.com/clayrisser/generator-editorconf)).
+
+- [gitignore](https://git-scm.com/docs/gitignore) file (courtesy of
+  [`generator-gi`](https://github.com/rorotikamobile/generator-gi)).
 
 - License file (courtesy of
   [`generator-license`](https://github.com/jozefizso/generator-license)).
 
 ### Planned generated files
 
-- VSCode debugging configuration
-- Editorconfig
 - Python package README.md
 - asdf/pyenv file
-- gitignore
 - optional mypy
 - optional linting (pylint)
 - optional ci (github actions)
 - poe tasks
+- optional main
+- retrieve latest python dependencies (optional?)
 
 ## Other features
 
@@ -85,3 +92,4 @@ GPL-3.0 © [Davide Laezza](https://github.com/davla)
 [actions-url]: https://github.com/davla/yeoman-python-poetry-vscode/actions/workflows/test-and-publish.yml
 [deps-image]: https://img.shields.io/librariesio/github/davla/yeoman-python-poetry-vscode?logo=librariesdotio
 [deps-url]: https://libraries.io/github/davla/yeoman-python-poetry-vscode
+[vscode-python-url]: https://marketplace.visualstudio.com/items?itemName=ms-python.python
