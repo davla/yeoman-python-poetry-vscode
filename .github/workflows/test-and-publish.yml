@@ -62,8 +62,12 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main' || startsWith(github.ref_name, 'done')
     name: Publish
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     steps:
     - name: Checkout repository code
@@ -79,8 +83,10 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Check release prerequisites
+      if: startsWith(github.ref_name, 'done')
+      run: npx semantic-release --dry-run
+
     - name: Release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      if: github.ref_name == 'main'
       run: npx semantic-release

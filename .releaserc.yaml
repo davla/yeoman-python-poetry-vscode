@@ -3,6 +3,7 @@
 
 branches:
 - main
+- { name: done/**, prerelease: alpha }
 
 preset: conventionalcommits
 
