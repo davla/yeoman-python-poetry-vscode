@@ -105,25 +105,6 @@
       "pre-commit": "lint-staged"
     }
   },
-  "mocha": {
-    "checkLeaks": true,
-    "failZero": true,
-    "parallel": false,
-    "recursive": true,
-    "timeout": 4000,
-    "require": [
-      "./test-lib/global-setup.js"
-    ],
-    "globals": [
-      "__core-js_shared__",
-      "core",
-      "System",
-      "asap",
-      "Observable",
-      "regeneratorRuntime",
-      "_babelPolyfill"
-    ]
-  },
   "release": {
     "branches": [
       "main"
