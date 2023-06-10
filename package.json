@@ -104,34 +104,5 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      "@semantic-release/exec",
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/npm",
-      "@semantic-release/github"
-    ],
-    "preset": "conventionalcommits",
-    "releaseRules": [
-      {
-        "type": "docs",
-        "scope": "changelog",
-        "release": false
-      },
-      {
-        "type": "feature",
-        "release": "minor"
-      },
-      {
-        "type": "performance",
-        "release": "patch"
-      }
-    ],
-    "generateNotesCmd": "npm run changelog --silent -- read-unreleased",
-    "publishCmd": "npm run changelog -- update --version ${nextRelease.version}"
   }
 }

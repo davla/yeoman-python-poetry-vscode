@@ -1,0 +1,21 @@
+%YAML 1.2
+---
+
+branches:
+- main
+
+preset: conventionalcommits
+
+releaseRules:
+- { type: docs, scope: changelog, release: false }
+- { type: feature, release: minor }
+- { type: performance, release: patch }
+
+plugins:
+- "@semantic-release/exec"
+- "@semantic-release/commit-analyzer"
+- "@semantic-release/npm"
+- "@semantic-release/github"
+
+generateNotesCmd: npm run changelog --silent -- read-unreleased
+publishCmd: npm run changelog -- update --version ${nextRelease.version}
