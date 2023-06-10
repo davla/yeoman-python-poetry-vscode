@@ -1,0 +1,68 @@
+%YAML 1.2
+---
+
+extends:
+- xo
+- plugin:chai-friendly/recommended
+- prettier
+
+plugins:
+- chai-friendly
+- import
+- prettier
+- unicorn
+
+env:
+  es6: true
+  mocha: true
+  node: true
+
+globals:
+  sinon: readonly
+  should: readonly
+
+rules:
+  import/default: error
+  import/export: error
+  import/first: error
+  import/named: error
+  import/namespace: error
+  import/newline-after-import: error
+  import/no-amd: error
+  import/no-commonjs: error
+  import/no-cycle: error
+  import/no-deprecated: warn
+  import/no-duplicates: error
+  import/no-extraneous-dependencies: error
+  import/no-mutable-exports: error
+  import/no-named-as-default: error
+  import/no-relative-packages: error
+  import/no-self-import: error
+  import/no-unused-modules: error
+  import/no-useless-path-segments: error
+  import/prefer-default-export: error
+  prettier/prettier: error
+  strict: error
+  unicorn/prefer-node-protocol: error
+
+  import/extensions:
+  - error
+  - ignorePackages
+
+  import/no-unresolved:
+  - error
+  - ignore:
+    - yeoman-test
+
+  import/order:
+  - error
+  - newlines-between: always
+    alphabetize:
+      order: asc
+      caseInsensitive: true
+
+  sort-imports:
+  - error
+  - allowSeparatedGroups: true
+    ignoreDeclarationSort: true
+    ignoreMemberSort: false
