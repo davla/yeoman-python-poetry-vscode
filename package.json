@@ -1,24 +1,29 @@
 {
   "name": "generator-python-poetry-vscode",
-  "version": "0.0.0-development",
-  "description": "Yeoman generator for Python packages, using Poetry and integrated with Visual Studio Code",
-  "homepage": "https://github.com/davla/yeoman-python-poetry-vscode",
-  "type": "module",
-  "author": {
-    "name": "Davide Laezza",
-    "email": "truzzialrogo@gmx.com",
-    "url": "https://github.com/davla"
+  "scripts": {
+    "changelog": "node ./scripts/changelog.js",
+    "format": "eslint . --ext js --fix --fix-type layout | dev-null",
+    "lint": "eslint . --ext js",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "mocha",
+    "test:ci": "npm run test -- --reporter json --reporter-option",
+    "test:update-snapshots": "cross-env UPDATE_SNAPSHOT=1 npm run test",
+    "semantic-release": "semantic-release"
   },
-  "files": [
-    "generators"
-  ],
-  "main": "generators/index.js",
-  "keywords": [
-    "python",
-    "poetry",
-    "vscode",
-    "yeoman-generator"
-  ],
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "chalk": "^5.2.0",
+    "email-validator": "^2.0.4",
+    "generator-editorconf": "^0.3.1",
+    "generator-gi": "^0.0.2",
+    "generator-license": "^5.4.0",
+    "giturl": "^1.0.1",
+    "lodash": "^4.17.21",
+    "remote-origin-url": "^2.0.0",
+    "semver": "^7.3.8",
+    "yeoman-generator": "^5.7.0",
+    "yosay": "^2.0.2"
+  },
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
     "@types/chai": "^4.3.4",
@@ -50,8 +55,6 @@
     "eslint-plugin-unicorn": "^47.0.0",
     "execa": "^7.1.1",
     "fast-glob": "^3.2.12",
-    "husky": "^8.0.2",
-    "lint-staged": "^13.1.0",
     "mocha": "^10.2.0",
     "mocha-chai-jest-snapshot": "^1.1.4",
     "prettier": "^2.8.1",
@@ -60,172 +63,29 @@
     "sinon-chai": "^3.7.0",
     "yeoman-test": "^7.1.0"
   },
+  "type": "module",
+  "files": [
+    "generators"
+  ],
+  "main": "generators/index.js",
   "engines": {
+    "node": ">= 16.0.0",
     "npm": ">= 4.0.0"
   },
-  "dependencies": {
-    "@iarna/toml": "^2.2.5",
-    "chalk": "^5.2.0",
-    "email-validator": "^2.0.4",
-    "generator-editorconf": "^0.3.1",
-    "generator-gi": "^0.0.2",
-    "generator-license": "^5.4.0",
-    "giturl": "^1.0.1",
-    "lodash": "^4.17.21",
-    "remote-origin-url": "^2.0.0",
-    "semver": "^7.3.8",
-    "yeoman-generator": "^5.7.0",
-    "yosay": "^2.0.2"
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.json": [
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "mocha": {
-    "checkLeaks": true,
-    "failZero": true,
-    "parallel": false,
-    "recursive": true,
-    "timeout": 4000,
-    "require": [
-      "./test-lib/global-setup.js"
-    ],
-    "globals": [
-      "__core-js_shared__",
-      "core",
-      "System",
-      "asap",
-      "Observable",
-      "regeneratorRuntime",
-      "_babelPolyfill"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      "@semantic-release/exec",
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/npm",
-      "@semantic-release/github"
-    ],
-    "preset": "conventionalcommits",
-    "releaseRules": [
-      {
-        "type": "docs",
-        "scope": "changelog",
-        "release": false
-      },
-      {
-        "type": "feature",
-        "release": "minor"
-      },
-      {
-        "type": "performance",
-        "release": "patch"
-      }
-    ],
-    "generateNotesCmd": "npm run changelog --silent -- read-unreleased",
-    "publishCmd": "npm run changelog -- update --version ${nextRelease.version}"
-  },
-  "eslintConfig": {
-    "extends": [
-      "xo",
-      "plugin:chai-friendly/recommended",
-      "prettier"
-    ],
-    "env": {
-      "es6": true,
-      "mocha": true,
-      "node": true
-    },
-    "globals": {
-      "sinon": "readonly",
-      "should": "readonly"
-    },
-    "rules": {
-      "import/default": "error",
-      "import/export": "error",
-      "import/extensions": [
-        "error",
-        "ignorePackages"
-      ],
-      "import/first": "error",
-      "import/named": "error",
-      "import/namespace": "error",
-      "import/newline-after-import": "error",
-      "import/no-amd": "error",
-      "import/no-commonjs": "error",
-      "import/no-cycle": "error",
-      "import/no-deprecated": "warn",
-      "import/no-duplicates": "error",
-      "import/no-extraneous-dependencies": "error",
-      "import/no-mutable-exports": "error",
-      "import/no-named-as-default": "error",
-      "import/no-relative-packages": "error",
-      "import/no-self-import": "error",
-      "import/no-unresolved": [
-        "error",
-        {
-          "ignore": [
-            "yeoman-test"
-          ]
-        }
-      ],
-      "import/no-unused-modules": "error",
-      "import/no-useless-path-segments": "error",
-      "import/order": [
-        "error",
-        {
-          "newlines-between": "always",
-          "alphabetize": {
-            "order": "asc",
-            "caseInsensitive": true
-          }
-        }
-      ],
-      "import/prefer-default-export": "error",
-      "prettier/prettier": "error",
-      "sort-imports": [
-        "error",
-        {
-          "allowSeparatedGroups": true,
-          "ignoreDeclarationSort": true,
-          "ignoreMemberSort": false
-        }
-      ],
-      "strict": "error",
-      "unicorn/prefer-node-protocol": "error"
-    },
-    "plugins": [
-      "chai-friendly",
-      "import",
-      "prettier",
-      "unicorn"
-    ]
-  },
-  "scripts": {
-    "changelog": "node ./scripts/changelog.js",
-    "format": "eslint . --ext js --fix --fix-type layout | dev-null",
-    "lint": "eslint . --ext js",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "mocha",
-    "test:ci": "npm run test -- --reporter json --reporter-option",
-    "test:update-snapshots": "cross-env UPDATE_SNAPSHOT=1 npm run test",
-    "semantic-release": "semantic-release"
-  },
+  "description": "Yeoman generator for Python packages, using Poetry and integrated with Visual Studio Code",
+  "homepage": "https://github.com/davla/yeoman-python-poetry-vscode",
+  "license": "GPL-3.0",
   "repository": "git@github.com:davla/yeoman-python-poetry-vscode.git",
-  "license": "GPL-3.0"
+  "version": "0.0.0-development",
+  "author": {
+    "name": "Davide Laezza",
+    "email": "truzzialrogo@gmx.com",
+    "url": "https://github.com/davla"
+  },
+  "keywords": [
+    "python",
+    "poetry",
+    "vscode",
+    "yeoman-generator"
+  ]
 }

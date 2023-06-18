@@ -1,0 +1,20 @@
+%YAML 1.2
+---
+
+checkLeaks: true
+failZero: true
+parallel: false
+recursive: true
+timeout: 10000
+
+require:
+- ./test-lib/global-setup.js
+
+globals:
+- __core-js_shared__
+- _babelPolyfill
+- asap
+- core
+- Observable
+- regeneratorRuntime
+- System
