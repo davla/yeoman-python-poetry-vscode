@@ -65,7 +65,8 @@
   },
   "type": "module",
   "files": [
-    "generators"
+    "generators",
+    "lib"
   ],
   "main": "generators/index.js",
   "engines": {
