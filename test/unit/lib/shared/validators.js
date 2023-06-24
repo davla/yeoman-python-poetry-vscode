@@ -7,7 +7,7 @@ import {
   validatePythonPackageName,
   validatePythonPackageVersion,
   validateUrl,
-} from "../../../lib/shared/validators.js";
+} from "../../../../lib/shared/validators.js";
 
 describe("Shared validators", () => {
   describe("Author email", () => {

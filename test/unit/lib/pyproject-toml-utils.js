@@ -1,7 +1,7 @@
 import {
   readPyProjectToml,
   readToolPoetryPath,
-} from "../../lib/pyproject-toml-utils.js";
+} from "../../../lib/pyproject-toml-utils.js";
 
 describe("toml-utils", () => {
   beforeEach(function () {

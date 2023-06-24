@@ -1,4 +1,4 @@
-import { Input, InvalidInputValueError } from "../../lib/input.js";
+import { Input, InvalidInputValueError } from "../../../lib/input.js";
 
 describe("Input", () => {
   describe("asOption", () => {

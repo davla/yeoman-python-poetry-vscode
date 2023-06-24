@@ -1,7 +1,7 @@
 import {
   validateDescription,
   validatePoetryVersionRange,
-} from "../../generators/poetry/validate-input.js";
+} from "../../../generators/poetry/validate-input.js";
 
 describe("Poetry input validation", () => {
   describe("Description", () => {

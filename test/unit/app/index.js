@@ -3,18 +3,18 @@ import { createRequire } from "node:module";
 import Generator from "yeoman-generator";
 import yeomanTest from "yeoman-test";
 
-import "../../test-lib/register-chai-snapshots.js";
-import PythonPoetryVSCodeGenerator from "../../generators/app/index.js";
-import PoetryGenerator from "../../generators/poetry/index.js";
-import PythonPackageGenerator from "../../generators/python-package/index.js";
-import VSCodeGenerator from "../../generators/vscode/index.js";
-import { readCwd } from "../../test-lib/file-system.js";
-import restoreRunResult from "../../test-lib/generator-hooks.js";
+import "../../lib/register-chai-snapshots.js";
+import PythonPoetryVSCodeGenerator from "../../../generators/app/index.js";
+import PoetryGenerator from "../../../generators/poetry/index.js";
+import PythonPackageGenerator from "../../../generators/python-package/index.js";
+import VSCodeGenerator from "../../../generators/vscode/index.js";
+import { readCwd } from "../../lib/file-system.js";
+import restoreRunResult from "../../lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
-} from "../../test-lib/system-access-stubs.js";
-import { withInput } from "../../test-lib/yeoman-test-input.js";
+} from "../../lib/system-access-stubs.js";
+import { withInput } from "../../lib/yeoman-test-input.js";
 
 const require = createRequire(import.meta.url);
 
@@ -129,7 +129,7 @@ describe("python-poetry-vscode", () => {
       this.composeWith.should.have.been.calledWith(
         {
           Generator: PoetryGenerator,
-          path: require.resolve("../../generators/poetry/index.js"),
+          path: require.resolve("../../../generators/poetry/index.js"),
         },
         {
           "author-name": "Anna Williams",
@@ -147,7 +147,7 @@ describe("python-poetry-vscode", () => {
       this.composeWith.should.have.been.calledWith(
         {
           Generator: PythonPackageGenerator,
-          path: require.resolve("../../generators/python-package/index.js"),
+          path: require.resolve("../../../generators/python-package/index.js"),
         },
         {
           "package-name": "tekken",
@@ -160,7 +160,7 @@ describe("python-poetry-vscode", () => {
       this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith({
         Generator: VSCodeGenerator,
-        path: require.resolve("../../generators/vscode/index.js"),
+        path: require.resolve("../../../generators/vscode/index.js"),
       });
     });
   });

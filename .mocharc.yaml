@@ -8,7 +8,7 @@ recursive: true
 timeout: 10000
 
 require:
-- ./test-lib/global-setup.js
+- ./test/lib/global-setup.js
 
 globals:
 - __core-js_shared__

@@ -5,8 +5,10 @@
     "format": "eslint . --ext js --fix --fix-type layout | dev-null",
     "lint": "eslint . --ext js",
     "lint:fix": "npm run lint -- --fix",
-    "test": "mocha",
-    "test:ci": "npm run test -- --reporter json --reporter-option",
+    "test": "npm run test:unit",
+    "test:cmd": "mocha",
+    "test:unit": "npm run test:cmd -- 'test/unit/**'",
+    "test:unit:ci": "npm run test:unit -- --reporter json --reporter-option",
     "test:update-snapshots": "cross-env UPDATE_SNAPSHOT=1 npm run test",
     "semantic-release": "semantic-release"
   },

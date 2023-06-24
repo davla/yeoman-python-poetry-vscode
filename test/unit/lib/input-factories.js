@@ -1,7 +1,7 @@
 import {
   InputFactory,
   PyProjectTomlInputFactory,
-} from "../../lib/input-factories.js";
+} from "../../../lib/input-factories.js";
 
 describe("InputFactory", () => {
   it("forwards constructor arguments to created inputs", () => {
