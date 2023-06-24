@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`end-to-end tests python-poetry-vscode:poetry 1`] = `
+Object {
+  "pyproject.toml": Object {
+    "build-system": Object {
+      "build-backend": "poetry.core.masonry.api",
+      "requires": Array [
+        "poetry-core",
+      ],
+    },
+    "tool": Object {
+      "poetry": Object {
+        "authors": Array [
+          "Paul Phoenix <paul.phoenix@tekken.us>",
+        ],
+        "dependencies": Object {
+          "python": "^3.10.0",
+        },
+        "description": "I don't actually like fighting games",
+        "license": "MIT",
+        "name": "tekken",
+        "repository": "https://github.com/paul-phoenix/tekken",
+        "version": "2.0.2",
+      },
+    },
+  },
+}
+`;
+
+exports[`end-to-end tests python-poetry-vscode:python-package 1`] = `
+Object {
+  "tests/__init__.py": "",
+  "tests/test_yoyo.py": "from yoyo import __version__
+
+
+def test_version():
+    assert __version__ == \\"1.9.0\\"
+",
+  "yoyo/__init__.py": Object {
+    "__version__": "1.9.0",
+  },
+}
+`;
+
+exports[`end-to-end tests python-poetry-vscode:vscode 1`] = `
+Object {
+  "poetry.toml": Object {
+    "virtualenvs": Object {
+      "in-project": true,
+    },
+  },
+  "pyproject.toml": Object {
+    "tool": Object {
+      "poetry": Object {
+        "dependencies": Object {
+          "black": "^23.3.0",
+          "isort": "^5.12.0",
+        },
+        "group": Object {
+          "dev": Object {
+            "dependencies": Object {
+              "pytest": "^7.3.1",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`;

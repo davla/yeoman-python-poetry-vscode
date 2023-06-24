@@ -3,12 +3,10 @@ import { createRequire } from "node:module";
 import Generator from "yeoman-generator";
 import yeomanTest from "yeoman-test";
 
-import "../../lib/register-chai-snapshots.js";
 import PythonPoetryVSCodeGenerator from "../../../generators/app/index.js";
 import PoetryGenerator from "../../../generators/poetry/index.js";
 import PythonPackageGenerator from "../../../generators/python-package/index.js";
 import VSCodeGenerator from "../../../generators/vscode/index.js";
-import { readCwd } from "../../lib/file-system.js";
 import restoreRunResult from "../../lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
@@ -37,15 +35,7 @@ describe("python-poetry-vscode", () => {
     });
   });
 
-  afterEach(function () {
-    cleanupSystemAccessStubs();
-    restoreRunResult.call(this);
-  });
-
-  it("should create the project scaffold files", async function () {
-    this.runResult = await this.generator;
-    (await readCwd(this.runResult)).should.matchSnapshot();
-  });
+  afterEach(cleanupSystemAccessStubs);
 
   describe("subgenerators", () => {
     beforeEach(function () {

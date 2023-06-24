@@ -2,7 +2,6 @@ import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import yeomanTest from "yeoman-test";
 
-import "../../lib/register-chai-snapshots.js";
 import PoetryGenerator from "../../../generators/poetry/index.js";
 import { readTomlInCwd, writeTomlInCwd } from "../../lib/file-system.js";
 import restoreRunResult from "../../lib/generator-hooks.js";
@@ -89,11 +88,6 @@ describe("python-poetry-vscode:poetry", () => {
 
   describe("pyproject.toml", () => {
     afterEach(restoreRunResult);
-
-    it("should populate pyproject.toml", async function () {
-      this.runResult = await this.generator;
-      return (await pyProjectToml(this.runResult)).should.matchSnapshot();
-    });
 
     it("creates the file in toml format", async function () {
       this.runResult = await this.generator;
