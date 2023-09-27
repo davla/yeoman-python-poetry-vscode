@@ -5,9 +5,13 @@
     "format": "eslint . --ext js --fix --fix-type layout | dev-null",
     "lint": "eslint . --ext js",
     "lint:fix": "npm run lint -- --fix",
-    "test": "mocha",
-    "test:ci": "npm run test -- --reporter json --reporter-option",
-    "test:update-snapshots": "cross-env UPDATE_SNAPSHOT=1 npm run test",
+    "test": "npm run test:unit",
+    "test:cmd": "mocha",
+    "test:end-to-end": "npm run test:cmd -- 'test/end-to-end/**/*.js'",
+    "test:end-to-end:ci": "npm run test:end-to-end -- --reporter json --reporter-option",
+    "test:unit": "npm run test:cmd -- 'test/unit/**'",
+    "test:unit:ci": "npm run test:unit -- --reporter json --reporter-option",
+    "test:update-snapshots": "cross-env UPDATE_SNAPSHOT=1 npm run test:end-to-end",
     "semantic-release": "semantic-release"
   },
   "dependencies": {
@@ -61,7 +65,8 @@
     "semantic-release": "^21.0.3",
     "sinon": "^15.0.1",
     "sinon-chai": "^3.7.0",
-    "yeoman-test": "^7.1.0"
+    "yeoman-test": "^7.1.0",
+    "yo": "^4.3.1"
   },
   "type": "module",
   "files": [

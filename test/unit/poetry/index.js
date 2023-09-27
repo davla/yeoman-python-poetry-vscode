@@ -2,15 +2,14 @@ import LicenseGenerator from "generator-license";
 import _ from "lodash";
 import yeomanTest from "yeoman-test";
 
-import "../../test-lib/register-chai-snapshots.js";
-import PoetryGenerator from "../../generators/poetry/index.js";
-import { readTomlInCwd, writeTomlInCwd } from "../../test-lib/file-system.js";
-import restoreRunResult from "../../test-lib/generator-hooks.js";
+import PoetryGenerator from "../../../generators/poetry/index.js";
+import { readTomlInCwd, writeTomlInCwd } from "../../lib/file-system.js";
+import restoreRunResult from "../../lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
-} from "../../test-lib/system-access-stubs.js";
-import { withInput } from "../../test-lib/yeoman-test-input.js";
+} from "../../lib/system-access-stubs.js";
+import { withInput } from "../../lib/yeoman-test-input.js";
 
 const inToolPoetry = (toolPoetryPath, content) => ({
   tool: { poetry: _.set({}, toolPoetryPath, content) },
@@ -89,11 +88,6 @@ describe("python-poetry-vscode:poetry", () => {
 
   describe("pyproject.toml", () => {
     afterEach(restoreRunResult);
-
-    it("should populate pyproject.toml", async function () {
-      this.runResult = await this.generator;
-      return (await pyProjectToml(this.runResult)).should.matchSnapshot();
-    });
 
     it("creates the file in toml format", async function () {
       this.runResult = await this.generator;

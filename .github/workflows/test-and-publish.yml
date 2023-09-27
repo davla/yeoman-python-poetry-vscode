@@ -7,14 +7,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16, 18, latest]
         runner: [ubuntu-22.04, windows-2022]
+        node-version: [16, 18, latest]
 
     name: Run tests
     runs-on: ${{ matrix.runner }}
 
     env:
-      test-results-path: test-results.json
+      unit-test-results-path: unit-test-results.json
+      end-to-end-test-results-path: end-to-end-test-results.json
 
     steps:
     - name: Checkout repository code
@@ -28,16 +29,34 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Test
-      run: npm run test:ci -- output=${{ env.test-results-path }}
+    - name: Run unit test
+      run: npm run test:unit:ci -- output=${{ env.unit-test-results-path }}
 
-    - name: Publish test results
+    - name: Publish unit test results
       uses: dorny/test-reporter@v1
       if: '!cancelled()'
       with:
-        name: Test results (${{ matrix.node-version }}, ${{ matrix.runner }})
+        name: Unit test results (${{ matrix.runner }}, ${{ matrix.node-version }})
         fail-on-error: false
-        path: ${{ env.test-results-path }}
+        path: ${{ env.unit-test-results-path }}
+        reporter: mocha-json
+
+    - name: Install end-to-end dependencies
+      run: pipx install poetry
+
+    - name: End-to-end test
+      run: |
+        exec bash '${{ github.workspace }}/test/end-to-end/with-packaging.sh' \
+            --test-output "${{ env.end-to-end-test-results-path }}"
+      shell: bash
+
+    - name: Publish end-to-end test results
+      uses: dorny/test-reporter@v1
+      if: '!cancelled()'
+      with:
+        name: End-to-end test results (${{ matrix.runner }}, ${{ matrix.node-version }})
+        fail-on-error: false
+        path: ${{ env.end-to-end-test-results-path }}
         reporter: mocha-json
 
   publish:

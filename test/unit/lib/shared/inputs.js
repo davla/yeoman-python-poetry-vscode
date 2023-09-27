@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import sharedInputs from "../../../lib/shared/inputs.js";
+import sharedInputs from "../../../../lib/shared/inputs.js";
 
 describe("Shared inputs", () => {
   describe("repository", () => {

@@ -1,4 +1,4 @@
-import mergeConfig from "../../lib/merge-config.js";
+import mergeConfig from "../../../lib/merge-config.js";
 
 describe("mergeConfig", () => {
   it("merges array of non-plain objects by concatenation", () => {

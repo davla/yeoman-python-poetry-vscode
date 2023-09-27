@@ -1,10 +1,10 @@
 import yeomanTest from "yeoman-test";
 
-import { InputFactory } from "../../lib/input-factories.js";
-import InputGenerator from "../../lib/input-generator.js";
-import { fileName } from "../../lib/paths.js";
-import { readFileInCwd } from "../../test-lib/file-system.js";
-import restoreRunResult from "../../test-lib/generator-hooks.js";
+import { InputFactory } from "../../../lib/input-factories.js";
+import InputGenerator from "../../../lib/input-generator.js";
+import { fileName } from "../../../lib/paths.js";
+import { readFileInCwd } from "../../lib/file-system.js";
+import restoreRunResult from "../../lib/generator-hooks.js";
 
 export default class JsonInputGenerator extends InputGenerator {
   static inputFactories = [

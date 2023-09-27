@@ -2,11 +2,11 @@ import path from "node:path";
 
 import yeomanTest from "yeoman-test";
 
-import "../../test-lib/register-chai-snapshots.js";
-import PythonPackageGenerator from "../../generators/python-package/index.js";
-import { readFileInCwd } from "../../test-lib/file-system.js";
-import restoreRunResult from "../../test-lib/generator-hooks.js";
-import { withInput } from "../../test-lib/yeoman-test-input.js";
+import "../../lib/register-chai-snapshots.js";
+import PythonPackageGenerator from "../../../generators/python-package/index.js";
+import { readFileInCwd } from "../../lib/file-system.js";
+import restoreRunResult from "../../lib/generator-hooks.js";
+import { withInput } from "../../lib/yeoman-test-input.js";
 
 const generatorInput = [
   {

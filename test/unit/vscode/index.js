@@ -3,18 +3,18 @@ import path from "node:path";
 
 import yeomanTest from "yeoman-test";
 
-import "../../test-lib/register-chai-snapshots.js";
-import VSCodeGenerator from "../../generators/vscode/index.js";
+import "../../lib/register-chai-snapshots.js";
+import VSCodeGenerator from "../../../generators/vscode/index.js";
 import {
   readJsonInCwd,
   readTomlInCwd,
   writeTomlInCwd,
-} from "../../test-lib/file-system.js";
-import restoreRunResult from "../../test-lib/generator-hooks.js";
+} from "../../lib/file-system.js";
+import restoreRunResult from "../../lib/generator-hooks.js";
 import {
   cleanupSystemAccessStubs,
   setupSystemAccessStubs,
-} from "../../test-lib/system-access-stubs.js";
+} from "../../lib/system-access-stubs.js";
 
 async function writeVsCodeConfig(fileName, content, dstDir) {
   const filePath = path.join(dstDir, ".vscode", fileName);

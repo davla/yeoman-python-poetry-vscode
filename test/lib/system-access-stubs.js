@@ -1,6 +1,6 @@
 import Generator from "yeoman-generator";
 
-import BaseGenerator from "../lib/base-generator.js";
+import BaseGenerator from "../../lib/base-generator.js";
 
 export function setupSystemAccessStubs() {
   return {
