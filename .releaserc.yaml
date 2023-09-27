@@ -7,6 +7,7 @@ branches:
 preset: conventionalcommits
 
 releaseRules:
+- { type: build, scope: deps, release: patch }
 - { type: docs, scope: changelog, release: false }
 - { type: feature, release: minor }
 - { type: performance, release: patch }
