@@ -1,13 +1,13 @@
 import path from "node:path";
 
 import InputGenerator from "../../lib/input-generator.js";
+import inputs from "../../lib/inputs.js";
 import { moduleDirName } from "../../lib/paths.js";
-import sharedInputs from "../../lib/shared/inputs.js";
 
 const parentDir = moduleDirName(import.meta);
 
 export default class PythonPackageGenerator extends InputGenerator {
-  static inputs = [sharedInputs.packageName, sharedInputs.packageVersion];
+  static inputs = [inputs.packageName, inputs.packageVersion];
 
   constructor(args, opts) {
     super(args, opts, PythonPackageGenerator.inputs);

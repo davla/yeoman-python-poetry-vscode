@@ -8,6 +8,7 @@ import VSCodeGenerator from "../../../generators/vscode/index.js";
 import {
   readJsonInCwd,
   readTomlInCwd,
+  toPosixPath,
   writeTomlInCwd,
 } from "../../lib/file-system.js";
 import restoreRunResult from "../../lib/generator-hooks.js";
@@ -21,8 +22,6 @@ async function writeVsCodeConfig(fileName, content, dstDir) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(content));
 }
-
-const toPosixPath = (p) => p.replace(path.sep, path.posix.sep);
 
 describe("python-poetry-vscode:vscode", () => {
   beforeEach(function () {

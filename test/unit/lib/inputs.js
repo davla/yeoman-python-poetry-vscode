@@ -1,15 +1,15 @@
 import _ from "lodash";
 
-import sharedInputs from "../../../../lib/shared/inputs.js";
+import inputs from "../../../lib/inputs.js";
 
-describe("Shared inputs", () => {
+describe("Inputs", () => {
   describe("packageName", () => {
     beforeEach(function () {
       this.generator = {
         destinationPath: sinon.fake(),
         fs: { read: sinon.stub() },
       };
-      this.input = sharedInputs.packageName.create(this.generator);
+      this.input = inputs.packageName.create(this.generator);
       this.cwd = sinon.stub(process, "cwd");
     });
 
@@ -57,7 +57,7 @@ describe("Shared inputs", () => {
         destinationPath: sinon.fake(),
         fs: { read: sinon.stub() },
       };
-      this.input = sharedInputs.packageVersion.create(this.generator);
+      this.input = inputs.packageVersion.create(this.generator);
     });
 
     it('defaults to read "version" from pyproject.toml', async function () {
@@ -88,7 +88,7 @@ describe("Shared inputs", () => {
         fs: { read: sinon.stub() },
         _queryGitOriginUrl: sinon.stub(),
       };
-      this.input = sharedInputs.repository.create(this.generator);
+      this.input = inputs.repository.create(this.generator);
     });
 
     it('defaults to read "repository" from pyproject.toml', async function () {
@@ -144,7 +144,7 @@ describe("Shared inputs", () => {
           fs: { read: sinon.stub() },
           user: { git: { [gitConfigName]: this.gitConfigStub } },
         };
-        this.input = sharedInputs[inputName].create(this.generator);
+        this.input = inputs[inputName].create(this.generator);
       });
 
       it('defaults to read "authors" in pyproject.toml', async function () {

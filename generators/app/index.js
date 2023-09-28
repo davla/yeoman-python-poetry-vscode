@@ -4,7 +4,7 @@ import chalk from "chalk";
 import yosay from "yosay";
 
 import BaseGenerator from "../../lib/base-generator.js";
-import sharedInputs from "../../lib/shared/inputs.js";
+import inputs from "../../lib/inputs.js";
 import PoetryGenerator from "../poetry/index.js";
 import PythonPackageGenerator from "../python-package/index.js";
 import VSCodeGenerator from "../vscode/index.js";
@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 
 export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   constructor(args, opts) {
-    super(args, opts, Object.values(sharedInputs));
+    super(args, opts, Object.values(inputs));
   }
 
   initializing() {
@@ -59,6 +59,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       "authorName",
       "authorEmail",
       "repository",
+      "description",
+      "pythonVersion",
     ]);
     this._compose(PythonPackageGenerator, "../python-package/index.js", [
       "packageName",

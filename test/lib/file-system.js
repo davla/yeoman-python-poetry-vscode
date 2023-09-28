@@ -8,6 +8,12 @@ const fileInCwd = (runResult, fileName) =>
   path.join(runResult.cwd ?? runResult, fileName);
 
 /**************************************
+ * List
+ **************************************/
+
+export const toPosixPath = (p) => p.replace(path.sep, path.posix.sep);
+
+/**************************************
  * Read
  **************************************/
 
@@ -41,14 +47,15 @@ async function tryParseInCwd(runResult, fileName) {
   return content;
 }
 
-export async function readCwd(runResult) {
+export async function readCwd(runResult, excludeFiles = []) {
   const filesInCwd = await glob(["**", ".**"], {
     cwd: (runResult.cwd ?? runResult).replace(path.sep, path.posix.sep),
+    ignore: excludeFiles,
     absolute: false,
     onlyFiles: true,
   });
   const nameContentPairs = filesInCwd.map(async (fileName) => [
-    fileName,
+    toPosixPath(fileName),
     await tryParseInCwd(runResult, fileName),
   ]);
   return Object.fromEntries(await Promise.all(nameContentPairs));
