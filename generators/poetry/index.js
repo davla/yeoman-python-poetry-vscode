@@ -85,7 +85,7 @@ export default class PoetryGenerator extends BaseGenerator {
     const diskPyProjectToml = readPyProjectToml.call(this);
     const statePyProjectToml = { tool: { poetry: this._toolPoetry() } };
     const newPyProjectToml = this._applyDefaultBuildSystem(
-      mergeConfig(diskPyProjectToml, statePyProjectToml)
+      mergeConfig(diskPyProjectToml, statePyProjectToml),
     );
     this._writeToml(pyProjectTomlPath.call(this), newPyProjectToml);
   }
@@ -97,24 +97,24 @@ export default class PoetryGenerator extends BaseGenerator {
      */
     return _.assign(
       this._readToml(this.templatePath("pyproject.toml")),
-      pyProjectToml
+      pyProjectToml,
     );
   }
 
   _makeAuthors() {
     const { authorName, authorEmail } = this.getInputValues(
       "authorName",
-      "authorEmail"
+      "authorEmail",
     );
     return { authors: [`${authorName} <${authorEmail}>`] };
   }
 
   _toolPoetry() {
     const verbatimInputs = this.inputs.filter(
-      (input) => !PoetryGenerator.authorInputNames.includes(input.name)
+      (input) => !PoetryGenerator.authorInputNames.includes(input.name),
     );
     const inputPaths = verbatimInputs.map(
-      (input) => input.extras.toolPoetryPath
+      (input) => input.extras.toolPoetryPath,
     );
     const inputValues = verbatimInputs.map((input) => input.value);
     return {

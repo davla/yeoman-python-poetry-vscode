@@ -25,7 +25,7 @@ describe("python-poetry-vscode:python-package", () => {
   beforeEach(function () {
     this.generator = withInput(
       yeomanTest.run(PythonPackageGenerator),
-      generatorInput
+      generatorInput,
     );
   });
 
@@ -42,7 +42,7 @@ describe("python-poetry-vscode:python-package", () => {
       this.runResult = await this.generator;
       const fileContent = await readFileInCwd(
         this.runResult,
-        path.join("package_name", "__init__.py")
+        path.join("package_name", "__init__.py"),
       );
       fileContent.should.matchSnapshot();
     });
@@ -61,7 +61,7 @@ describe("python-poetry-vscode:python-package", () => {
       this.runResult = await this.generator;
       const fileContent = await readFileInCwd(
         this.runResult,
-        path.join("tests", "__init__.py")
+        path.join("tests", "__init__.py"),
       );
       fileContent.should.matchSnapshot();
     });
@@ -76,7 +76,7 @@ describe("python-poetry-vscode:python-package", () => {
       this.runResult = await this.generator;
       const fileContent = await readFileInCwd(
         this.runResult,
-        path.join("tests", "test_package_name.py")
+        path.join("tests", "test_package_name.py"),
       );
       fileContent.should.matchSnapshot();
     });

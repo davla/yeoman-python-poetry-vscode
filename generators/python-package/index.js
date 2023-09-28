@@ -25,21 +25,21 @@ export default class PythonPackageGenerator extends InputGenerator {
   writing() {
     const { packageName, packageVersion: version } = this.getInputValues(
       "packageName",
-      "packageVersion"
+      "packageVersion",
     );
     this.fs.copyTpl(
       this.templatePath("__init__.py"),
       this.destinationPath(packageName, "__init__.py"),
-      { version }
+      { version },
     );
     this.fs.copy(
       this.templatePath("tests", "__init__.py"),
-      this.destinationPath("tests", "__init__.py")
+      this.destinationPath("tests", "__init__.py"),
     );
     this.fs.copyTpl(
       this.templatePath("tests", "test.py"),
       this.destinationPath("tests", `test_${packageName}.py`),
-      { packageName, version }
+      { packageName, version },
     );
   }
 }

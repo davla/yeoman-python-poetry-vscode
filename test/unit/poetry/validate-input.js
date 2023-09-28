@@ -11,7 +11,7 @@ describe("Poetry input validation", () => {
       { testText: "undefined", description: undefined },
     ].forEach(({ testText, description }) =>
       it(`Should report ${testText} descriptions`, () =>
-        validateDescription(description).should.include("empty"))
+        validateDescription(description).should.include("empty")),
     );
 
     it("Should not report valid descriptions", () =>

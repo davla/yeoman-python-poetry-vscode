@@ -70,7 +70,7 @@ describe("python-poetry-vscode:poetry", () => {
   beforeEach(function () {
     this.stubs = setupSystemAccessStubs();
     this.stubs.queryGitOriginUrl.resolves(
-      "https://github.com/eddy-gordo/git_package"
+      "https://github.com/eddy-gordo/git_package",
     );
     this.stubs.spawnCommand
       .withArgs("python", ["--version"], { stdio: "pipe" })
@@ -105,7 +105,7 @@ describe("python-poetry-vscode:poetry", () => {
                 dependencies: { black: "^2.31.0" },
               },
             },
-          })
+          }),
         )
         .withOptions({
           "author-name": "Mokujin",
@@ -146,7 +146,7 @@ describe("python-poetry-vscode:poetry", () => {
         },
       };
       this.runResult = await this.generator.doInDir(
-        writePyProjectToml.bind(this.generator, existingBuildSystem)
+        writePyProjectToml.bind(this.generator, existingBuildSystem),
       );
       (await pyProjectToml(this.runResult)).should.have
         .property("build-system")
@@ -163,7 +163,7 @@ describe("python-poetry-vscode:poetry", () => {
         const expectedContent = inToolPoetry(outputPath, inputValue);
         this.runResult = await withInput(this.generator, inputTestData);
         (await pyProjectToml(this.runResult)).should.containSubset(
-          expectedContent
+          expectedContent,
         );
       });
     }
@@ -171,7 +171,7 @@ describe("python-poetry-vscode:poetry", () => {
     it('should output inputs authorName and authorEmail at "tool.poetry.author.0"', async function () {
       const expectedContent = inToolPoetry(
         "authors.0",
-        "Paul Phoenix <paul.phoenix@tekken.us>"
+        "Paul Phoenix <paul.phoenix@tekken.us>",
       );
       this.runResult = await withInput(this.generator, [
         {
@@ -186,7 +186,7 @@ describe("python-poetry-vscode:poetry", () => {
         },
       ]);
       (await pyProjectToml(this.runResult)).should.containSubset(
-        expectedContent
+        expectedContent,
       );
     });
   });
@@ -199,7 +199,7 @@ describe("python-poetry-vscode:poetry", () => {
         tool: { poetry: { dependencies: { python: "^3.7.2" } } },
       };
       this.runResult = await this.generator.doInDir(
-        writePyProjectToml.bind(this.generator, toolPoetry)
+        writePyProjectToml.bind(this.generator, toolPoetry),
       );
       this.stubs.spawnCommand.should.not.have.been.called;
       (await pyProjectToml(this.runResult)).should.containSubset(toolPoetry);
@@ -212,7 +212,7 @@ describe("python-poetry-vscode:poetry", () => {
         ["--version"],
         {
           stdio: "pipe",
-        }
+        },
       );
 
       (await pyProjectToml(this.runResult)).should.containSubset({

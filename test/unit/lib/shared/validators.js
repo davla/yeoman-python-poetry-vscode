@@ -83,7 +83,7 @@ describe("Shared validators", () => {
 
     it("Should report SSH URLs", () =>
       validateUrl("git@github.com:heihachi/mishima.git").should.include(
-        "Invalid URL"
+        "Invalid URL",
       ));
 
     [
@@ -91,7 +91,7 @@ describe("Shared validators", () => {
       { protocol: "https", url: "https://github.com/heihachi/mishima" },
     ].forEach(({ protocol, url }) =>
       it(`Should not report valid ${protocol} addresses`, () =>
-        validateUrl(url).should.be.true)
+        validateUrl(url).should.be.true),
     );
   });
 });

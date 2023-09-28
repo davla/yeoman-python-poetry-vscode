@@ -6,7 +6,7 @@ export function withInput(runContext, inputData) {
   const inputs = _.flatten([inputData]);
   const [optionData, promptData] = _.partition(
     inputs,
-    (_) => Math.random() > 0.5
+    (_) => Math.random() > 0.5,
   );
   const options = optionData.map(({ optionName, inputValue }) => ({
     [optionName]: inputValue,

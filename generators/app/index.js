@@ -34,7 +34,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
         "authorEmail",
         "repository",
         "license",
-        "packageName"
+        "packageName",
       );
 
     this.composeWith(require.resolve("generator-editorconf"), {
@@ -70,7 +70,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   async install() {
     const poetryInstall = chalk.green("poetry install");
     this.log(
-      yosay(`I'll now run ${poetryInstall} to bootstrap your workspace.`)
+      yosay(`I'll now run ${poetryInstall} to bootstrap your workspace.`),
     );
 
     try {
@@ -91,7 +91,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
         Generator: generatorClass,
         path: require.resolve(generatorPath),
       },
-      this.getOptionValues(...optionNames)
+      this.getOptionValues(...optionNames),
     );
   }
 
@@ -103,8 +103,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       yosay(
         `I'll now ask you some questions. The ${defaultAnswers} are derived` +
           `from the environment (e.g. existing ${pyprojectToml}, ` +
-          `${git} configuration...).`
-      )
+          `${git} configuration...).`,
+      ),
     );
   }
 
@@ -119,8 +119,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
           `You can install it here: ${intallLink}.`,
         {
           maxLength: url.length + 1,
-        }
-      )
+        },
+      ),
     );
   }
 }

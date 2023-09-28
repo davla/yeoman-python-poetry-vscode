@@ -11,7 +11,7 @@ import "../lib/register-chai-snapshots.js";
 const endToEndPath = path.join(
   moduleDirName(import.meta),
   "test",
-  "end-to-end"
+  "end-to-end",
 );
 
 describe("end-to-end tests", () => {
