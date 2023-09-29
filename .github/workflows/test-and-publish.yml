@@ -41,6 +41,11 @@ jobs:
         path: ${{ env.unit-test-results-path }}
         reporter: mocha-json
 
+    - name: Install python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+
     - name: Install end-to-end dependencies
       run: pipx install poetry
 

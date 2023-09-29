@@ -20,7 +20,7 @@ describe("python-poetry-vscode", () => {
   beforeEach(function () {
     this.stubs = setupSystemAccessStubs();
     this.stubs.queryGitOriginUrl.resolves(
-      "https://github.com/eddy-gordo/git_package"
+      "https://github.com/eddy-gordo/git_package",
     );
     this.stubs.spawnCommand
       .withArgs("python", ["--version"], { stdio: "pipe" })
@@ -70,6 +70,16 @@ describe("python-poetry-vscode", () => {
           promptName: "license",
           inputValue: "GPL-3.0",
         },
+        {
+          optionName: "python-version",
+          promptName: "pythonVersion",
+          inputValue: "^3.9.0",
+        },
+        {
+          optionName: "description",
+          promptName: "description",
+          inputValue: "The King of Iron First Tournament",
+        },
       ]);
       this.composeWith = sinon
         .stub(Generator.prototype, "composeWith")
@@ -89,7 +99,7 @@ describe("python-poetry-vscode", () => {
           languages: ["python"],
           name: "tekken",
           destination: this.runResult.cwd,
-        }
+        },
       );
     });
 
@@ -97,7 +107,7 @@ describe("python-poetry-vscode", () => {
       this.runResult = await this.generator;
       this.composeWith.should.have.been.calledWith(
         require.resolve("generator-gi/generators/app"),
-        { arguments: ["python", "visualstudiocode"] }
+        { arguments: ["python", "visualstudiocode"] },
       );
     });
 
@@ -110,7 +120,7 @@ describe("python-poetry-vscode", () => {
           license: "GPL-3.0",
           name: "Anna Williams",
           website: "https://github.com/steve-fox/git_package",
-        }
+        },
       );
     });
 
@@ -128,7 +138,9 @@ describe("python-poetry-vscode", () => {
           "package-name": "tekken",
           "package-version": "0.5.3",
           repository: "https://github.com/steve-fox/git_package",
-        }
+          description: "The King of Iron First Tournament",
+          "python-version": "^3.9.0",
+        },
       );
     });
 
@@ -142,7 +154,7 @@ describe("python-poetry-vscode", () => {
         {
           "package-name": "tekken",
           "package-version": "0.5.3",
-        }
+        },
       );
     });
 

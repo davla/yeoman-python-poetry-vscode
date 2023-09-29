@@ -87,7 +87,7 @@ describe("Input", () => {
       it(`overrides "${functionName}" if given in "prompt"`, () => {
         const input = new Input(
           { prompt: { [functionName]: 88 } },
-          { [functionName]: true }
+          { [functionName]: true },
         );
         input.asPrompt()[functionName].should.equal(88);
       });

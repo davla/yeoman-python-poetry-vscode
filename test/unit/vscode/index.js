@@ -8,6 +8,7 @@ import VSCodeGenerator from "../../../generators/vscode/index.js";
 import {
   readJsonInCwd,
   readTomlInCwd,
+  toPosixPath,
   writeTomlInCwd,
 } from "../../lib/file-system.js";
 import restoreRunResult from "../../lib/generator-hooks.js";
@@ -21,8 +22,6 @@ async function writeVsCodeConfig(fileName, content, dstDir) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(content));
 }
-
-const toPosixPath = (p) => p.replace(path.sep, path.posix.sep);
 
 describe("python-poetry-vscode:vscode", () => {
   beforeEach(function () {
@@ -58,7 +57,7 @@ describe("python-poetry-vscode:vscode", () => {
         },
       };
       this.runResult = await this.generator.doInDir(
-        writeVsCodeConfig.bind(this.generator, "settings.json", content)
+        writeVsCodeConfig.bind(this.generator, "settings.json", content),
       );
       const fileInDst = path.join(".vscode", "settings.json");
       (await readJsonInCwd(this.runResult, fileInDst)).should.containSubset({
@@ -78,8 +77,8 @@ describe("python-poetry-vscode:vscode", () => {
         writeVsCodeConfig.bind(
           this.generator,
           "extensions.json",
-          existingContent
-        )
+          existingContent,
+        ),
       );
       const fileInDst = path.join(".vscode", "extensions.json");
       (await readJsonInCwd(this.runResult, fileInDst)).should.containSubset({
@@ -115,13 +114,13 @@ describe("python-poetry-vscode:vscode", () => {
         installer: { parallel: false },
       };
       this.runResult = await this.generator.doInDir((dstDir) =>
-        writeTomlInCwd(dstDir, "poetry.toml", existingContent)
+        writeTomlInCwd(dstDir, "poetry.toml", existingContent),
       );
       (await readTomlInCwd(this.runResult, "poetry.toml")).should.containSubset(
         {
           virtualenvs: { create: true, "in-project": true },
           installer: { parallel: false },
-        }
+        },
       );
     });
 
@@ -135,7 +134,7 @@ describe("python-poetry-vscode:vscode", () => {
         },
       };
       this.runResult = await this.generator.doInDir((dstDir) =>
-        writeTomlInCwd(dstDir, "pyproject.toml", existingContent)
+        writeTomlInCwd(dstDir, "pyproject.toml", existingContent),
       );
       (
         await readTomlInCwd(this.runResult, "pyproject.toml")

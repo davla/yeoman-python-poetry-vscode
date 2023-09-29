@@ -47,7 +47,7 @@ export default class JsonInputGenerator extends InputGenerator {
   async writing() {
     this.fs.writeJSON(
       this.destinationPath("output.json"),
-      await this.getInputValues("anice", "licorice")
+      await this.getInputValues("anice", "licorice"),
     );
   }
 }
@@ -103,7 +103,7 @@ describe("InputGenerator", () => {
         "licorice-option": "is too",
       });
       const fileContent = JSON.parse(
-        await readFileInCwd(this.runResult, "output.json")
+        await readFileInCwd(this.runResult, "output.json"),
       );
       fileContent.should.be.an("object").that.has.all.keys("anice", "licorice");
     });
@@ -113,7 +113,7 @@ describe("InputGenerator", () => {
         fennel: "and this too",
       });
       const fileContent = JSON.parse(
-        await readFileInCwd(this.runResult, "output.json")
+        await readFileInCwd(this.runResult, "output.json"),
       );
       fileContent.should.be.an("object").that.does.not.have.any.keys("fennel");
     });
@@ -123,7 +123,7 @@ describe("InputGenerator", () => {
         .withOptions({ anice: "is not very good" })
         .should.be.rejectedWith(
           TypeError,
-          /.*is not very good.+option --anice.+you're lying.*/
+          /.*is not very good.+option --anice.+you're lying.*/,
         );
     });
   });
@@ -150,7 +150,7 @@ describe("InputGenerator", () => {
     it("should report missing input names", function () {
       (() => this.generatorObj.getInputValues("fennel")).should.throw(
         TypeError,
-        /No input.*fennel/
+        /No input.*fennel/,
       );
     });
   });
@@ -169,7 +169,7 @@ describe("InputGenerator", () => {
     it("should report missing input names", function () {
       (() => this.generatorObj.getInputValues("fennel")).should.throw(
         TypeError,
-        /No input.*fennel/
+        /No input.*fennel/,
       );
     });
   });

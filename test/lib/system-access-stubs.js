@@ -8,7 +8,7 @@ export function setupSystemAccessStubs() {
     userGitName: sinon.stub(Generator.prototype.user.git, "name"),
     queryGitOriginUrl: sinon.stub(
       BaseGenerator.prototype,
-      "_queryGitOriginUrl"
+      "_queryGitOriginUrl",
     ),
     spawnCommand: sinon.stub(Generator.prototype, "spawnCommand"),
   };

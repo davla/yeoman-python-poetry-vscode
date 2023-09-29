@@ -4,7 +4,7 @@ import chalk from "chalk";
 import yosay from "yosay";
 
 import BaseGenerator from "../../lib/base-generator.js";
-import sharedInputs from "../../lib/shared/inputs.js";
+import inputs from "../../lib/inputs.js";
 import PoetryGenerator from "../poetry/index.js";
 import PythonPackageGenerator from "../python-package/index.js";
 import VSCodeGenerator from "../vscode/index.js";
@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 
 export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   constructor(args, opts) {
-    super(args, opts, Object.values(sharedInputs));
+    super(args, opts, Object.values(inputs));
   }
 
   initializing() {
@@ -34,7 +34,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
         "authorEmail",
         "repository",
         "license",
-        "packageName"
+        "packageName",
       );
 
     this.composeWith(require.resolve("generator-editorconf"), {
@@ -59,6 +59,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       "authorName",
       "authorEmail",
       "repository",
+      "description",
+      "pythonVersion",
     ]);
     this._compose(PythonPackageGenerator, "../python-package/index.js", [
       "packageName",
@@ -70,7 +72,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
   async install() {
     const poetryInstall = chalk.green("poetry install");
     this.log(
-      yosay(`I'll now run ${poetryInstall} to bootstrap your workspace.`)
+      yosay(`I'll now run ${poetryInstall} to bootstrap your workspace.`),
     );
 
     try {
@@ -91,7 +93,7 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
         Generator: generatorClass,
         path: require.resolve(generatorPath),
       },
-      this.getOptionValues(...optionNames)
+      this.getOptionValues(...optionNames),
     );
   }
 
@@ -103,8 +105,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
       yosay(
         `I'll now ask you some questions. The ${defaultAnswers} are derived` +
           `from the environment (e.g. existing ${pyprojectToml}, ` +
-          `${git} configuration...).`
-      )
+          `${git} configuration...).`,
+      ),
     );
   }
 
@@ -119,8 +121,8 @@ export default class PythonPoetryVSCodeGenerator extends BaseGenerator {
           `You can install it here: ${intallLink}.`,
         {
           maxLength: url.length + 1,
-        }
-      )
+        },
+      ),
     );
   }
 }

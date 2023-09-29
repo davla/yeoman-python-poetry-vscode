@@ -17,7 +17,7 @@ describe("toml-utils", () => {
     it("reads pyproject.toml in the generator destination path", function () {
       readPyProjectToml.call(this.generator);
       this.generator.destinationPath.should.have.been.calledOnceWith(
-        "pyproject.toml"
+        "pyproject.toml",
       );
     });
 

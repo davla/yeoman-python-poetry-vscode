@@ -8,11 +8,7 @@ import { readCwd } from "../lib/file-system.js";
 
 import "../lib/register-chai-snapshots.js";
 
-const endToEndPath = path.join(
-  moduleDirName(import.meta),
-  "test",
-  "end-to-end"
-);
+const endToEndPath = path.join(moduleDirName(import.meta), "test-output");
 
 describe("end-to-end tests", () => {
   beforeEach(function () {
@@ -26,7 +22,7 @@ describe("end-to-end tests", () => {
       }
     };
 
-    this.execTest = async function (parameters = {}) {
+    this.execTest = async function (parameters = {}, outOfSnapshotFiles = []) {
       const cliArgs = Object.entries(parameters).flatMap(([key, value]) => [
         "--" + key,
         value,
@@ -35,26 +31,35 @@ describe("end-to-end tests", () => {
         cwd: this.outputPath,
       });
 
-      (await readCwd(this.outputPath)).should.matchSnapshot();
+      const cwdFiles = await readCwd(this.outputPath, outOfSnapshotFiles);
+      cwdFiles.should.matchSnapshot();
+
+      await Promise.all(
+        outOfSnapshotFiles.map((file) => {
+          const filePath = path.join(this.outputPath, file);
+          return fs.access(filePath).should.be.fulfilled;
+        }),
+      );
     };
   });
 
-  afterEach(async function () {
-    await fs.rm(this.outputPath, { recursive: true });
-  });
+  after(() => fs.rm(endToEndPath, { force: true, recursive: true }));
 
-  it.skip("python-poetry-vscode", async function () {
+  it("python-poetry-vscode", async function () {
     await this.prepare();
-    await this.execTest({
-      "author-email": "jin.kazama@tekken.jp",
-      "author-name": "Jin Kazama",
-      description: "I don't actually like fighting games",
-      license: "GPL-3.0",
-      "package-name": "tekken-3",
-      "package-version": "0.5.3",
-      "python-version": "^3.10.2",
-      repository: "https://github.com/jin-kazama/tekken-3",
-    });
+    await this.execTest(
+      {
+        "author-email": "jin.kazama@tekken.jp",
+        "author-name": "Jin Kazama",
+        description: "I don't actually like fighting games",
+        license: "GPL-3.0",
+        "package-name": "tekken_3",
+        "package-version": "0.5.3",
+        "python-version": "^3.10.2",
+        repository: "https://github.com/jin-kazama/tekken-3",
+      },
+      [".gitignore", "poetry.lock"],
+    );
   });
 
   it("python-poetry-vscode:poetry", async function () {

@@ -47,7 +47,7 @@ const findUnreleasedSection = (unreleasedHeadingContent, headingLevel) =>
   async function* (lines) {
     const { headingStart, unreleasedHeading } = makeHeadings(
       unreleasedHeadingContent,
-      headingLevel
+      headingLevel,
     );
 
     let isHeadingFound = false;
@@ -89,12 +89,12 @@ const readLines = async (fileName, options = { encoding: "utf-8" }) =>
 export const readUnreleased = async (
   changelogFile,
   unreleasedHeadingContent,
-  headingLevel
+  headingLevel,
 ) =>
   pipeline(
     await readLines(changelogFile),
     findUnreleasedSection(unreleasedHeadingContent, headingLevel),
-    process.stdout
+    process.stdout,
   );
 
 /**************************************
@@ -105,18 +105,18 @@ async function updateHeadings(
   changelogFile,
   version,
   unreleasedHeadingContent,
-  headingLevel
+  headingLevel,
 ) {
   const content = await fs.readFile(changelogFile, "utf8");
 
   const { newReleaseHeading, unreleasedHeading } = makeHeadings(
     unreleasedHeadingContent,
     headingLevel,
-    version
+    version,
   );
   const result = content.replace(
     unreleasedHeading,
-    unreleasedHeading + "\n\n" + newReleaseHeading
+    unreleasedHeading + "\n\n" + newReleaseHeading,
   );
 
   await fs.writeFile(changelogFile, result, "utf8");
@@ -136,13 +136,13 @@ export async function update(
   version,
   changelogFile,
   unreleasedHeadingContent,
-  headingLevel
+  headingLevel,
 ) {
   await updateHeadings(
     changelogFile,
     version,
     unreleasedHeadingContent,
-    headingLevel
+    headingLevel,
   );
   await commitChangelog(changelogFile, version);
 }
@@ -184,7 +184,7 @@ function main() {
     return readUnreleased(
       changelogFile,
       unreleasedHeadingContent,
-      headingLevel
+      headingLevel,
     );
   }
 
@@ -193,7 +193,7 @@ function main() {
       version,
       changelogFile,
       unreleasedHeadingContent,
-      headingLevel
+      headingLevel,
     );
   }
 }

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The description and python version prompts are available as command line
+  options.
+- The package name and package version inputs have default prompt values when
+  there is no pre-existing `pyproject.toml` file.
+
+### Fixed
+
+- The repository input is no longer mandatory, as per
+  [the specification](https://python-poetry.org/docs/pyproject/#repository)
+  of the `tool.poetry` section in `pyproject.toml`.
+
 ## [1.1.2] - 2023-09-27
 
 ### Changed
