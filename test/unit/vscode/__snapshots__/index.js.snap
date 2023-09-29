@@ -31,11 +31,11 @@ Object {
 exports[`python-poetry-vscode:vscode vscode config populates .vscode/extensions.json 1`] = `
 Object {
   "recommendations": Array [
-    "bungcip.better-toml",
     "editorconfig.editorconfig",
     "ms-python.black-formatter",
     "ms-python.isort",
     "ms-python.python",
+    "tamasfe.even-better-toml",
   ],
   "unwantedRecommendations": Array [],
 }
