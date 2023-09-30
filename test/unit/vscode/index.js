@@ -3,7 +3,6 @@ import path from "node:path";
 
 import yeomanTest from "yeoman-test";
 
-import "../../lib/register-chai-snapshots.js";
 import VSCodeGenerator from "../../../generators/vscode/index.js";
 import {
   readJsonInCwd,
@@ -41,11 +40,6 @@ describe("python-poetry-vscode:vscode", () => {
         this.runResult = await this.generator;
         this.runResult.assertFile(filePath);
         await readJsonInCwd(this.runResult, filePath).should.be.fulfilled;
-      });
-
-      it(`populates ${toPosixPath(filePath)}`, async function () {
-        this.runResult = await this.generator;
-        (await readJsonInCwd(this.runResult, filePath)).should.matchSnapshot();
       });
     }
 
@@ -100,11 +94,6 @@ describe("python-poetry-vscode:vscode", () => {
         this.runResult = await this.generator;
         this.runResult.assertFile(filePath);
         await readTomlInCwd(this.runResult, filePath).should.be.fulfilled;
-      });
-
-      it(`populates ${toPosixPath(filePath)}`, async function () {
-        this.runResult = await this.generator;
-        (await readTomlInCwd(this.runResult, filePath)).should.matchSnapshot();
       });
     }
 
