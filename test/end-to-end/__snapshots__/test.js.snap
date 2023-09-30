@@ -23,6 +23,40 @@ trim_trailing_whitespace = false
 charset = utf-8
 indent_style = tab
 ",
+  ".vscode/extensions.json": Object {
+    "recommendations": Array [
+      "editorconfig.editorconfig",
+      "ms-python.black-formatter",
+      "ms-python.isort",
+      "ms-python.python",
+      "tamasfe.even-better-toml",
+    ],
+    "unwantedRecommendations": Array [],
+  },
+  ".vscode/settings.json": Object {
+    "[python]": Object {
+      "editor.codeActionsOnSave": Object {
+        "source.organizeImports": true,
+      },
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.rulers": Array [
+        88,
+      ],
+    },
+    "black-formatter.importStrategy": "fromEnvironment",
+    "isort.args": Array [
+      "--profile",
+      "black",
+    ],
+    "isort.importStrategy": "fromEnvironment",
+    "python.formatting.provider": "none",
+    "python.linting.ignorePatterns": Array [
+      "**/site-packages/**/*.py",
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+  },
   "LICENSE": "Copyright (c) 2023 Jin Kazama <jin.kazama@tekken.jp> (https://github.com/jin-kazama/tekken-3)
 
 This program is free software: you can redistribute it and/or modify
@@ -796,21 +830,55 @@ Object {
 
 exports[`end-to-end tests python-poetry-vscode:python-package 1`] = `
 Object {
+  "tekken_4/__init__.py": Object {
+    "__version__": "1.9.0",
+  },
   "tests/__init__.py": "",
-  "tests/test_yoyo.py": "from yoyo import __version__
+  "tests/test_tekken_4.py": "from tekken_4 import __version__
 
 
 def test_version():
     assert __version__ == \\"1.9.0\\"
 ",
-  "yoyo/__init__.py": Object {
-    "__version__": "1.9.0",
-  },
 }
 `;
 
 exports[`end-to-end tests python-poetry-vscode:vscode 1`] = `
 Object {
+  ".vscode/extensions.json": Object {
+    "recommendations": Array [
+      "editorconfig.editorconfig",
+      "ms-python.black-formatter",
+      "ms-python.isort",
+      "ms-python.python",
+      "tamasfe.even-better-toml",
+    ],
+    "unwantedRecommendations": Array [],
+  },
+  ".vscode/settings.json": Object {
+    "[python]": Object {
+      "editor.codeActionsOnSave": Object {
+        "source.organizeImports": true,
+      },
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.rulers": Array [
+        88,
+      ],
+    },
+    "black-formatter.importStrategy": "fromEnvironment",
+    "isort.args": Array [
+      "--profile",
+      "black",
+    ],
+    "isort.importStrategy": "fromEnvironment",
+    "python.formatting.provider": "none",
+    "python.linting.ignorePatterns": Array [
+      "**/site-packages/**/*.py",
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+  },
   "poetry.toml": Object {
     "virtualenvs": Object {
       "in-project": true,

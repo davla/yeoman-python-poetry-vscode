@@ -58,7 +58,7 @@ describe("end-to-end tests", () => {
         "python-version": "^3.10.2",
         repository: "https://github.com/jin-kazama/tekken-3",
       },
-      [".gitignore", "poetry.lock"],
+      [".gitignore", ".venv", "poetry.lock"],
     );
   });
 
@@ -79,7 +79,7 @@ describe("end-to-end tests", () => {
   it("python-poetry-vscode:python-package", async function () {
     await this.prepare("python-package");
     await this.execTest({
-      "package-name": "yoyo",
+      "package-name": "tekken_4",
       "package-version": "1.9.0",
     });
   });

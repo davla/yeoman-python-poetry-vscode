@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Replace the deprecated Visual Studio Code extension
+  [Better TOML](https://marketplace.visualstudio.com/items?itemName=bungcip.better-toml)
+  with the suggested stand-in
+  [Even Better TOML](https://marketplace.visualstudio.com/items?itemName=tamasfe.even-better-toml).
+
 ## [1.2.0] - 2023-09-29
 
 ### Added

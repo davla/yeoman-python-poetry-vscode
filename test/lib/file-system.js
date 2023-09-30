@@ -48,14 +48,16 @@ async function tryParseInCwd(runResult, fileName) {
 }
 
 export async function readCwd(runResult, excludeFiles = []) {
-  const filesInCwd = await glob(["**", ".**"], {
-    cwd: (runResult.cwd ?? runResult).replace(path.sep, path.posix.sep),
-    ignore: excludeFiles,
+  const filesInCwd = await glob("**", {
     absolute: false,
+    cwd: toPosixPath(runResult.cwd ?? runResult),
+    dot: true,
+    globstar: true,
+    ignore: excludeFiles,
     onlyFiles: true,
   });
   const nameContentPairs = filesInCwd.map(async (fileName) => [
-    toPosixPath(fileName),
+    fileName,
     await tryParseInCwd(runResult, fileName),
   ]);
   return Object.fromEntries(await Promise.all(nameContentPairs));
