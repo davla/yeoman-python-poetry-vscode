@@ -10,7 +10,7 @@ const generatorInput = [
   {
     optionName: "package-name",
     promptName: "packageName",
-    inputValue: "package_name",
+    inputValue: "tekken_7",
   },
   {
     optionName: "package-version",
@@ -32,7 +32,7 @@ describe("python-poetry-vscode:python-package", () => {
 
     it("should create __init__.py in a directory named after the package", async function () {
       this.runResult = await this.generator;
-      this.runResult.assertFile(path.join("package_name", "__init__.py"));
+      this.runResult.assertFile(path.join("tekken_7", "__init__.py"));
     });
   });
 
@@ -46,7 +46,7 @@ describe("python-poetry-vscode:python-package", () => {
 
     it("should create a tests file named after the package in the tests directory", async function () {
       this.runResult = await this.generator;
-      this.runResult.assertFile(path.join("tests", "test_package_name.py"));
+      this.runResult.assertFile(path.join("tests", "test_tekken_7.py"));
     });
   });
 });

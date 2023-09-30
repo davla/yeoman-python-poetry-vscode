@@ -26,7 +26,7 @@ const generatorInput = [
     optionName: "package-name",
     promptName: "packageName",
     outputPath: "name",
-    inputValue: "input_package",
+    inputValue: "tekken_6",
   },
   {
     optionName: "package-version",
@@ -38,7 +38,7 @@ const generatorInput = [
     optionName: "description",
     promptName: "description",
     outputPath: "description",
-    inputValue: "Input description",
+    inputValue: "I don't actually like fighting games",
   },
   {
     optionName: "license",
@@ -56,21 +56,21 @@ const generatorInput = [
     optionName: "repository",
     promptName: "repository",
     outputPath: "repository",
-    inputValue: "https://github.com/marshall-law/input_package",
+    inputValue: "https://github.com/marshall-law/tekken-6",
   },
 ];
 
 const mandatoryAnswers = {
-  packageName: "mandatory_package",
+  packageName: "tekken_7",
   packageVersion: "1.9.0",
-  description: "Non-empty description",
+  description: "The King of Iron Fist Tournament",
 };
 
 describe("python-poetry-vscode:poetry", () => {
   beforeEach(function () {
     this.stubs = setupSystemAccessStubs();
     this.stubs.queryGitOriginUrl.resolves(
-      "https://github.com/eddy-gordo/git_package",
+      "https://github.com/eddy-gordo/tekken-5",
     );
     this.stubs.spawnCommand
       .withArgs("python", ["--version"], { stdio: "pipe" })

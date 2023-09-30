@@ -118,7 +118,7 @@ describe("python-poetry-vscode:vscode", () => {
         tool: {
           poetry: {
             dependencies: { pylint: "^2.15.0" },
-            name: "existing_package",
+            name: "tekken",
           },
         },
       };
@@ -135,7 +135,7 @@ describe("python-poetry-vscode:vscode", () => {
               isort: "^5.12.0",
               pylint: "^2.15.0",
             },
-            name: "existing_package",
+            name: "tekken",
           },
         },
       });
