@@ -18,8 +18,6 @@ describe("InputFactory", () => {
 
   it("binds this in valueFunctions to the generator", () => {
     const valueFunctions = {
-      retrieve: { bind: sinon.spy() },
-      transform: { bind: sinon.spy() },
       validate: { bind: sinon.spy() },
       default: { bind: sinon.spy() },
     };
@@ -31,6 +29,64 @@ describe("InputFactory", () => {
     for (const valueFunction of Object.values(valueFunctions)) {
       valueFunction.bind.should.have.been.calledOnceWith(generator);
     }
+  });
+
+  describe("compose", () => {
+    for (const argName of ["ioConfig", "extras"]) {
+      it(`merges "${argName}" recursively`, () => {
+        const thisArg = { thisShallowKey: 22, deep: { thisKey: 73 } };
+        const thatArg = { thatShallowKey: false, deep: { thatKey: true } };
+        const thisFactory = new InputFactory({ [argName]: thisArg });
+        const thatFactory = new InputFactory({ [argName]: thatArg });
+
+        const factory = thisFactory.compose(thatFactory);
+
+        factory[argName].should.containSubset({
+          thisShallowKey: 22,
+          thatShallowKey: false,
+          deep: { thisKey: 73, thatKey: true },
+        });
+      });
+
+      it(`prioritizes this when merging "${argName}"`, () => {
+        const thisArg = { key: 22, deep: { key: 73 } };
+        const thatArg = { key: false, deep: { key: true } };
+        const thisFactory = new InputFactory({ [argName]: thisArg });
+        const thatFactory = new InputFactory({ [argName]: thatArg });
+
+        const factory = thisFactory.compose(thatFactory);
+
+        factory[argName].should.containSubset({ key: 22, deep: { key: 73 } });
+      });
+    }
+
+    it("composes valueFunctions with this functions first", async () => {
+      const thisFn = sinon.stub().resolves(77);
+      const thatFn = sinon.stub().resolves("eight");
+      const thisFactory = new InputFactory({ valueFunctions: { f: thisFn } });
+      const thatFactory = new InputFactory({ valueFunctions: { f: thatFn } });
+
+      const factory = thisFactory.compose(thatFactory);
+      const res = await factory.valueFunctions.f(false);
+
+      thisFn.should.have.been.calledBefore(thatFn);
+      thisFn.should.have.been.calledOnceWith(false);
+      thatFn.should.have.been.calledOnceWith(77);
+      res.should.equal("eight");
+    });
+
+    it("composes valueFunctions by name", async () => {
+      const thisFn = sinon.stub().resolves(77);
+      const thatFn = sinon.stub().resolves("eight");
+      const thisFactory = new InputFactory({ valueFunctions: { f: thisFn } });
+      const thatFactory = new InputFactory({ valueFunctions: { g: thatFn } });
+
+      const factory = thisFactory.compose(thatFactory);
+      await factory.valueFunctions.f(false);
+
+      thisFn.should.have.been.calledOnceWith(false);
+      thatFn.should.have.not.been.called;
+    });
   });
 });
 
