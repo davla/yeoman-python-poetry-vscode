@@ -32,17 +32,17 @@ describe("Inputs", () => {
 
     it("defaults to the current working directory name when reading pyproject.toml is undefined", async function () {
       this.generator.fs.read.returns("");
-      process.cwd.returns("/an/absolute/path/to/here");
+      process.cwd.returns("/tekken/4/steve/fox");
 
       const promptDefault = await this.input.asPrompt().default();
 
-      promptDefault.should.equal("here");
+      promptDefault.should.equal("fox");
       process.cwd.should.have.been.calledOnce;
     });
 
     it("defaults to null if the current working directory is not a valid python package name", async function () {
       this.generator.fs.read.returns("");
-      process.cwd.returns("/an/absolute/path/to-here");
+      process.cwd.returns("/tekken/4/steve-fox");
 
       const promptDefault = await this.input.asPrompt().default();
 
@@ -94,19 +94,19 @@ describe("Inputs", () => {
     it('defaults to read "repository" from pyproject.toml', async function () {
       this.generator.fs.read.returns(`
         [tool.poetry]
-        repository = "https://github.com/hwoarang/https_package"
+        repository = "https://github.com/hwoarang/tekken-5"
       `);
 
       const promptDefault = await this.input.asPrompt().default();
 
-      promptDefault.should.equal("https://github.com/hwoarang/https_package");
+      promptDefault.should.equal("https://github.com/hwoarang/tekken-5");
       this.generator.fs.read.should.have.been.calledOnce;
       this.generator._queryGitOriginUrl.should.not.have.been.called;
     });
 
     [
-      { protocol: "https", url: "https://github.com/hwoarang/https_package" },
-      { protocol: "ssh", url: "git@github.com:hwoarang/https_package.git" },
+      { protocol: "https", url: "https://github.com/hwoarang/tekken-5" },
+      { protocol: "ssh", url: "git@github.com:hwoarang/tekken-5.git" },
     ].forEach(({ protocol, url }) => {
       it(`defaults to query the url of the git "origin" remote (${protocol}) when reading pyproject.toml is undefined`, async function () {
         this.generator.fs.read.returns("");
@@ -114,7 +114,7 @@ describe("Inputs", () => {
 
         const promptDefault = await this.input.asPrompt().default();
 
-        promptDefault.should.equal("https://github.com/hwoarang/https_package");
+        promptDefault.should.equal("https://github.com/hwoarang/tekken-5");
         this.generator._queryGitOriginUrl.should.have.been.calledOnce;
       });
     });

@@ -29,7 +29,7 @@ describe("python-poetry-vscode", () => {
     this.stubs.userGitName.returns("Jin Kazama");
 
     this.generator = yeomanTest.run(PythonPoetryVSCodeGenerator).withAnswers({
-      packageName: "mandatory_package",
+      packageName: "tekken_2",
       packageVersion: "3.18.0",
       description: "I don't actually like fighting games",
     });
@@ -58,12 +58,12 @@ describe("python-poetry-vscode", () => {
         {
           optionName: "author-email",
           promptName: "authorEmail",
-          inputValue: "anna.williamsa@tekken.ie",
+          inputValue: "anna.williams@tekken.ie",
         },
         {
           optionName: "repository",
           promptName: "repository",
-          inputValue: "https://github.com/steve-fox/git_package",
+          inputValue: "https://github.com/anna-williams/tekken",
         },
         {
           optionName: "license",
@@ -116,10 +116,10 @@ describe("python-poetry-vscode", () => {
       this.composeWith.should.have.been.calledWith(
         require.resolve("generator-license"),
         {
-          email: "anna.williamsa@tekken.ie",
+          email: "anna.williams@tekken.ie",
           license: "GPL-3.0",
           name: "Anna Williams",
-          website: "https://github.com/steve-fox/git_package",
+          website: "https://github.com/anna-williams/tekken",
         },
       );
     });
@@ -133,11 +133,11 @@ describe("python-poetry-vscode", () => {
         },
         {
           "author-name": "Anna Williams",
-          "author-email": "anna.williamsa@tekken.ie",
+          "author-email": "anna.williams@tekken.ie",
           license: "GPL-3.0",
           "package-name": "tekken",
           "package-version": "0.5.3",
-          repository: "https://github.com/steve-fox/git_package",
+          repository: "https://github.com/anna-williams/tekken",
           description: "The King of Iron First Tournament",
           "python-version": "^3.9.0",
         },

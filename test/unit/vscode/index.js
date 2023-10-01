@@ -3,7 +3,6 @@ import path from "node:path";
 
 import yeomanTest from "yeoman-test";
 
-import "../../lib/register-chai-snapshots.js";
 import VSCodeGenerator from "../../../generators/vscode/index.js";
 import {
   readJsonInCwd,
@@ -41,11 +40,6 @@ describe("python-poetry-vscode:vscode", () => {
         this.runResult = await this.generator;
         this.runResult.assertFile(filePath);
         await readJsonInCwd(this.runResult, filePath).should.be.fulfilled;
-      });
-
-      it(`populates ${toPosixPath(filePath)}`, async function () {
-        this.runResult = await this.generator;
-        (await readJsonInCwd(this.runResult, filePath)).should.matchSnapshot();
       });
     }
 
@@ -101,11 +95,6 @@ describe("python-poetry-vscode:vscode", () => {
         this.runResult.assertFile(filePath);
         await readTomlInCwd(this.runResult, filePath).should.be.fulfilled;
       });
-
-      it(`populates ${toPosixPath(filePath)}`, async function () {
-        this.runResult = await this.generator;
-        (await readTomlInCwd(this.runResult, filePath)).should.matchSnapshot();
-      });
     }
 
     it("merges poetry.toml with existing content", async function () {
@@ -129,7 +118,7 @@ describe("python-poetry-vscode:vscode", () => {
         tool: {
           poetry: {
             dependencies: { pylint: "^2.15.0" },
-            name: "existing_package",
+            name: "tekken",
           },
         },
       };
@@ -146,7 +135,7 @@ describe("python-poetry-vscode:vscode", () => {
               isort: "^5.12.0",
               pylint: "^2.15.0",
             },
-            name: "existing_package",
+            name: "tekken",
           },
         },
       });

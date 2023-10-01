@@ -30,10 +30,10 @@ describe("mergeConfig", () => {
 
   it("merges plain objects recursively", () => {
     const dst = { a: { deep: { value: 42 } }, flag: false };
-    const src = { a: { deep: { file: "config.hocon" } }, flag: true };
+    const src = { a: { deep: { file: "Ling Xiaoyu" } }, flag: true };
 
     mergeConfig(dst, src).should.deep.equal({
-      a: { deep: { value: 42, file: "config.hocon" } },
+      a: { deep: { value: 42, file: "Ling Xiaoyu" } },
       flag: true,
     });
   });
