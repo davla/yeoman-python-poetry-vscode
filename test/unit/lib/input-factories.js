@@ -1,4 +1,5 @@
 import {
+  ChoiceInputFactory,
   InputFactory,
   PyProjectTomlInputFactory,
 } from "../../../lib/input-factories.js";
@@ -215,6 +216,114 @@ describe("PyProjectTomlInputFactory", () => {
       const input = factory.create(this.generator);
       const promptDefault = await input.asPrompt().default();
       promptDefault.should.be.false;
+    });
+  });
+});
+
+describe("ChoiceInputFactory", () => {
+  it('creates a "String" option', () => {
+    const factory = new ChoiceInputFactory({ choices: [] });
+    const input = factory.create({});
+
+    const option = input.asOption();
+
+    option.type.should.equal(String);
+  });
+
+  [
+    {
+      value: "Qwilfish",
+      desc: 'not in "choices"',
+      err: "not one of Rampardos, Gyarados",
+    },
+    { value: -7, desc: "negative", err: "out of range \\[0; 1\\]" },
+    { value: 3, desc: "out-of-range", err: "out of range \\[0; 1\\]" },
+  ].forEach(({ value, desc, err }) => {
+    it(`reports ${desc} default choices`, () => {
+      const args = { choices: ["Rampardos", "Gyarados"], defaultChoice: value };
+      (() => new ChoiceInputFactory(args)).should.throw(
+        new RegExp(`${value}.*${err}`),
+      );
+    });
+  });
+
+  describe("prompt", () => {
+    it('creates a "list" prompt with the inputs as choices', () => {
+      const factory = new ChoiceInputFactory({
+        choices: ["Infernape", "Wailord"],
+        defaultChoice: "Wailord",
+      });
+      const input = factory.create({});
+
+      const prompt = input.asPrompt();
+
+      prompt.should.containSubset({
+        type: "list",
+        choices: ["Infernape", "Wailord"],
+        default: "Wailord",
+      });
+    });
+
+    it('defaults to "defaultChoice"', async () => {
+      const factory = new ChoiceInputFactory({
+        choices: ["Oricorio"],
+        defaultChoice: "Oricorio",
+      });
+      const input = factory.create({});
+
+      const prompt = input.asPrompt();
+
+      prompt.default.should.equal("Oricorio");
+    });
+
+    it('fallbacks to the default valueFunction if "defaultChoice" is not given', async () => {
+      const args = {
+        choices: [],
+        valueFunctions: { default: sinon.stub().resolves("Clefable") },
+      };
+      const factory = new ChoiceInputFactory(args);
+      const input = factory.create({});
+
+      const defaultVal = await input.asPrompt().default();
+
+      defaultVal.should.equal("Clefable");
+    });
+
+    it('validates answers in "choices"', () => {
+      const factory = new ChoiceInputFactory({ choices: ["Lampent"] });
+      const input = factory.create({});
+
+      const isValid = input.asPrompt().validate("Lampent");
+
+      isValid.should.be.true;
+    });
+
+    it('reports answers not in "choices"', () => {
+      const args = { choices: ["Donphan", "Sprigatito"] };
+      const factory = new ChoiceInputFactory(args);
+      const input = factory.create({});
+
+      const isValid = input.asPrompt().validate("Fletchinder");
+
+      isValid.should.be
+        .a("string")
+        .and.include("Fletchinder")
+        .and.include("not")
+        .and.include(args.choices.join(", "));
+    });
+
+    it('calls "validate" valueFunction for answers in choices', () => {
+      const validate = sinon.stub().returns("invalid answer");
+      const factory = new ChoiceInputFactory({
+        choices: ["Tauros"],
+        valueFunctions: { validate },
+      });
+      const input = factory.create({});
+
+      const isValid = input.asPrompt().validate("Tauros");
+
+      validate.should.have.been.calledOnceWith("Tauros");
+      isValid.should.equal("invalid answer");
     });
   });
 });
